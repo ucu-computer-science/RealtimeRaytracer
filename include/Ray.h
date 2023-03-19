@@ -7,7 +7,7 @@
 class Ray {
 
 	Vec3 pos, dir;
-	[[nodiscard]] float det(const Vec3& v1, const Vec3& v2, const Vec3& v3) const;
+	[[nodiscard]] float det(const Vec3& v1, const Vec3& v2, const Vec3& v3) const{ return Vec3::det(v1, v2, v3);}; // todo
 public:
 	Ray(Vec3 pos, Vec3 dir) : pos{ pos }, dir{ dir }{}
 	~Ray() = default;

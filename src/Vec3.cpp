@@ -54,6 +54,11 @@ Vec3 Vec3::cross(const Vec3& v) const {
 			x() * v.y() - y() * v.x() };
 }
 
+float Vec3::det(const Vec3 &v1, const Vec3 &v2, const Vec3 &v3) {
+    return v1.x()*v2.y()*v3.z() + v1.y()*v2.z()*v3.x() + v1.z()*v2.x()*v3.y() -
+           v1.z()*v2.y()*v3.x() - v1.y()*v2.x()*v3.z() - v1.x()*v2.z()*v3.y();
+}
+
 
 Vec3 operator*(const float x, const Vec3& v) {
 	return { x * v.x(), x * v.y(), x * v.z() };

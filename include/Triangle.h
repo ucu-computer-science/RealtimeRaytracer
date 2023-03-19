@@ -16,7 +16,7 @@ class Triangle {
 
 	Vec3 p1, p2, p3;
 	PlaneEq planeEq;
-	[[nodiscard]] float det(const Vec3& v1, const Vec3& v2, const Vec3& v3) const;
+    [[nodiscard]] float det(const Vec3& v1, const Vec3& v2, const Vec3& v3) const{return Vec3::det(v1, v2, v3);}; // todo
 	[[nodiscard]] PlaneEq calcPlaneEq() const {
 		return  { (p2 - p1).cross(p3 - p1), det(p1, p2 - p1, p3 - p1) };
 	}
