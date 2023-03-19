@@ -6,7 +6,10 @@ project ("RayTracer")
 
 include_directories(include)
 
-add_executable (RayTracer src/main.cpp "src/Vec3.cpp" src/Triangle.cpp src/Ray.cpp)
+add_executable (RayTracer src/main.cpp "src/Vec3.cpp" src/Triangle.cpp src/Ray.cpp src/SDL_runner.cpp)
+
+find_package(SDL2 REQUIRED COMPONENTS SDL2)
+target_link_libraries(RayTracer PRIVATE SDL2::SDL2)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET RayTracer PROPERTY CXX_STANDARD 20)
