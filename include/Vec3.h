@@ -1,5 +1,6 @@
 #ifndef VEC3_H
 #define VEC3_H
+
 #include <istream>
 
 class Vec3
@@ -16,10 +17,6 @@ public:
 	[[nodiscard]] float y() const { return val[1]; }
 	[[nodiscard]] float z() const { return val[2]; }
 
-	[[nodiscard]] float r() const { return val[0]; }
-	[[nodiscard]] float g() const { return val[1]; }
-	[[nodiscard]] float b() const { return val[2]; }
-
 	[[nodiscard]] const Vec3& operator+() const { return *this; }
 	[[nodiscard]] Vec3 operator-() const { return { -val[0], -val[1], -val[2] }; }
 	[[nodiscard]] float operator[](const int i) const { return val[i]; }
@@ -28,12 +25,10 @@ public:
 	[[nodiscard]] Vec3 operator+(const Vec3& v) const;
 	[[nodiscard]] Vec3 operator-(const Vec3& v) const;
 	[[nodiscard]] float operator*(const Vec3& v) const;
-
 	[[nodiscard]] Vec3 operator/(float v) const;
 
 	Vec3& operator+=(const Vec3& v);
 	Vec3& operator-=(const Vec3& v);
-	Vec3& operator*=(const Vec3& v);
 	Vec3& operator*=(float f);
 	Vec3& operator/=(float f);
 
@@ -50,7 +45,7 @@ inline std::istream& operator>>(std::istream& is, Vec3& v)
 }
 inline std::ostream& operator<<(std::ostream& os, const Vec3& v)
 {
-	os << v.val[0] << v.val[1] << v.val[2];
+	os << "(" << v.val[0] << ", " << v.val[1] << ", " << v.val[2] << ")";
 	return os;
 }
 

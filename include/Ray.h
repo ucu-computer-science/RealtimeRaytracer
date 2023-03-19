@@ -1,10 +1,5 @@
-//
-// Created by ADMIN on 19-Mar-23.
-//
-
-#ifndef RAY_TRACING_RAY_H
-#define RAY_TRACING_RAY_H
-
+#ifndef RAY_H
+#define RAY_H
 
 #include "Triangle.h"
 #include "Vec3.h"
@@ -28,18 +23,18 @@ public:
 	[[nodiscard]] bool intersects(const Triangle& triangle) const {
 		auto I = getPlaneIntersectionPoint(triangle);
 
-		float d = det(triangle.getP1(), triangle.getP2(), triangle.getP3());
+		float d = det(triangle.P1(), triangle.P2(), triangle.P3());
 
 
-		if (det(I, triangle.getP2(), triangle.getP3()) / d < 0)
+		if (det(I, triangle.P2(), triangle.P3()) / d < 0)
 			return false;
-		if (det(triangle.getP1(), I, triangle.getP3()) / d < 0)
+		if (det(triangle.P1(), I, triangle.P3()) / d < 0)
 			return false;
-		if (det(triangle.getP2(), triangle.getP2(), I) / d < 0)
+		if (det(triangle.P2(), triangle.P2(), I) / d < 0)
 			return false;
 		return true;
 	}
 };
 
 
-#endif //RAY_TRACING_RAY_H
+#endif // RAY_H

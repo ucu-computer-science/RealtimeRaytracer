@@ -1,13 +1,13 @@
 ﻿
 #include <iostream>
-#include "Vec3.h"
-#include "Triangle.h"	
+#include <Vec3.h>
+#include <Triangle.h>	
+#include <Color.h>
 
 int main()
 {
-	const auto v = Vec3(1, 1, 1);
-	const Vec3 u = v * -1;
-	const Vec3 w = v.cross(u);
-	std::cout << v * w << std::endl;
+	auto v = Vec3(1, 2, 3);
+	auto x = v * v;
+	std::cout << x << std::endl;
 	return 0;
 }
