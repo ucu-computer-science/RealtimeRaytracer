@@ -33,6 +33,8 @@ public:
 	Vec3& operator/=(float f);
 
 	[[nodiscard]] Vec3 cross(const Vec3& v) const;
+
+    [[nodiscard]] static float det(const Vec3 &v1, const Vec3 &v2, const Vec3 &v3); //todo
 };
 
 [[nodiscard]] Vec3 operator*(float x, const Vec3& v);
