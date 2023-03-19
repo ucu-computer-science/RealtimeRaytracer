@@ -6,10 +6,10 @@
 
 class Ray {
 
-	Vec3& pos, & dir;
+	Vec3 pos, dir;
 	[[nodiscard]] float det(const Vec3& v1, const Vec3& v2, const Vec3& v3) const;
 public:
-	Ray(Vec3& pos, Vec3& dir) : pos{ pos }, dir{ dir }{}
+	Ray(Vec3 pos, Vec3 dir) : pos{ pos }, dir{ dir }{}
 	~Ray() = default;
 	[[nodiscard]] float getT(const Triangle& triangle) const {
 		auto norm = triangle.getPlaneEq().norm;

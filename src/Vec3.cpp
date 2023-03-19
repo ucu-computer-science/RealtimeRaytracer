@@ -13,7 +13,7 @@ float Vec3::operator*(const Vec3& v) const
 	return x() * v.x() + y() * v.y() + z() * v.z();
 }
 
-Vec3 Vec3::operator/(const float v) const
+Vec3 Vec3::operator/(float v) const
 {
 	return { x() / v, y() / v, z() / v };
 }
