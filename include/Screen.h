@@ -1,32 +1,34 @@
-#ifndef SCREEN_H
-#define SCREEN_H
+#pragma once
 
-#include "Camera.h"
-#include "Vec3.h"
 #include "Vec2.h"
 #include "Vec2Int.h"
-#include "Ray.h"
+#include "Vec3.h"
+
+using Vector::Vec2;
+using Vector::Vec2Int;
+using Vector::Vec3;
+
+class Camera;
+class ScreenMatrix;
 
 class Screen
 {
-	class Camera* camera;
 public:
+	static Screen* instance;
+
 	Vec2Int pixelSize;
 	Vec2 size;
-	Vec3 dir1, dir2;
+	Vec3 dir1, dir2, norm;
 
 	Screen(const Vec2 size, const Vec2Int pixelSize, const Vec3& dir1, const Vec3& dir2)
-		: camera(nullptr), pixelSize(pixelSize), size(size), dir1(dir1), dir2(dir2)
+		: pixelSize(pixelSize), size(size), dir1(dir1), dir2(dir2), norm(dir1.cross(dir2).normalized())
 	{
-	}
-	void setCamera(Camera& camera)
-	{
-		this->camera = &camera;
+		if (instance != nullptr)
+			throw std::runtime_error("Screen object already exists.");
+		instance = this;
 	}
 
 	Vec3 getCenterPosition() const;
-	Vec3 getPixelPosition(int x, int y) const;
 
-	void update() const;
+	void updatePixelMatrix(ScreenMatrix& matrix) const;
 };
-#endif // SCREEN_H

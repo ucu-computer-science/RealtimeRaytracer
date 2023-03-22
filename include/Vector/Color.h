@@ -1,15 +1,18 @@
-#ifndef COLOR_H
-#define COLOR_H
+#pragma once
 
-#include "Vec3.h"
-
-class Color :public Vec3
+namespace Vector
 {
-public:
-	Color(const float r, const float g, const float b) { val[0] = r; val[1] = g; val[2] = b; }
+	class Color :public Vec3
+	{
+	public:
+		Color() { val[0] = 0; val[1] = 0; val[2] = 0; }
+		Color(const float r, const float g, const float b) { val[0] = r; val[1] = g; val[2] = b; }
 
-	[[nodiscard]] float r() const { return val[0]; }
-	[[nodiscard]] float g() const { return val[1]; }
-	[[nodiscard]] float b() const { return val[2]; }
-};
-#endif // COLOR_H
+		static Color white() { return { 1, 1, 1 }; }
+		static Color black() { return { 0, 0, 0 }; }
+
+		float r() const { return val[0]; }
+		float g() const { return val[1]; }
+		float b() const { return val[2]; }
+	};
+}

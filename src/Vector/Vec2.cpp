@@ -1,4 +1,5 @@
 #include "Vec2.h"
+using Vector::Vec2;
 
 Vec2 Vec2::operator+(const Vec2& v) const
 {
@@ -43,9 +44,20 @@ Vec2& Vec2::operator/=(const float f)
 }
 
 
-Vec2 operator*(const float x, const Vec2& v) {
+Vec2 Vector::operator*(const float x, const Vec2& v) {
 	return { x * v.x(), x * v.y() };
 }
-Vec2 operator*(const Vec2& v, const float x) {
+Vec2 Vector::operator*(const Vec2& v, const float x) {
 	return { x * v.x(), x * v.y() };
+}
+
+std::istream& Vector::operator>>(std::istream& is, Vec2& v)
+{
+	is >> v.val[0] >> v.val[1];
+	return is;
+}
+std::ostream& Vector::operator<<(std::ostream& os, const Vec2& v)
+{
+	os << "(" << v.val[0] << ", " << v.val[1] << ", " << ")";
+	return os;
 }

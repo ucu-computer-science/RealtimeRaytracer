@@ -1,18 +1,22 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#pragma once
 
-#include "Screen.h"
 #include "Object.h"
-#include <iostream>
+#include "Screen.h"
 
 class Camera : public Object
 {
 public:
-	float fov;
-	const class Screen* const screen;
+	static Camera* instance;
 
-	Camera(const float fov, const Screen* screen) : fov(fov), screen(screen) {}
+	float fov;
+	const Screen& screen;
+
+	Camera(const Vec3 pos, const float fov, const Screen& screen) : Object(pos), fov(fov), screen(screen)
+	{
+		if (instance != nullptr)
+			throw std::runtime_error("Screen object already exists.");
+		instance = this;
+	}
 
 	Vec3 getFocalPoint() const;
 };
-#endif // CAMERA_H

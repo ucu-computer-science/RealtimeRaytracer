@@ -1,23 +1,32 @@
-﻿
-#include <iostream>
-#include "Vec2Int.h"
+﻿#include <iostream>
+#include <functional>
+#include "Vec3.h"
 #include "Camera.h"
+#include "GraphicalObject.h"
+#include "Ray.h"
+#include "Raycast.h"
+#include "ScreenMatrix.h"
+#include "SDL_runner.h"
+#include "Triangle.h"
 
-int main()
-{
-	const auto p1 = Vec3(-1, 1, 0);
-	const auto p2 = Vec3(-1, 1, 1);
-	const auto p3 = Vec3(1, 1, 1);
+using Vector::Vec3;
 
-	const auto dir1 = (p1 - p2).normalized();
-	const auto dir2 = (p3 - p2).normalized();
-	std::cout << dir1 << std::endl;
-	std::cout << dir2 << std::endl;
+int main(int argv, char** args) {
+	const auto A = Vec3(0, 0, 0);
+	const auto B = Vec3(0, 0, 1);
+	const auto C = Vec3(1, 0, 1);
 
-	Screen screen{ {1,2},{20,10}, dir1, dir2 };
-	Camera camera{ 1, &screen };
-	camera.pos = p2;
-	screen.setCamera(camera);
-	std::cout << camera.getFocalPoint();
+	const auto dir1 = (A - B).normalized();
+	const auto dir2 = (C - B).normalized();
+	constexpr float fov = 1;
+
+	Screen screen{ {1,1},{400,400}, dir1, dir2 };
+	Camera camera{ B, fov, screen };
+
+	Triangle t{ Vec3(0.2f,1,0.2f), Vec3(0.2f,1,0.8f), Vec3(0.8f,1,0.5f) };
+	GraphicalObject obj{ Vec3{1,1,1}, {&t} };
+
+	show(400, 400);
+
 	return 0;
 }
