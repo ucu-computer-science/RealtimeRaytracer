@@ -1,0 +1,14 @@
+//
+// Created by ADMIN on 21-Mar-23.
+//
+
+#ifndef RAYTRACER_SIMPLEGRAPHICALOBJECT_H
+#define RAYTRACER_SIMPLEGRAPHICALOBJECT_H
+
+
+class SimpleGraphicalObject {
+
+};
+
+
+#endif //RAYTRACER_SIMPLEGRAPHICALOBJECT_H
