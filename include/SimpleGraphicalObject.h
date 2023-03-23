@@ -6,7 +6,9 @@
 #define RAYTRACER_SIMPLEGRAPHICALOBJECT_H
 
 
-class SimpleGraphicalObject {
+#include "GraphicalObject.h"
+
+class SimpleGraphicalObject: public GraphicalObject{
 
 };
 
