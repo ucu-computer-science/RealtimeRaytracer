@@ -11,40 +11,77 @@
 #if defined(_M_IX86) || defined(__i386__)
 
 #endif
-#define USE_INTRINSICS
+//#define USE_INTRINSICS_AVX
 Vec3 Vec3::operator+(const Vec3& v) const{
 //{       dx::XMFLOAT3 xmfloat3{}
-#ifdef USE_INTRINSICS
+#ifdef USE_INTRINSICS_SSE
     __m128 v1 = _mm_set_ps(x(), y(), z(), 0 );
     __m128 v2 = _mm_set_ps(v.x(), v.y(), v.z(), 0 );
     v1 = _mm_add_ps(v1, v2);
-    return { v1.m128_f32};
+    return {v1};
 #else
+ #ifdef USE_INTRINSICS_AVX
+    __m256 v1 = _mm256_set_ps(x(), y(), z(), 0, v.x(), v.y(), v.z() ,0);
+//    __m256 v2 = _mm256_set_ps(v.x(), v.y(), v.z(), 0, 0, 0 ,0 ,0 );
+//    v1 = _mm256_add_ps(v1, v2);
+//    return {v1};
+    return {_mm_add_ps(_mm256_extractf128_ps(v1, 0), _mm256_extractf128_ps(v1, 1))};
+
+ #else
     return  { x() + v.x(), y() + v.y(), z() + v.z() };
-#endif // USE_INTRINSICS
+#endif // USE_INTRINSICS_AVX
+
+#endif // USE_INTRINSICS_SSE
 }
 Vec3 Vec3::operator-(const Vec3& v) const
 {
-#ifdef USE_INTRINSICS
+#ifdef USE_INTRINSICS_SSE
     __m128 v1 = _mm_set_ps(x(), y(), z(), 0 );
     __m128 v2 = _mm_set_ps(v.x(), v.y(), v.z(), 0 );
     v1 = _mm_sub_ps(v1, v2);
-    return { v1.m128_f32};
+    return { v1};
 #else
-	return { x() - v.x() , y() - v.y() , z() - v.z()  };
-#endif // USE_INTRINSICS
+#ifdef USE_INTRINSICS_AVX
+
+//    __m256 v1 = _mm256_set_ps(x(), y(), z(), 0, 0, 0 ,0 ,0);
+//    __m256 v2 = _mm256_set_ps(v.x(), v.y(), v.z(), 0, 0, 0 ,0 ,0 );
+//    v1 = _mm256_sub_ps(v1, v2);
+//    return { v1};
+//#else
+    __m256 v1 = _mm256_set_ps(x(), y(), z(), 0, v.x(), v.y(), v.z() ,0);
+//    __m128 v2 = _mm_sub_ps(_mm256_extractf128_ps(v1, 0), _mm256_extractf128_ps(v1, 1));
+        return {_mm_sub_ps(_mm256_extractf128_ps(v1, 0), _mm256_extractf128_ps(v1, 1))};
+
+#endif // USE_INTRINSICS_AVX
+    return { x() - v.x() , y() - v.y() , z() - v.z()  };
+
+#endif // USE_INTRINSICS_SSE
 }
 float Vec3::operator*(const Vec3& v) const
 {
-#ifdef USE_INTRINSICS
+#ifdef USE_INTRINSICS_SSE
     __m128 v1 = _mm_set_ps(x(), y(), z(), 0 );
     __m128 v2 = _mm_set_ps(v.x(), v.y(), v.z(), 0 );
     v1 = _mm_mul_ps(v1, v2);
     v1 = _mm_hadd_ps(v1,v1);
     return v1.m128_f32[3];
 #else
+
+    #ifdef USE_INTRINSICS_AVX
+//    __m256 v1 = _mm256_set_ps(x(), y(), z(), 0, 0, 0 ,0 ,0);
+//    __m256 v2 = _mm256_set_ps(v.x(), v.y(), v.z(), 0, 0, 0 ,0 ,0 );
+//    v1 = _mm256_mul_ps(v1, v2);
+//    v1 = _mm256_hadd_ps(v1, v1);
+    __m256 v1 = _mm256_set_ps(x(), y(), z(), 0, v.x(), v.y(), v.z() ,0);
+    __m128 v2 = _mm_mul_ps(_mm256_extractf128_ps(v1, 0), _mm256_extractf128_ps(v1, 1));
+    return _mm_hadd_ps(v2, v2).m128_f32[3];
+//std::cout<<v1.m256_f32[7];
+//    exit(0);
+//    return v1.m256_f32[7];
+#else
     return x() * v.x() + y() * v.y() + z() * v.z();
-#endif // USE_INTRINSICS
+#endif //USE_INTRINSICS_AVX
+#endif // USE_INTRINSICS_SSE
 //    exit(0);
 //    _mm_extra
 //    return v1.m128_f32[0];
@@ -57,30 +94,30 @@ Vec3 Vec3::operator/(float v) const
 
 Vec3& Vec3::operator+=(const Vec3& v)
 {
-	this->val[0] += v[0];
-	this->val[1] += v[1];
-	this->val[2] += v[2];
+	val[0] += v.val[0];
+	val[1] += v.val[1];
+	val[2] += v.val[2];
 	return *this;
 }
 Vec3& Vec3::operator-=(const Vec3& v)
 {
-	this->val[0] -= v[0];
-	this->val[1] -= v[1];
-	this->val[2] -= v[2];
+	val[0] -= v.val[0];
+	val[1] -= v.val[1];
+	val[2] -= v.val[2];
 	return *this;
 }
 Vec3& Vec3::operator*=(const float f)
 {
-	this->val[0] *= f;
-	this->val[1] *= f;
-	this->val[2] *= f;
+	val[0] *= f;
+	val[1] *= f;
+	val[2] *= f;
 	return *this;
 }
 Vec3& Vec3::operator/=(const float f)
 {
-	this->val[0] /= f;
-	this->val[1] /= f;
-	this->val[2] /= f;
+	val[0] /= f;
+	val[1] /= f;
+	val[2] /= f;
 	return *this;
 }
 

@@ -39,11 +39,12 @@ void set_cursor(int x = 0 , int y = 0)
 #include <memory>
 #include "Benchmark.h"
 #include "Square.h"
-
+#define SHOW
 int main() {
-//    int wPixels = 450;
-//    int hPixels = 98;
-        Benchmark::benchmark(50);
+    int wPixels = 450;
+    int hPixels = 98;
+//        Benchmark::benchmark(100);
+//Benchmark::benchmarkVectors(50);
 //        Triangle t(Vec3(1, 1, 1), Vec3(-1, 1, 1), Vec3(0, 3, -1));
 #ifdef SHOW
     auto screen = std::vector(hPixels, std::vector<float>(wPixels, 0));
@@ -52,7 +53,7 @@ int main() {
     graphicalObjects.emplace_back(new  Square(Vec3(1, 1, 1),
                                                    Vec3(-1, 1, 1),
                                                    Vec3(0, 3, -1)));
-    graphicalObjects.emplace_back(new  Square(Vec3(1, 1, 1),
+    graphicalObjects.emplace_back(new  Triangle(Vec3(1, 1, 1),
                                               Vec3(-1, 1, 1),
                                               Vec3(-1, 4, 1)));
 //    graphicalObjects.emplace_back(new Triangle(Vec3(1, 1, 1),

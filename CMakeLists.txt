@@ -1,6 +1,6 @@
 
 cmake_minimum_required (VERSION 3.8)
-set(CXX_STANDARD 17)
+set(CXX_STANDARD 20)
 
 project ("RayTracer")
 set(PROJECT_NAME RayTracer)

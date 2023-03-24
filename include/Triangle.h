@@ -64,6 +64,7 @@ public:
             return false;
         if ((((det(P1(), P2(), I) / d)) < 0))
             return false;
+
         ray.setClosestDist(this, (ray.getDir() - I).norm());
         return true;
     }

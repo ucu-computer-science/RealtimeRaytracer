@@ -19,9 +19,13 @@ public:
 	Vec3(const float x, const float y, const float z) { val[0] = x; val[1] = y; val[2] = z; }
 	Vec3(const float x, const float y) : Vec3(x, y, 0) {}
 	Vec3() : Vec3(0, 0, 0) {}
-    Vec3(float * vec) : Vec3(vec[3], vec[2], vec[1]) {}
+    Vec3(__m128& vec) : Vec3(vec.m128_f32[3], vec.m128_f32[2], vec.m128_f32[1]) {}
+    Vec3(__m256& vec) : Vec3(vec.m256_f32[7], vec.m256_f32[6], vec.m256_f32[5]) {}
+    Vec3(__m128&& vec) : Vec3(vec.m128_f32[3], vec.m128_f32[2], vec.m128_f32[1]) {}
+    Vec3(__m256&& vec) : Vec3(vec.m256_f32[7], vec.m256_f32[6], vec.m256_f32[5]) {}
 
-	[[nodiscard]] float x() const { return val[0]; }
+
+    [[nodiscard]] float x() const { return val[0]; }
 	[[nodiscard]] float y() const { return val[1]; }
 	[[nodiscard]] float z() const { return val[2]; }
 
@@ -47,7 +51,7 @@ public:
     [[nodiscard]]  bool operator== (const Vec3& v) const;
     [[nodiscard]] float norm() const{
         /**returns squared length*/
-        return (this->operator*(*this));
+        return (*this)*(*this);
     }
     [[nodiscard]] bool isNan() const{
         return std::isnan(x()) || std::isnan(y()) || std::isnan(z());

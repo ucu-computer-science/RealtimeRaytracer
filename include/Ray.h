@@ -9,12 +9,12 @@
 #include <cfloat>
 
 class Ray {
+public:
 
 	Vec3 pos, dir;
     float closestDist;
-    const class Triangle* closestTriangle;
+    const class Triangle* closestTriangle; // be aware of nullptr!!!
 	[[nodiscard]] float det(const Vec3& v1, const Vec3& v2, const Vec3& v3) const{ return Vec3::det(v1, v2, v3);}; // todo
-public:
 	Ray(Vec3 pos, Vec3 dir);
 	~Ray() = default;
     [[nodiscard]] const Vec3& getDir() const{

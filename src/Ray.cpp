@@ -5,7 +5,7 @@
 
 void Ray::setClosestDist(const Triangle* triangle, float distance) {
     closestDist = std::min(closestDist, distance);
-    if (closestDist == distance) {
+    if (fabs(closestDist - distance) < std::numeric_limits<float>::epsilon() ) {
         closestTriangle = triangle;
     }
 }

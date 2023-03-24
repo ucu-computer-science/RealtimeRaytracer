@@ -33,13 +33,13 @@ public:
 //                std::cout<<(((float)j)*deltaXDirection +((float)i)*deltaYDirection)<<std::endl;
                 screen[i][j] = 0;
                 for (auto &t: objectVector) {
-//                    std::cout<< ray.intersects(t) << std::endl;
-//                    if (i==5){
-//                        int a = 0;
-//                    };
-                    screen[i][j] = screen[i][j] || t->intersects(ray);
-
+                    t->intersects(ray);
+                    ray.
                 }
+//                if (ray.closestTriangle != nullptr){
+                castRay(ray);
+//                }
+                ray.getDir();
             }
         }
     };
