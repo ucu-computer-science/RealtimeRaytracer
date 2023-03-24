@@ -1,13 +1,10 @@
-﻿#include <iostream>
-#include <functional>
-#include "Vec3.h"
+﻿#include "Vec3.h"
 #include "Camera.h"
 #include "GraphicalObject.h"
-#include "Ray.h"
-#include "Raycast.h"
-#include "ScreenMatrix.h"
 #include "SDL_runner.h"
 #include "Triangle.h"
+
+#include "Square.h"
 
 using Vector::Vec3;
 
@@ -18,15 +15,17 @@ int main(int argv, char** args) {
 
 	const auto dir1 = (A - B).normalized();
 	const auto dir2 = (C - B).normalized();
-	constexpr float fov = 1;
+	constexpr double fov = 1;
 
-	Screen screen{ {1,1},{400,400}, dir1, dir2 };
-	Camera camera{ B, fov, screen };
+	Vec2Int screenResolution{ 800, 400 };
 
-	Triangle t{ Vec3(0.2f,1,0.2f), Vec3(0.2f,1,0.8f), Vec3(0.8f,1,0.5f) };
+	Screen screen{ {2,1},screenResolution, dir1, dir2 };
+	Camera camera{ {0,0,0}, fov, screen };
+
+	Triangle t{ Vec3(0.2,1,0.2), Vec3(0.2,1,0.8), Vec3(0.8,1,0.5) };
 	GraphicalObject obj{ Vec3{1,1,1}, {&t} };
 
-	show(400, 400);
+	show(screenResolution);
 
 	return 0;
 }

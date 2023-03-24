@@ -8,9 +8,9 @@ class Triangle
 
 	struct PlaneEq {
 		Vec3 norm;
-		float d;
+		double d;
 
-		PlaneEq(Vec3 norm, const float d) : norm{ norm }, d{ d } {}
+		PlaneEq(Vec3 norm, const double d) : norm{ norm }, d{ d } {}
 	};
 
 	Vec3 p1, p2, p3;

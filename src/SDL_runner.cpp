@@ -1,37 +1,50 @@
 #include "SDL_runner.h"
 
+#include "Color.h"
 #include "Screen.h"
-#include "ScreenMatrix.h"
+#include "Matrix.h"
 #include "Input.h"
 
-int show(const int width, const int height)
+using Vector::Color;
+
+int show(const Vec2Int& res)
 {
 	SDL_Event event;
 	SDL_Renderer* renderer;
 	SDL_Window* window;
 
 	SDL_Init(SDL_INIT_VIDEO);
-	SDL_CreateWindowAndRenderer(width, height, 0, &window, &renderer);
+	SDL_CreateWindowAndRenderer(res.x(), res.y(), 0, &window, &renderer);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 	SDL_RenderClear(renderer);
 
-	ScreenMatrix pixelMatrix{ width, height };
+	auto renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_TARGET, res.x(), res.y());
+	auto pixels = new Uint32[res.y() * res.x()];
 	while (true) {
 		if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
 			break;
 
-		Screen::instance->updatePixelMatrix(pixelMatrix);
+		Screen::instance->updatePixelMatrix(pixels);
 		Input::updateInput(event);
+		//std::cout << 1;
+		//for (int y = 0; y < height; y++)
+		//{
+		//	for (int x = 0; x < width; x++)
+		//	{
+		//		pixels[y * width + x] = Color::white().toColor32();
+		//		/*SDL_SetRenderDrawColor(renderer, color, color, color, 255);
+		//		SDL_RenderDrawPoint(renderer, x, y);*/
+		//	}
+		//}
 
-		for (int y = 0; y < height; y++)
-		{
-			for (int x = 0; x < width; x++)
-			{
-				Color& color = pixelMatrix[y][x];
-				SDL_SetRenderDrawColor(renderer, color.r() * 255, color.g() * 255, color.b() * 255, 255);
-				SDL_RenderDrawPoint(renderer, x, y);
-			}
-		}
+		SDL_UpdateTexture(renderTexture, nullptr, pixels, res.x() * sizeof(Uint32));
+		SDL_Rect rect;
+		rect.x = 0;
+		rect.y = 0;
+		rect.w = res.x();
+		rect.h = res.y();
+		SDL_Rect bounds = rect;
+		SDL_RenderCopy(renderer, renderTexture, &rect, &bounds);
 		SDL_RenderPresent(renderer);
 	}
 	SDL_DestroyRenderer(renderer);

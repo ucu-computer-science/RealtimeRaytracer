@@ -3,6 +3,8 @@
 #include <functional>
 #include <SDL2/SDL.h>
 
+#include "Vec2Int.h"
+
 class ScreenMatrix;
 
-int show(int width, int height);
+int show(const Vector::Vec2Int& res);

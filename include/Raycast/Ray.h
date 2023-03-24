@@ -8,11 +8,14 @@ class Ray
 {
 public:
 	Vector::Vec3 pos, dir;
+	double closestDis;
+	const Triangle* closestTriangle;
+	Vector::Vec3& interPoint;
 
-	Ray(Vector::Vec3 pos, Vector::Vec3 dir) : pos{ pos }, dir{ dir }{}
+	Ray(Vector::Vec3 pos, Vector::Vec3 dir) : pos{ pos }, dir{ dir }, closestDis(__DBL_MAX__), closestTriangle(nullptr){}
 
-	float getT(const Triangle& triangle) const;
-	bool intersects(const Triangle& triangle, Vector::Vec3& interPoint) const;
+	double getT(const Triangle& triangle) const;
+	bool intersects(const Triangle& triangle);
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Ray& r)

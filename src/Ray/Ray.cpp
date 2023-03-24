@@ -3,21 +3,21 @@
 
 using namespace Vector;
 
-float Ray::getT(const Triangle& triangle) const
+double Ray::getT(const Triangle& triangle) const
 {
 	const auto norm = triangle.getPlaneEq().norm;
 	const auto d = triangle.getPlaneEq().d;
 	return (d - norm * pos) / (norm * dir);
 }
 
-bool Ray::intersects(const Triangle& triangle, Vec3& interPoint) const
+bool Ray::intersects(const Triangle& triangle) 
 {
-	const float t = getT(triangle);
+	const double t = getT(triangle);
 	if (t <= 0)
 		return false;
 
-	const auto p = pos + t * dir;
-	const float d = Vec3::det(triangle.P1(), triangle.P2(), triangle.P3());
+	auto p = pos + t * dir;
+	const double d = Vec3::det(triangle.P1(), triangle.P2(), triangle.P3());
 
 	if (Vec3::det(p, triangle.P2(), triangle.P3()) / d < 0)
 		return false;

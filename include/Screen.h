@@ -1,5 +1,9 @@
 #pragma once
 
+#include <SDL_stdinc.h>
+
+#include "Color.h"
+#include "Matrix.h"
 #include "Vec2.h"
 #include "Vec2Int.h"
 #include "Vec3.h"
@@ -28,7 +32,7 @@ public:
 		instance = this;
 	}
 
-	Vec3 getCenterPosition() const;
+	Vec3 getBotLeftCorner() const;
 
-	void updatePixelMatrix(ScreenMatrix& matrix) const;
+	void updatePixelMatrix(Uint32* pixels) const;
 };

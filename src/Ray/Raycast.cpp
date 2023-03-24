@@ -10,6 +10,7 @@ Raycast Raycast::castRay(const Ray ray)
 	{
 		for (const auto triangle : obj->triangles)
 		{
+			double t;
 			if (ray.intersects(*triangle, interPoint))
 				return Raycast(true, triangle, interPoint);
 		}
