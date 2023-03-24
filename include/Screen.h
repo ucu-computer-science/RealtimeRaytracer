@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SDL_stdinc.h>
-
 #include "Color.h"
 #include "Matrix.h"
 #include "Vec2.h"

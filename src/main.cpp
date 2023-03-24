@@ -8,7 +8,7 @@
 
 using Vector::Vec3;
 
-int main(int argv, char** args) {
+int main(int argv, char* args[]) {
 	const auto A = Vec3(0, 0, 0);
 	const auto B = Vec3(0, 0, 1);
 	const auto C = Vec3(1, 0, 1);

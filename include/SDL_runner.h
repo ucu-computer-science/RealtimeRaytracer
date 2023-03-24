@@ -1,8 +1,12 @@
 #pragma once
 
 #include <functional>
-#include <SDL2/SDL.h>
 
+#ifdef __MINGW64__
+#include "SDL.h"
+#else
+#include <SDL2/SDL.h>
+#endif // __MINGW64__
 #include "Vec2Int.h"
 
 class ScreenMatrix;

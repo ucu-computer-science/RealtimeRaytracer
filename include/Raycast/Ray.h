@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Vec3.h"
-
+#include "cmath"
+#include <cfloat>
 class Triangle;
 
 class Ray
@@ -12,7 +13,7 @@ public:
 	const Triangle* closestTriangle;
 	Vector::Vec3* interPoint;
 
-	Ray(Vector::Vec3 pos, Vector::Vec3 dir) : pos{ pos }, dir{ dir }, closestT(__DBL_MAX__), closestTriangle(nullptr), interPoint{ nullptr }{}
+	Ray(Vector::Vec3 pos, Vector::Vec3 dir) : pos{ pos }, dir{ dir }, closestT(DBL_MAX), closestTriangle(nullptr), interPoint{ nullptr }{}
 
 	double getT(const Triangle& triangle) const;
 	bool intersects(const Triangle& triangle);

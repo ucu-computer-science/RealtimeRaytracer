@@ -2,3 +2,8 @@
 .vs/
 .idea/
 build/
+/cmake-build-debug/.cmake/api/v1/query/cache-v2
+/cmake-build-debug
+/cmake-build-debug-wsl
+/cmake-build-release
+/.PVS-Studio
