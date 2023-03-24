@@ -2,8 +2,6 @@
 
 #include <SDL_stdinc.h>
 
-#include "Color.h"
-#include "Matrix.h"
 #include "Vec2.h"
 #include "Vec2Int.h"
 #include "Vec3.h"
@@ -13,7 +11,6 @@ using Vector::Vec2Int;
 using Vector::Vec3;
 
 class Camera;
-class ScreenMatrix;
 
 class Screen
 {

@@ -1,4 +1,6 @@
 #pragma once
+#include <SDL_pixels.h>
+
 #include "Vec3.h"
 
 namespace Vector
@@ -11,6 +13,12 @@ namespace Vector
 
 		static Color white() { return { 1, 1, 1 }; }
 		static Color black() { return { 0, 0, 0 }; }
+		static Color red() { return { 1, 0, 0 }; }
+		static Color green() { return { 0, 1, 0 }; }
+		static Color blue() { return { 0, 0, 1 }; }
+		static Color yellow() { return { 1, 1, 0 }; }
+		static Color cyan() { return { 0, 1, 1 }; }
+		static Color magenta() { return { 1, 0, 1 }; }
 
 		double r() const { return val[0]; }
 		double g() const { return val[1]; }
@@ -18,7 +26,7 @@ namespace Vector
 
 		uint32_t toColor32() const
 		{
-			return ((int)(r() * 255) << 24) + ((int)(g() * 255) << 16) + ((int)(b() * 255) << 8);
+			return ((int)(r() * 255) << 16) + ((int)(g() * 255) << 8) + ((int)(b() * 255) << 0);
 		}
 	};
 }

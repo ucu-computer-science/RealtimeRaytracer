@@ -4,8 +4,6 @@
 #include "SDL_runner.h"
 #include "Triangle.h"
 
-#include "Square.h"
-
 using Vector::Vec3;
 
 int main(int argv, char** args) {
@@ -22,9 +20,11 @@ int main(int argv, char** args) {
 	Screen screen{ {2,1},screenResolution, dir1, dir2 };
 	Camera camera{ {0,0,0}, fov, screen };
 
-	Triangle t{ Vec3(0.2,1,0.2), Vec3(0.2,1,0.8), Vec3(0.8,1,0.5) };
+	Triangle t1{ Vec3(0.2,1,0.2), Vec3(0.2,1,0.8), Vec3(0.8,1,0.5),Color::cyan() };
+	Triangle t2{ Vec3(0.4,1,0.2), Vec3(0.4,1,0.8), Vec3(1,1,0.8) ,Color::magenta() };
 	GraphicalObject obj{ Vec3{1,1,1} };
-	obj.triangles.emplace_back(&t);
+	obj.triangles.emplace_back(&t1);
+	obj.triangles.emplace_back(&t2);
 
 	show(screenResolution);
 

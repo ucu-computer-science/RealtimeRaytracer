@@ -18,7 +18,8 @@ int show(const Vec2Int& resolution)
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 	SDL_RenderClear(renderer);
 
-	auto renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_TARGET, resolution.x(), resolution.y());
+	auto surface = SDL_GetWindowSurface(window);
+	auto renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
 	auto pixels = new Uint32[resolution.y() * resolution.x()];
 	while (true) {
 		if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
@@ -26,7 +27,7 @@ int show(const Vec2Int& resolution)
 
 		Screen::instance->updatePixelMatrix(pixels);
 		Input::updateInput(event);
-		//std::cout << 1;
+
 		//for (int y = 0; y < height; y++)
 		//{
 		//	for (int x = 0; x < width; x++)

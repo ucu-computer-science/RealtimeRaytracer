@@ -31,7 +31,7 @@ void Screen::updatePixelMatrix(Uint32* pixels) const
 		{
 			auto ray = Ray(focalPoint, pos2 - focalPoint);
 			Raycast raycast = Raycast::castRay(ray);
-			pixels[y * sizeX + x] = raycast.ray.hit() ? 0x00000000 : 0xffffff00;
+			pixels[y * sizeX + x] = raycast.ray.hit() ? raycast.ray.closestTriangle->color.toColor32() : Color::black().toColor32();
 			pos2 += dx;
 		}
 		pos1 += dy;

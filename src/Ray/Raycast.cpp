@@ -11,7 +11,6 @@ Raycast Raycast::castRay(Ray& ray)
 		for (const auto triangle : obj->triangles)
 		{
 			ray.intersects(*triangle);
-			std::cout << ;
 		}
 	}
 	return Raycast(ray);
