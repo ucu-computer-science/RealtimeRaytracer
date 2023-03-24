@@ -9,19 +9,19 @@ void Input::updateInput(const SDL_Event event)
 	{
 		if (event.key.keysym.sym == SDLK_w)
 		{
-			Camera::instance->translate(-Screen::instance->norm * moveSpeed);
+			Camera::instance->translate(Camera::instance->forward() * moveSpeed);
 		}
 		else if (event.key.keysym.sym == SDLK_s)
 		{
-			Camera::instance->translate(Screen::instance->norm * moveSpeed);
+			Camera::instance->translate(Camera::instance->backward() * moveSpeed);
 		}
 		else if (event.key.keysym.sym == SDLK_a)
 		{
-			Camera::instance->translate(-Screen::instance->dir1 * moveSpeed);
+			Camera::instance->translate(Camera::instance->left() * moveSpeed);
 		}
 		else if (event.key.keysym.sym == SDLK_d)
 		{
-			Camera::instance->translate(Screen::instance->dir1 * moveSpeed);
+			Camera::instance->translate(Camera::instance->right() * moveSpeed);
 		}
 
 		if (event.key.keysym.sym == SDLK_UP)

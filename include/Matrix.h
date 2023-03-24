@@ -3,13 +3,11 @@
 #include "Vec3.h"
 #include <cmath>
 
-using Vector::Vec3;
-
 # define PI           3.14159265358979323846f
 constexpr double degToRad = 180 / PI;
 
 template <typename T>
-class Matrix :std::vector<std::vector<T>>
+class Matrix : std::vector<std::vector<T>>
 {
 public:
 	Matrix(int n, int m) : std::vector<std::vector<T>>(n, std::vector<T>(m)) {}
@@ -17,7 +15,7 @@ public:
 	using std::vector<std::vector<T>>::vector;
 	using std::vector<std::vector<T>>::operator[];
 
-	template<typename = double>
+	template <typename = double>
 	Vec3 operator*(const Vec3& v) const
 	{
 		return Vec3
@@ -38,9 +36,9 @@ public:
 
 		return Matrix
 		{
-			{cosY * cosZ, -cosX * sinZ + sinX * sinY * sinZ, sinX * sinZ + cosX * sinY * cosZ},
-			{cosY * sinZ, cosX * cosZ + sinX * sinY * sinZ, -sinX * cosZ + cosX * sinY * sinZ},
-			{-sinY, sinX * cosY, cosX * cosY},
+			{ cosY * cosZ, -cosX * sinZ + sinX * sinY * sinZ, sinX * sinZ + cosX * sinY * cosZ },
+			{ cosY * sinZ, cosX * cosZ + sinX * sinY * sinZ, -sinX * cosZ + cosX * sinY * sinZ },
+			{ -sinY, sinX * cosY, cosX * cosY },
 		};
 	}
 };
