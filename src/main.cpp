@@ -1,28 +1,32 @@
-﻿
-#include <iostream>
-#include <Vec3.h>
-#include <Triangle.h>
-#include <Color.h>
-#include <Camera.h>
-//#include "SDL_runner.h"
-//void test(){
-//	Triangle t(Vec3(0, 0, 0), Vec3(1, 0, 0), Vec3(0, 1, 0));
-//	Color c(1, 0, 0);
-//
-//	}
+﻿#include "Vec3.h"
+#include "Camera.h"
+#include "GraphicalObject.h"
+#include "SDL_runner.h"
+#include "Triangle.h"
 
+#include "Square.h"
 
-int main()
-{
-	auto v = Vec3(1, 2, 3);
-	auto x = v * v;
-    int wPixels = 20;
-    int hPixels = 10;
-    auto screen = std::vector(hPixels, std::vector<float>(wPixels, 0))
-    Camera camera(Vec3(-1,1,1),
-                  Vec3(-1,1,0),
-                  Vec3(1,1,1), wPixels, hPixels, 4, screen);
-	std::cout << x << std::endl;
-//	test();
-//    show(1000, 800);
-    return 1;
+using Vector::Vec3;
+
+int main(int argv, char** args) {
+	const auto A = Vec3(0, 0, 0);
+	const auto B = Vec3(0, 0, 1);
+	const auto C = Vec3(1, 0, 1);
+
+	const auto dir1 = (A - B).normalized();
+	const auto dir2 = (C - B).normalized();
+	constexpr double fov = 1;
+
+	Vec2Int screenResolution{ 800, 400 };
+
+	Screen screen{ {2,1},screenResolution, dir1, dir2 };
+	Camera camera{ {0,0,0}, fov, screen };
+
+	Triangle t{ Vec3(0.2,1,0.2), Vec3(0.2,1,0.8), Vec3(0.8,1,0.5) };
+	GraphicalObject obj{ Vec3{1,1,1} };
+	obj.triangles.emplace_back(&t);
+
+	show(screenResolution);
+
+	return 0;
+}

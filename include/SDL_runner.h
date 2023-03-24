@@ -1,9 +1,10 @@
-//
-// Created by Віталій Петричко on 19.03.2023.
-//
+#pragma once
 
-#ifndef RAYTRACER_SDL_RUNNER_H
-#define RAYTRACER_SDL_RUNNER_H
-int show(int width, int height);
+#include <functional>
+#include <SDL2/SDL.h>
 
-#endif //RAYTRACER_SDL_RUNNER_H
+#include "Vec2Int.h"
+
+class ScreenMatrix;
+
+int show(const Vector::Vec2Int& resolution);
