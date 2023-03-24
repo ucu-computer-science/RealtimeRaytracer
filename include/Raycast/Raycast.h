@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Ray.h"
 #include "Triangle.h"
 #include "Vec3.h"
 
@@ -11,18 +12,18 @@ class Ray;
 class Raycast
 {
 public:
-	bool hit;
-	Triangle* triangle;
-	Vec3 hitPos;
+	Ray& ray;
 
-	explicit Raycast(const bool hit, Triangle* triangle = nullptr, const Vec3& pos = Vec3())
-		: hit(hit), triangle(triangle), hitPos(pos) {}
+	explicit Raycast(Ray& ray) :ray(ray) { }
 
-	static Raycast castRay(Ray ray);
+	static Raycast castRay(Ray& ray);
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Raycast& r)
 {
-	os << "Raycast(hitPos: " << r.hitPos << ")";
+	if (r.ray.hit())
+		os << "Raycast(hitPos: " << *r.ray.interPoint << ")";
+	else
+		os << "Raycast(hitPos: NOHIT)";
 	return os;
 }

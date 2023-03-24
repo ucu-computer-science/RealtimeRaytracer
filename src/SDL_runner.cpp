@@ -7,19 +7,19 @@
 
 using Vector::Color;
 
-int show(const Vec2Int& res)
+int show(const Vec2Int& resolution)
 {
 	SDL_Event event;
 	SDL_Renderer* renderer;
 	SDL_Window* window;
 
 	SDL_Init(SDL_INIT_VIDEO);
-	SDL_CreateWindowAndRenderer(res.x(), res.y(), 0, &window, &renderer);
+	SDL_CreateWindowAndRenderer(resolution.x(), resolution.y(), 0, &window, &renderer);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 	SDL_RenderClear(renderer);
 
-	auto renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_TARGET, res.x(), res.y());
-	auto pixels = new Uint32[res.y() * res.x()];
+	auto renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_TARGET, resolution.x(), resolution.y());
+	auto pixels = new Uint32[resolution.y() * resolution.x()];
 	while (true) {
 		if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
 			break;
@@ -37,12 +37,12 @@ int show(const Vec2Int& res)
 		//	}
 		//}
 
-		SDL_UpdateTexture(renderTexture, nullptr, pixels, res.x() * sizeof(Uint32));
+		SDL_UpdateTexture(renderTexture, nullptr, pixels, resolution.x() * sizeof(Uint32));
 		SDL_Rect rect;
 		rect.x = 0;
 		rect.y = 0;
-		rect.w = res.x();
-		rect.h = res.y();
+		rect.w = resolution.x();
+		rect.h = resolution.y();
 		SDL_Rect bounds = rect;
 		SDL_RenderCopy(renderer, renderTexture, &rect, &bounds);
 		SDL_RenderPresent(renderer);

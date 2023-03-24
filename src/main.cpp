@@ -23,7 +23,8 @@ int main(int argv, char** args) {
 	Camera camera{ {0,0,0}, fov, screen };
 
 	Triangle t{ Vec3(0.2,1,0.2), Vec3(0.2,1,0.8), Vec3(0.8,1,0.5) };
-	GraphicalObject obj{ Vec3{1,1,1}, {&t} };
+	GraphicalObject obj{ Vec3{1,1,1} };
+	obj.triangles.emplace_back(&t);
 
 	show(screenResolution);
 

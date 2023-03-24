@@ -3,17 +3,16 @@
 #include "Ray.h"
 #include "GraphicalObject.h"
 
-Raycast Raycast::castRay(const Ray ray)
+Raycast Raycast::castRay(Ray& ray)
 {
 	Vector::Vec3 interPoint;
 	for (const auto obj : Scene::graphicalObjects)
 	{
 		for (const auto triangle : obj->triangles)
 		{
-			double t;
-			if (ray.intersects(*triangle, interPoint))
-				return Raycast(true, triangle, interPoint);
+			ray.intersects(*triangle);
+			std::cout << ;
 		}
 	}
-	return Raycast(false);
+	return Raycast(ray);
 }

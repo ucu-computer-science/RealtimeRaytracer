@@ -7,4 +7,4 @@
 
 class ScreenMatrix;
 
-int show(const Vector::Vec2Int& res);
+int show(const Vector::Vec2Int& resolution);

@@ -2,7 +2,7 @@
 
 #include "Scene.h"
 
-GraphicalObject::GraphicalObject(const Vec3 pos, std::vector<Triangle*> triangles) : Object(pos), triangles(std::move(triangles))
+GraphicalObject::GraphicalObject(const Vec3 pos) : Object(pos)
 {
 	Scene::graphicalObjects.emplace_back(this);
 }
