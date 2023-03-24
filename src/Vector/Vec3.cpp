@@ -1,8 +1,6 @@
 #include "Vec3.h"
 #include <cmath>
 
-using Vector::Vec3;
-
 Vec3 Vec3::operator+(const Vec3& v) const
 {
 	return { x() + v.x(), y() + v.y(), z() + v.z() };
@@ -49,10 +47,13 @@ Vec3& Vec3::operator/=(const double f)
 	return *this;
 }
 
-Vec3 Vec3::cross(const Vec3& v) const {
-	return { y() * v.z() - z() * v.y(),
-			z() * v.x() - x() * v.z(),
-			x() * v.y() - y() * v.x() };
+Vec3 Vec3::cross(const Vec3& v) const
+{
+	return {
+		y() * v.z() - z() * v.y(),
+		z() * v.x() - x() * v.z(),
+		x() * v.y() - y() * v.x()
+	};
 }
 
 double Vec3::length() const
@@ -75,10 +76,11 @@ double Vec3::det(const Vec3& v1, const Vec3& v2, const Vec3& v3)
 	return v1[0] * x - v1[1] * y + v1[2] * z;
 }
 
-Vec3 Vector::operator*(const double x, const Vec3& v) {
+Vec3 operator*(const double x, const Vec3& v)
+{
 	return { x * v.x(), x * v.y(), x * v.z() };
 }
-Vec3 Vector::operator*(const Vec3& v, const double x) {
+Vec3 operator*(const Vec3& v, const double x)
+{
 	return { x * v.x(), x * v.y(), x * v.z() };
 }
-

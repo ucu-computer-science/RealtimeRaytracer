@@ -5,12 +5,11 @@
 
 Raycast Raycast::castRay(Ray& ray)
 {
-	Vector::Vec3 interPoint;
 	for (const auto obj : Scene::graphicalObjects)
 	{
 		for (const auto triangle : obj->triangles)
 		{
-			ray.intersects(*triangle);
+			ray.intersect(*triangle);
 		}
 	}
 	return Raycast(ray);

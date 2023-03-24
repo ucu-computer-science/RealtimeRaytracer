@@ -1,10 +1,7 @@
 #pragma once
 
 #include "Ray.h"
-#include "Triangle.h"
 #include "Vec3.h"
-
-using Vector::Vec3;
 
 class Triangle;
 class Ray;
@@ -14,7 +11,7 @@ class Raycast
 public:
 	Ray& ray;
 
-	explicit Raycast(Ray& ray) :ray(ray) { }
+	explicit Raycast(Ray& ray) : ray(ray) { }
 
 	static Raycast castRay(Ray& ray);
 };

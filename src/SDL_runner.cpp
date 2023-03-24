@@ -1,11 +1,8 @@
 #include "SDL_runner.h"
 
-#include "Color.h"
-#include "Screen.h"
+#include "Camera.h"
 #include "Matrix.h"
 #include "Input.h"
-
-using Vector::Color;
 
 int show(const Vec2Int& resolution)
 {
@@ -21,22 +18,13 @@ int show(const Vec2Int& resolution)
 	auto surface = SDL_GetWindowSurface(window);
 	auto renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
 	auto pixels = new Uint32[resolution.y() * resolution.x()];
-	while (true) {
+	while (true)
+	{
 		if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
 			break;
 
-		Screen::instance->updatePixelMatrix(pixels);
+		Camera::instance->updatePixelMatrix(pixels);
 		Input::updateInput(event);
-
-		//for (int y = 0; y < height; y++)
-		//{
-		//	for (int x = 0; x < width; x++)
-		//	{
-		//		pixels[y * width + x] = Color::white().toColor32();
-		//		/*SDL_SetRenderDrawColor(renderer, color, color, color, 255);
-		//		SDL_RenderDrawPoint(renderer, x, y);*/
-		//	}
-		//}
 
 		SDL_UpdateTexture(renderTexture, nullptr, pixels, resolution.x() * sizeof(Uint32));
 		SDL_Rect rect;

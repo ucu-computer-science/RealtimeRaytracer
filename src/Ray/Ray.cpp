@@ -1,10 +1,6 @@
-#include "Ray.h"
-
 #include <cmath>
-
+#include "Ray.h"
 #include "Triangle.h"
-
-using namespace Vector;
 
 double Ray::getT(const Triangle& triangle) const
 {
@@ -13,7 +9,7 @@ double Ray::getT(const Triangle& triangle) const
 	return (d - norm * pos) / (norm * dir);
 }
 
-bool Ray::intersects(const Triangle& triangle)
+bool Ray::intersect(const Triangle& triangle)
 {
 	double t = getT(triangle);
 	if (std::isnan(t) || t <= 1 || t >= closestT)

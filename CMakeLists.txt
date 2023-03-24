@@ -9,7 +9,7 @@ include_directories(include/Vector)
 include_directories(include/Object)
 include_directories(include/Raycast)
 
-add_executable (RayTracer src/Vector/Vec3.cpp src/Vector/Vec2.cpp src/Vector/Vec2Int.cpp src/Screen.cpp src/main.cpp 
+add_executable (RayTracer src/Vector/Vec3.cpp src/Vector/Vec2.cpp src/Vector/Vec2Int.cpp  src/main.cpp 
 "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp" "src/Ray/Ray.cpp" "src/Ray/Raycast.cpp" "src/Camera.cpp" "src/SDL_runner.cpp" "src/Scene.cpp" "include/Input.h" "src/Input.cpp" "include/Matrix.h"   "include/Square.h")
 
 find_package(PkgConfig REQUIRED) 

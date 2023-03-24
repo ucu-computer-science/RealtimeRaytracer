@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Vec3.h"
-using Vector::Vec3;
 
 class Object
 {
@@ -10,6 +9,13 @@ public:
 	Vec3 rotation;
 
 	explicit Object(Vec3 pos);
+
+	Vec3 forward() const;
+	Vec3 backward() const;
+	Vec3 up() const;
+	Vec3 down() const;
+	Vec3 left() const;
+	Vec3 right() const;
 
 	void translate(const Vec3& v);
 	void rotateBy(const Vec3& degrees);
