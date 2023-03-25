@@ -35,6 +35,7 @@ namespace Benchmark {
     std::vector<long long> measure_time(int ntimes, int wPixels, int hPixels);
     std::vector<long long> measure_time_our_vector(int);
     std::vector<long long> measure_time_dx_vector(int);
+    std::vector<long long> measure_time_glm_vector(int);
 
     void benchmarkVectors(int ntimes);;
 };

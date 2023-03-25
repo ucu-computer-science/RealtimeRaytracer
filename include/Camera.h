@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDL_stdinc.h>
+//#include <SDL_stdinc.h>
 
 #include "Color.h"
 #include "Object.h"
@@ -37,5 +37,5 @@ public:
 	{
 		return skip;
 	}
-	void updatePixelMatrix(Uint32* pixels) const;
+	void updatePixelMatrix(uint32_t* pixels) const;
 };

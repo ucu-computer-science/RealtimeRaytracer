@@ -24,8 +24,8 @@ class Triangle
 
 public:
 	Color color;
-
-	Triangle(Vec3 p1, Vec3 p2, Vec3 p3, Color color = Color::white()) : p1{ p1 }, p2{ p2 }, p3{ p3 }, planeEq{ calcPlaneEq() }, color{ color } {}
+	double determinant;
+	Triangle(Vec3 p1, Vec3 p2, Vec3 p3, Color color = Color::white()) : p1{ p1 }, p2{ p2 }, p3{ p3 }, planeEq{ calcPlaneEq() }, color{ color }, determinant(Vec3::det(p1, p2, p3)){}
 
 	const PlaneEq& getPlaneEq() const { return planeEq; }
 	const Vec3& getNorm() const { return planeEq.norm; }

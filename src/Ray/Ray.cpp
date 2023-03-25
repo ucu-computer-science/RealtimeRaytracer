@@ -15,14 +15,26 @@ bool Ray::intersect(const Triangle* triangle)
 		return false;
 
 	auto p = pos + t * dir;
-	double d = Vec3::det(triangle->P1(), triangle->P2(), triangle->P3());
 
-	if (Vec3::det(p, triangle->P2(), triangle->P3()) / d < 0)
-		return false;
-	if (Vec3::det(triangle->P1(), p, triangle->P3()) / d < 0)
-		return false;
-	if (Vec3::det(triangle->P1(), triangle->P2(), p) / d < 0)
-		return false;
+	if (triangle->determinant > 0)
+	{
+		if (Vec3::det(p, triangle->P2(), triangle->P3()) < 0)
+			return false;
+		if (Vec3::det(triangle->P1(), p, triangle->P3()) < 0)
+			return false;
+		if (Vec3::det(triangle->P1(), triangle->P2(), p) < 0)
+			return false;
+	}
+	else
+	{
+		if (Vec3::det(p, triangle->P2(), triangle->P3()) > 0)
+			return false;
+		if (Vec3::det(triangle->P1(), p, triangle->P3()) > 0)
+			return false;
+		if (Vec3::det(triangle->P1(), triangle->P2(), p) > 0)
+			return false;
+	}
+
 
 	closestT = t;
 	closestTriangle = triangle;

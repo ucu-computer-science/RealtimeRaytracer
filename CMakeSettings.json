@@ -107,6 +107,11 @@
           "name": "CMAKE_CXX_COMPILER",
           "value": "${env.BIN_ROOT}/g++.exe",
           "type": "STRING"
+        },
+        {
+          "name": "CMAKE_CXX_FLAGS_RELWITHDEBINFO",
+          "value": "-O2 -g -DNDEBUG",
+          "type": "STRING"
         }
       ],
       "intelliSenseMode": "linux-gcc-x64"

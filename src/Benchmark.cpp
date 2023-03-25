@@ -5,6 +5,9 @@
 #include "Square.h"
 #include <cmath>
 
+#include "Triangle.h"
+#include "glm/vec3.hpp"
+#include "glm/gtx/string_cast.hpp"
 void Benchmark::benchmark(int ntimes) {
     auto timeMeasurments = measure_time(ntimes, 1920, 1080);
     show_stats(timeMeasurments, ntimes);
@@ -64,7 +67,7 @@ std::vector<long long> Benchmark::measure_time(int ntimes, int wPixels, int hPix
     obj.triangles.emplace_back(&t3);
     obj.triangles.emplace_back(&t4);
 
-    auto pixels = new Uint32[wPixels  * hPixels];
+    auto pixels = new uint32_t[wPixels  * hPixels];
 
     for (int i = 0; i < ntimes; ++i) {
         auto start_time = get_current_time_fenced();
@@ -81,8 +84,10 @@ void Benchmark::benchmarkVectors(int ntimes) {
     auto res1 = measure_time_our_vector(ntimes);
     show_stats(res1, ntimes);
 
-    auto res2 = measure_time_dx_vector(ntimes);
-    show_stats(res2, ntimes);
+    //auto res2 = measure_time_dx_vector(ntimes);
+    //show_stats(res2, ntimes);
+    auto res3 = measure_time_glm_vector(ntimes);
+    show_stats(res3, ntimes);
 
 }
 
@@ -93,15 +98,17 @@ std::vector<long long> Benchmark::measure_time_our_vector(int ntimes) {
         auto start_time = get_current_time_fenced();
         Vec3 v1 (1.1, 1.1, 1.1);
         for (int k = 0; k < 10'000'000; ++k) {
-            v1 = v1 + v1;
+            v1 = (2.f * v1) + v1;
+            v1 = v1 - (v1 / 2.f);
         }
         auto finish_time = get_current_time_fenced();
         auto total_time = finish_time - start_time;
         time_measurments.push_back(to_ms(total_time));
         //std::cout << v1;
+        std::cout << (v1);
 
     }
-    //std::cout  << std::endl;
+    std::cout  << std::endl;
 
     return time_measurments;
 }
@@ -125,5 +132,26 @@ std::vector<long long> Benchmark::measure_time_dx_vector(int ntimes) {
 //        std::cout << p.x<< p.y<< p.z;
 //    }
 //    std::cout  << std::endl;
+    return time_measurments;
+}
+std::vector<long long> Benchmark::measure_time_glm_vector(int ntimes)
+{
+    std::vector<long long> time_measurments;
+
+    for (int m = 0; m < ntimes; ++m) {
+        auto start_time = get_current_time_fenced();
+        glm::vec3 v1(1.1, 1.1, 1.1);
+        for (int k = 0; k < 10'000'000; ++k) {
+            v1 = (2.f * v1 )+ v1;
+            v1 = v1 - (v1 / 2.f);
+        }
+        auto finish_time = get_current_time_fenced();
+        auto total_time = finish_time - start_time;
+        time_measurments.push_back(to_ms(total_time));
+        std::cout << glm::to_string(v1);
+
+    }
+    std::cout  << std::endl;
+
     return time_measurments;
 }

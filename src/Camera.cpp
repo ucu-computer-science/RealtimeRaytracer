@@ -15,7 +15,7 @@ Vec3 Camera::getBotLeftCorner() const
 	return pos - 0.5 * size.y() * up() - 0.5 * size.x() * right();
 }
 
-void Camera::updatePixelMatrix(Uint32* pixels) const
+void Camera::updatePixelMatrix(uint32_t* pixels) const
 {
 	Vec3 focalPoint = getFocalPoint();
 	auto sizeX = resolution.x();

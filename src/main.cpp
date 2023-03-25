@@ -11,12 +11,13 @@ int main(int argv, char* args[])
 {
 
 #ifdef BENCHMARK
-	Benchmark::benchmark(100);
+	Benchmark::benchmark(200);
+	//Benchmark::benchmarkVectors(100);
 #else
 
 	constexpr double fov = 1;
 
-	Vec2Int screenResolution{ 400, 200 };
+	Vec2Int screenResolution{ 1280, 720 };
 	Vec2 cameraSize{ 2, 1 };
 
 	Camera camera{ { 0.5, 0, 0.5 }, fov, screenResolution, cameraSize };
