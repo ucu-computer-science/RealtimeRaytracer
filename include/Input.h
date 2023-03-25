@@ -4,5 +4,9 @@
 class Input
 {
 public:
-	static void updateInput(const SDL_Event& event);
+	inline static bool isFullscreen = false;
+	inline static double moveSpeed = 0.4;
+	inline static double rotationSpeed = 15;
+
+	static void updateInput(SDL_Event event);
 };

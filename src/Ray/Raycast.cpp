@@ -7,10 +7,8 @@ Raycast Raycast::castRay(Ray& ray)
 {
 	for (const auto obj : Scene::graphicalObjects)
 	{
-		for (const auto triangle : obj->triangles)
-		{
-			ray.intersect(triangle);
-		}
+		obj->intersect(ray);
 	}
+
 	return Raycast(ray);
 }

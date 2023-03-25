@@ -41,6 +41,10 @@ void Object::rotateBy(const Vec3& degrees)
 {
 	rotation += degrees;
 }
+void Object::rotateAround(const Vec3& vec, double degrees)
+{
+	
+}
 
 Vec3 Object::localToGlobalPos(const Vec3& localPos) const
 {

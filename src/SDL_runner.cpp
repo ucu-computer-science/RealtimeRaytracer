@@ -1,7 +1,7 @@
 #include "SDL_runner.h"
 
 #include <SDL.h>
-
+#include "SDL_runner.h"
 #include "Camera.h"
 #include "Matrix.h"
 #include "Input.h"
@@ -17,11 +17,10 @@ int show(const Vec2Int& resolution)
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 	SDL_RenderClear(renderer);
 
-	const auto surface = SDL_GetWindowSurface(window);
-	const auto renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
-	 auto pixels = new Uint32[resolution.y() * resolution.x()];
-	 const int  pitch = resolution.x() * sizeof(Uint32);
-	//Camera::instance->setSkip(2);
+	auto surface = SDL_GetWindowSurface(window);
+	auto renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
+	auto pixels = new Uint32[resolution.y() * resolution.x()];
+    const int pitch = resolution.x() * sizeof(Uint32);
 	while (true)
 	{
 
@@ -32,7 +31,7 @@ int show(const Vec2Int& resolution)
 
 		Camera::instance->updatePixelMatrix(pixels);
 		Input::updateInput(std::ref(event));
-
+        SDL_SetWindowFullscreen(window, Input::isFullscreen ? 1 : 0);
 		SDL_UpdateTexture(renderTexture, nullptr, pixels, pitch);
 		SDL_RenderCopy(renderer, renderTexture, nullptr, nullptr);
 		SDL_RenderPresent(renderer);
