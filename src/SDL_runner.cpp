@@ -25,6 +25,7 @@ int show(const Vec2Int& resolution)
 
 		Camera::instance->updatePixelMatrix(pixels);
 		Input::updateInput(event);
+		SDL_SetWindowFullscreen(window, Input::isFullscreen ? 1 : 0);
 
 		SDL_UpdateTexture(renderTexture, nullptr, pixels, resolution.x() * sizeof(Uint32));
 		SDL_Rect rect;

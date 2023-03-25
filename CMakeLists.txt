@@ -5,12 +5,14 @@ set(CMAKE_CXX_STANDARD_LIBRARY c:/msys64/mingw64/lib/libstdc++.a)
 project ("RayTracer")
 
 include_directories(include)
-include_directories(include/Vector)
+include_directories(include/Math)
 include_directories(include/Object)
+include_directories(include/Object/GraphicalObject)
 include_directories(include/Raycast)
+include_directories(glm)
 
-add_executable (RayTracer src/Vector/Vec3.cpp src/Vector/Vec2.cpp src/Vector/Vec2Int.cpp  src/main.cpp 
-"src/Object/GraphicalObject.cpp" "src/Object/Object.cpp" "src/Ray/Ray.cpp" "src/Ray/Raycast.cpp" "src/Camera.cpp" "src/SDL_runner.cpp" "src/Scene.cpp" "include/Input.h" "src/Input.cpp" "include/Matrix.h"   "include/Square.h")
+add_executable (RayTracer src/Math/Vec3.cpp src/Math/Vec2.cpp src/Math/Vec2Int.cpp  src/main.cpp 
+"src/Object/GraphicalObject.cpp" "src/Object/Object.cpp" "src/Ray/Ray.cpp" "src/Ray/Raycast.cpp" "src/Camera.cpp" "src/SDL_runner.cpp" "src/Scene.cpp" "src/Input.cpp"   )
 
 find_package(PkgConfig REQUIRED) 
 pkg_check_modules(SDL_PKG REQUIRED IMPORTED_TARGET sdl2)

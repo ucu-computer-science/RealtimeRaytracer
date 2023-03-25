@@ -17,22 +17,20 @@ Vec3 Camera::getBotLeftCorner() const
 
 void Camera::updatePixelMatrix(Uint32* pixels) const
 {
-	Vec3 focalPoint = Camera::instance->getFocalPoint();
+	Vec3 focalPoint = getFocalPoint();
 	auto sizeX = resolution.x();
 	auto sizeY = resolution.y();
 	Vec3 dx = size.x() / (double)sizeX * right();
 	Vec3 dy = size.y() / (double)sizeY * up();
 	Vec3 pos1 = getBotLeftCorner();
-	for (int y = 0; y < sizeY; ++y)
+	for (int y = 0; y < sizeY; ++y, pos1 += dy)
 	{
 		Vec3 pos2 = pos1;
-		for (int x = 0; x < sizeX; ++x)
+		for (int x = 0; x < sizeX; ++x, pos2 += dx)
 		{
 			auto ray = Ray(focalPoint, pos2 - focalPoint);
 			Raycast raycast = Raycast::castRay(ray);
-			pixels[y * sizeX + x] = raycast.ray.hit() ? raycast.ray.closestTriangle->color.toColor32() : Color::black().toColor32();
-			pos2 += dx;
+			pixels[y * sizeX + x] = raycast.ray.hit() ? raycast.ray.closestTriangle->color.toColor32() : bgColor32;
 		}
-		pos1 += dy;
 	}
 }

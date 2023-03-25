@@ -12,7 +12,7 @@ double Ray::getT(const Triangle& triangle) const
 bool Ray::intersect(const Triangle& triangle)
 {
 	double t = getT(triangle);
-	if (std::isnan(t) || t <= 1 || t >= closestT)
+	if (std::isnan(t) || t <= 0 || t >= closestT)
 		return false;
 
 	auto p = pos + t * dir;
