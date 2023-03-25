@@ -4,24 +4,22 @@
 #include "GraphicalObject.h"
 #include "SDL_runner.h"
 #include "Triangle.h"
-#include "Square.h"
 #include "glm/vec2.hpp"
-#define BENCHMARK
+//#define BENCHMARK
 int main(int argv, char* args[])
 {
-
 #ifdef BENCHMARK
 	Benchmark::benchmark(200);
 	//Benchmark::benchmarkVectors(100);
 #else
 
-	constexpr double fov = 1;
+	constexpr float fov = 1;
 
-	glm::vec2 screenResolution{ 1280, 720 };
+	glm::vec2 screenResolution{ 1280 / 2, 720 / 2 };
 	glm::vec2 cameraSize{ 2, 1 };
 
 	Camera camera{ { 0.5, 0, 0.5 }, fov, screenResolution, cameraSize };
-    camera.setBackgroundColor(Color::gray());
+	camera.setBackgroundColor(Color::gray());
 
 	//GraphicalObject obj1{ glm::vec3{ 1, 1, 1 } };
 	//Triangle t1{ glm::vec3(0.2, 1, 0.2), glm::vec3(0.2, 1, 0.8), glm::vec3(0.8, 1, 0.5), Color::cyan() };
@@ -31,7 +29,13 @@ int main(int argv, char* args[])
 
 	Cube obj2{ glm::vec3{ 1, 1, 1 }, 1 };
 	obj2.setColor(Color::green());
+	Cube obj3{ glm::vec3{ 0.5, 1.5, 1.5 }, 1 };
+	obj3.setColor(Color::magenta());
+	//Cube obj4{ glm::vec3{ 1.5, 0.5, 0.5 }, 1 };
+	//obj4.setColor(Color::yellow());
+
 	show(screenResolution);
+
 #endif //BENCHMARK
 
 	return 0;

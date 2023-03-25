@@ -2,7 +2,6 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include "Benchmark.h"
 #include "GraphicalObject.h"
-#include "Square.h"
 #include <cmath>
 
 #include "Triangle.h"
@@ -41,7 +40,7 @@ void Benchmark::show_stats(std::vector<long long int> &timeMeasurments, int ntim
 std::vector<long long> Benchmark::measure_time(int ntimes, int wPixels, int hPixels) {
     std::vector<long long> time_measurments;
     auto screen = std::vector(hPixels, std::vector<float>(wPixels, 0));
-    constexpr double fov = 1;
+    constexpr float fov = 1;
     glm::vec2 screenResolution{ wPixels, hPixels };
     glm::vec2 cameraSize{ 2, 1 };
 

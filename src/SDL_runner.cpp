@@ -25,11 +25,10 @@ int show(const glm::vec2 resolution)
 	auto surface = SDL_GetWindowSurface(window);
 	auto renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
 	auto pixels = new uint32_t[sizeY * sizeX];
-    const int pitch = sizeX * sizeof(uint32_t);
+	const int pitch = sizeX * sizeof(uint32_t);
 	while (true)
 	{
-
-		if (SDL_PollEvent(&event)==0)
+		if (SDL_PollEvent(&event) == 0)
 			continue;
 		if (event.type == SDL_QUIT)
 			break;
