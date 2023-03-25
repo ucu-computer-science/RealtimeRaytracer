@@ -14,9 +14,9 @@ include_directories(glm)
 add_executable (RayTracer src/Math/Vec3.cpp src/Math/Vec2.cpp src/Math/Vec2Int.cpp  src/main.cpp 
 "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp" "src/Ray/Ray.cpp" "src/Ray/Raycast.cpp" "src/Camera.cpp" "src/SDL_runner.cpp" "src/Scene.cpp" "src/Input.cpp"   )
 
-find_package(PkgConfig REQUIRED) 
-pkg_check_modules(SDL_PKG REQUIRED IMPORTED_TARGET sdl2)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SDL_PKG REQUIRED IMPORTED_TARGET sdl2)
 target_link_libraries(RayTracer PUBLIC PkgConfig::SDL_PKG)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
