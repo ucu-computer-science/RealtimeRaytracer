@@ -33,9 +33,9 @@ int show(const glm::vec2 resolution)
 			continue;
 		if (event.type == SDL_QUIT)
 			break;
-
-		Camera::instance->updatePixelMatrix(pixels);
 		Input::updateInput(std::ref(event));
+		Camera::instance->updatePixelMatrix(pixels);
+
 		SDL_SetWindowFullscreen(window, Input::isFullscreen ? 1 : 0);
 
 		uint32_t currTime = SDL_GetTicks();

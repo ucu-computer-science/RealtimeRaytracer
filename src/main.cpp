@@ -6,7 +6,7 @@
 #include "Triangle.h"
 #include "Square.h"
 #include "glm/vec2.hpp"
-//#define BENCHMARK
+#define BENCHMARK
 int main(int argv, char* args[])
 {
 
@@ -17,7 +17,7 @@ int main(int argv, char* args[])
 
 	constexpr double fov = 1;
 
-	glm::vec2 screenResolution{ 1280/2, 720/2 };
+	glm::vec2 screenResolution{ 1280, 720 };
 	glm::vec2 cameraSize{ 2, 1 };
 
 	Camera camera{ { 0.5, 0, 0.5 }, fov, screenResolution, cameraSize };
