@@ -30,6 +30,7 @@ void Camera::updatePixelMatrix(uint32_t* pixels) const
 		{
             auto ray = Ray(focalPoint, pos2);
 			Raycast raycast = Raycast::castRay(ray);
+			//std::cout << x << ":" << y << std::endl;
 			pixels[y * sizeX + x] = raycast.ray.hit() ? raycast.ray.closestTriangle->color.toColor32() : bgColor32;
 		}
 	}

@@ -10,13 +10,15 @@ float Ray::getT(const Triangle* triangle) const
 
 bool Ray::intersect(const Triangle* triangle)
 {
+
 	float t = getT(triangle);
+
 	if (std::isnan(t) || t <= 0 || t >= closestT)
 		return false;
 
 	auto p = pos + t * dir;
-
-	if (triangle->detPositive)
+	
+	if (triangle->detSign > 0)
 	{
 		if (triangle->optimizedDet(p, 1) < 0)
 			return false;
@@ -25,7 +27,7 @@ bool Ray::intersect(const Triangle* triangle)
 		if (triangle->optimizedDet(p, 3) < 0)
 			return false;
 	}
-	else
+	else if (triangle->detSign < 0)
 	{
 		if (triangle->optimizedDet(p, 1) > 0)
 			return false;
@@ -33,6 +35,10 @@ bool Ray::intersect(const Triangle* triangle)
 			return false;
 		if (triangle->optimizedDet(p, 3) > 0)
 			return false;
+	}
+	else
+	{
+		return false;
 	}
 
 	closestT = t;

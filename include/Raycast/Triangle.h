@@ -7,6 +7,7 @@
 #include "glm/gtx/string_cast.hpp"
 #include <iostream>
 
+//enum DeterminantState {  };
 class Triangle
 {
 	struct PlaneEq
@@ -28,19 +29,32 @@ class Triangle
 		glm::vec3 normal = cross(p2 - p1, p3 - p1);
 		return { normal, dot(normal, p1) };
 	}
-
+	int setDetSign() const
+	{
+		float d = det(p1, p2, p3);
+		if (d > 0)
+		{
+			return 1;
+		}
+		if (d < 0)
+		{
+			return -1;
+		}
+		return 0;
+	}
 public:
 	Color color;
 
-	bool detPositive;
+	int detSign;
 
 
 	Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, Color color = Color::white()) : p1{ p1 }, p2{ p2 }, p3{ p3 },
 		planeEq{ calcPlaneEq() }, cofVec1(getRowCofactorVec(1)), cofVec2(getRowCofactorVec(2)),
-		cofVec3(getRowCofactorVec(3)), color{ color }, detPositive(det(p1, p2, p3) > 0) { }
+		cofVec3(getRowCofactorVec(3)), color{ color }, detSign(setDetSign()) { }
 
 	const PlaneEq& getPlaneEq() const { return planeEq; }
 	const glm::vec3& getNorm() const { return planeEq.norm; }
+
 	float getD() const { return planeEq.d; }
 
 	const glm::vec3& P1() const { return p1; }

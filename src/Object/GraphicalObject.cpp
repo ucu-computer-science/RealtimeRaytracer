@@ -10,7 +10,7 @@ GraphicalObject::GraphicalObject(const glm::vec3 pos) : Object(pos)
 }
 void GraphicalObject::setColor(Color color) const
 {
-	for (auto triangle : triangles)
+	for (const auto triangle : triangles)
 	{
 		triangle->color = color;
 	}
@@ -18,7 +18,7 @@ void GraphicalObject::setColor(Color color) const
 
 void GraphicalObject::intersect(Ray& ray)
 {
-	for (auto triangle : triangles)
+	for (const auto triangle : triangles)
 	{
 		ray.intersect(triangle);
 	}
@@ -68,7 +68,7 @@ Cube::Cube(glm::vec3 pos, float side) : GraphicalObject(pos)
 void Cube::intersect(Ray& ray)
 {
 	int interCount = 0;
-	for (auto triangle : triangles)
+	for (const auto triangle : triangles)
 	{
 		if (ray.intersect(triangle))
 			interCount++;
