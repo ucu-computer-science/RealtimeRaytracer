@@ -1,9 +1,7 @@
 #pragma once
 
-#include <SDL2/SDL.h>
-
-#include "Vec2Int.h"
-
+#include <SDL.h>
+#include "glm/vec2.hpp"
 class ScreenMatrix;
 
-int show(const Vec2Int& resolution);
+int show(const glm::vec2 resolution);

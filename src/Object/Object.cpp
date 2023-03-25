@@ -1,56 +1,52 @@
 #include "Object.h"
-
 #include "Matrix.h"
 #include "Scene.h"
 
-Object::Object(const Vec3 pos) : pos(pos)
+
+Object::Object(const glm::vec3 pos) : pos(pos), rotation(0, 0, 0)
 {
 	Scene::objects.emplace_back(this);
 }
 
-Vec3 Object::forward() const
+glm::vec3 Object::forward() const
 {
-	return Matrix<double>::getRotationMatrix(rotation) * Vec3(0, 1, 0);
+	return Matrix<float>::getRotationMatrix(rotation) * glm::vec3(0, 1, 0);
 }
-Vec3 Object::backward() const
+glm::vec3 Object::backward() const
 {
-	return Matrix<double>::getRotationMatrix(rotation) * Vec3(0, -1, 0);
+	return Matrix<float>::getRotationMatrix(rotation) * glm::vec3(0, -1, 0);
 }
-Vec3 Object::up() const
+glm::vec3 Object::up() const
 {
-	return Matrix<double>::getRotationMatrix(rotation) * Vec3(0, 0, 1);
+	return Matrix<float>::getRotationMatrix(rotation) * glm::vec3(0, 0, 1);
 }
-Vec3 Object::down() const
+glm::vec3 Object::down() const
 {
-	return Matrix<double>::getRotationMatrix(rotation) * Vec3(0, 0, -1);
+	return Matrix<float>::getRotationMatrix(rotation) * glm::vec3(0, 0, -1);
 }
-Vec3 Object::left() const
+glm::vec3 Object::left() const
 {
-	return Matrix<double>::getRotationMatrix(rotation) * Vec3(-1, 0, 0);
+	return Matrix<float>::getRotationMatrix(rotation) * glm::vec3(-1, 0, 0);
 }
-Vec3 Object::right() const
+glm::vec3 Object::right() const
 {
-	return Matrix<double>::getRotationMatrix(rotation) * Vec3(1, 0, 0);
+	return Matrix<float>::getRotationMatrix(rotation) * glm::vec3(1, 0, 0);
 }
 
-void Object::translate(const Vec3& v)
+void Object::translate(const glm::vec3& v)
 {
 	pos += v;
 }
-void Object::rotateBy(const Vec3& degrees)
+void Object::rotateBy(const glm::vec3& degrees)
 {
 	rotation += degrees;
 }
-void Object::rotateAround(const Vec3& vec, double degrees)
-{
-	
-}
 
-Vec3 Object::localToGlobalPos(const Vec3& localPos) const
+glm::vec3 Object::localToGlobalPos(const glm::vec3& localPos) const
 {
-	return Matrix<double>::getRotationMatrix(rotation) * localPos + pos;
+	return Matrix<float>::getRotationMatrix(rotation) * localPos + pos;
 }
-Vec3 Object::globalToLocalPos(const Vec3& globalPos) const
+glm::vec3 Object::globalToLocalPos(const glm::vec3& globalPos) const
 {
-	return Matrix<double>::getRotationMatrix(-rotation) * globalPos - pos;
+	return Matrix<float>::getRotationMatrix(-rotation) * globalPos - pos;
 }

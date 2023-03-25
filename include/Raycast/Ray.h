@@ -1,20 +1,22 @@
 #pragma once
 
-#include "Vec3.h"
+#include <ostream>
+#include "glm/vec3.hpp"
+#include "glm/gtx/string_cast.hpp"
 
 class Triangle;
 
 class Ray
 {
 public:
-	Vec3 pos, dir;
-	double closestT;
+	glm::vec3 pos, dir;
+	float closestT;
 	const Triangle* closestTriangle;
-	Vec3* interPoint;
+	glm::vec3* interPoint;
 
-	Ray(Vec3 pos, Vec3 dir) : pos{ pos }, dir{ dir }, closestT(__DBL_MAX__), closestTriangle(nullptr), interPoint{ nullptr } {}
+	Ray(glm::vec3 pos, glm::vec3 dir) : pos{ pos }, dir{ dir }, closestT(DBL_MAX), closestTriangle(nullptr), interPoint{ nullptr } {}
 
-	double getT(const Triangle& triangle) const;
+	float getT(const Triangle& triangle) const;
 	bool intersect(const Triangle& triangle);
 
 	bool hit() const
@@ -25,6 +27,6 @@ public:
 
 inline std::ostream& operator<<(std::ostream& os, const Ray& r)
 {
-	os << "Ray(pos: " << r.pos << ", dir: " << r.dir << ")";
+	os << "Ray(pos: " << to_string(r.pos) << ", dir: " << to_string(r.dir) << ")";
 	return os;
 }

@@ -5,8 +5,8 @@ class Input
 {
 public:
 	inline static bool isFullscreen = false;
-	inline static double moveSpeed = 0.4;
-	inline static double rotationSpeed = 15;
+	inline static float moveSpeed = 0.4f;
+	inline static float rotationSpeed = 15.0f;
 
 	static void updateInput(SDL_Event event);
 };

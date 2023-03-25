@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vector>
-
 #include "Color.h"
 #include "Object.h"
+#include "glm/vec3.hpp"
 
 class Ray;
 class Triangle;
@@ -14,7 +14,7 @@ class GraphicalObject : public Object
 public:
 	std::vector<Triangle*> triangles{};
 
-	explicit GraphicalObject(Vec3 pos);
+	explicit GraphicalObject(glm::vec3 pos);
 
 	void setColor(Color color) const;
 
@@ -25,14 +25,14 @@ public:
 class Square final : public GraphicalObject
 {
 public:
-	Square(Vec3 pos, double side);
+	Square(glm::vec3 pos, float side);
 };
 
 
 class Cube final : public GraphicalObject
 {
 public:
-	Cube(Vec3 pos, double side);
+	Cube(glm::vec3 pos, float side);
 
 	void intersect(Ray& ray) override;
 };

@@ -1,27 +1,26 @@
 #pragma once
 
-#include "Vec3.h"
+#include "glm/vec3.hpp"
 
 class Object
 {
 public:
-	Vec3 pos;
-	Vec3 rotation;
+	glm::vec3 pos;
+	glm::vec3 rotation;
 
-	explicit Object(Vec3 pos);
+	explicit Object(glm::vec3 pos);
 	virtual ~Object() = default;
 
-	Vec3 forward() const;
-	Vec3 backward() const;
-	Vec3 up() const;
-	Vec3 down() const;
-	Vec3 left() const;
-	Vec3 right() const;
+	glm::vec3 forward() const;
+	glm::vec3 backward() const;
+	glm::vec3 up() const;
+	glm::vec3 down() const;
+	glm::vec3 left() const;
+	glm::vec3 right() const;
 
-	void translate(const Vec3& v);
-	void rotateBy(const Vec3& degrees);
-	void rotateAround(const Vec3& vec, double degrees);
+	void translate(const glm::vec3& v);
+	void rotateBy(const glm::vec3& degrees);
 
-	Vec3 localToGlobalPos(const Vec3& localPos) const;
-	Vec3 globalToLocalPos(const Vec3& globalPos) const;
+	glm::vec3 localToGlobalPos(const glm::vec3& localPos) const;
+	glm::vec3 globalToLocalPos(const glm::vec3& globalPos) const;
 };

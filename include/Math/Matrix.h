@@ -1,10 +1,9 @@
 #pragma once
 #include <vector>
-#include "Vec3.h"
 #include <cmath>
 
 # define PI           3.14159265358979323846f
-constexpr double degToRad = 180 / PI;
+constexpr float degToRad = 180 / PI;
 
 template <typename T>
 class Matrix : std::vector<std::vector<T>>
@@ -15,10 +14,10 @@ public:
 	using std::vector<std::vector<T>>::vector;
 	using std::vector<std::vector<T>>::operator[];
 
-	template <typename = double>
-	Vec3 operator*(const Vec3& v) const
+	template <typename = float>
+	glm::vec3 operator*(const glm::vec3& v) const
 	{
-		return Vec3
+		return glm::vec3
 		{
 			operator[](0)[0] * v[0] + operator[](0)[1] * v[1] + operator[](0)[2] * v[2],
 			operator[](1)[0] * v[0] + operator[](1)[1] * v[1] + operator[](1)[2] * v[2],
@@ -27,12 +26,12 @@ public:
 	}
 
 
-	static Matrix<double> getRotationMatrix(Vec3 angles)
+	static Matrix<float> getRotationMatrix(glm::vec3 angles)
 	{
-		double x = angles[0] / degToRad, y = angles[1] / degToRad, z = angles[2] / degToRad;
+		float x = angles[0] / degToRad, y = angles[1] / degToRad, z = angles[2] / degToRad;
 
-		double cosX = cos(x), cosY = cos(y), cosZ = cos(z);
-		double sinX = sin(x), sinY = sin(y), sinZ = sin(z);
+		float cosX = cos(x), cosY = cos(y), cosZ = cos(z);
+		float sinX = sin(x), sinY = sin(y), sinZ = sin(z);
 
 		return Matrix
 		{
