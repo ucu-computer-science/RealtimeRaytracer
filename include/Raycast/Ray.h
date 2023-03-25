@@ -19,7 +19,7 @@ public:
 	Ray(glm::vec3 pos, glm::vec3 dir) : pos{ pos }, dir{ dir }, closestT(DBL_MAX), closestTriangle(nullptr), interPoint{ nullptr } {}
 	Ray() = default;
 	~Ray() = default;
-	double getT(const Triangle* triangle) const;
+	float getT(const Triangle* triangle) const;
 	bool intersect(const Triangle* triangle);
 
 	bool hit() const

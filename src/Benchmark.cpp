@@ -7,6 +7,7 @@
 
 #include "Triangle.h"
 #include "glm/vec3.hpp"
+#include "glm/vec2.hpp"
 #include "glm/gtx/string_cast.hpp"
 void Benchmark::benchmark(int ntimes) {
     auto timeMeasurments = measure_time(ntimes, 1920, 1080);
@@ -41,11 +42,11 @@ std::vector<long long> Benchmark::measure_time(int ntimes, int wPixels, int hPix
     std::vector<long long> time_measurments;
     auto screen = std::vector(hPixels, std::vector<float>(wPixels, 0));
     constexpr double fov = 1;
-    Vec2Int screenResolution{ wPixels, hPixels };
-    Vec2 cameraSize{ 2, 1 };
+    glm::vec2 screenResolution{ wPixels, hPixels };
+    glm::vec2 cameraSize{ 2, 1 };
 
     Camera camera{ { 0.5, 0, 0.5 }, fov, screenResolution, cameraSize };
-    GraphicalObject obj{ Vec3{ 1, 1, 1 } };
+    GraphicalObject obj{ glm::vec3{ 1, 1, 1 } };
     //Square (Vec3(1, 1, 1), Vec3(1, 1, 1),
     //          Vec3(-1, 1, 1),
     //          Vec3(0, 3, -1), Color::cyan());
@@ -53,13 +54,13 @@ std::vector<long long> Benchmark::measure_time(int ntimes, int wPixels, int hPix
     //          Vec3(-1, 1, 1),
     //          Vec3(-1, 4, 1), Color::magenta());
 
-    Triangle t3(Vec3(1, 1, 1),
-        Vec3(-1, 1, 1),
-        Vec3(0, 3, -1), Color::white());
+    Triangle t3(glm::vec3(1, 1, 1),
+        glm::vec3(-1, 1, 1),
+        glm::vec3(0, 3, -1), Color::white());
     //Triangle t4({ 1, 1, 1 }, { 0, 3, -1 }, { -1,  4, 1 }, Color::white());
-    Triangle t4(Vec3(1, 1, 1),
-			Vec3(3, 1, 0),
-			Vec3(0, 3, -1), Color::white());
+    Triangle t4(glm::vec3(1, 1, 1),
+        glm::vec3(3, 1, 0),
+        glm::vec3(0, 3, -1), Color::white());
 
     //Square t1{ Vec3(1, 1, 1), Vec3(0.2, 1, 0.8), Vec3(0.8, 1, 0.5), Color::cyan() };
     //Square t2{Vec3(1, 1, 1), Vec3(1, 1, 0.8), Vec3(0.4, 1, 0.2), Color::magenta() };

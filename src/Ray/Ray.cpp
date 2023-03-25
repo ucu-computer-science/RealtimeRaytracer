@@ -6,7 +6,7 @@
 float Ray::getT(const Triangle* triangle) const
 {
 	const auto norm = triangle->getNorm();
-	return (triangle->getD() - norm * pos) / (norm * dir);
+	return (triangle->getD() - dot(norm , pos)) / dot(norm , dir);
 }
 
 bool Ray::intersect(const Triangle* triangle)
@@ -19,20 +19,20 @@ bool Ray::intersect(const Triangle* triangle)
 
 	if (triangle->detPositive)
 	{
-		if (triangle.optimizedDet(p, 1) < 0)
+		if (triangle->optimizedDet(p, 1) < 0)
 			return false;
-		if (triangle.optimizedDet(p, 2) < 0)
+		if (triangle->optimizedDet(p, 2) < 0)
 			return false;
-		if (triangle.optimizedDet(p, 3) < 0)
+		if (triangle->optimizedDet(p, 3) < 0)
 			return false;
 	}
 	else
 	{
-		if (triangle.optimizedDet(p, 1) > 0)
+		if (triangle->optimizedDet(p, 1) > 0)
 			return false;
-		if (triangle.optimizedDet(p, 2) > 0)
+		if (triangle->optimizedDet(p, 2) > 0)
 			return false;
-		if (triangle.optimizedDet(p, 3) > 0)
+		if (triangle->optimizedDet(p, 3) > 0)
 			return false;
 	}
 
