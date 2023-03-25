@@ -3,7 +3,7 @@
 
 double moveSpeed = 0.4;
 double rotationSpeed = 5;
-void Input::updateInput(const SDL_Event event)
+void Input::updateInput(const SDL_Event& event)
 {
 	if (event.type == SDL_KEYDOWN)
 	{

@@ -1,5 +1,7 @@
 #include "SDL_runner.h"
 
+#include <SDL.h>
+
 #include "Camera.h"
 #include "Matrix.h"
 #include "Input.h"
@@ -15,27 +17,27 @@ int show(const Vec2Int& resolution)
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 	SDL_RenderClear(renderer);
 
-	auto surface = SDL_GetWindowSurface(window);
-	auto renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
-	auto pixels = new Uint32[resolution.y() * resolution.x()];
+	const auto surface = SDL_GetWindowSurface(window);
+	const auto renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
+	 auto pixels = new Uint32[resolution.y() * resolution.x()];
+	 const int  pitch = resolution.x() * sizeof(Uint32);
+	//Camera::instance->setSkip(2);
 	while (true)
 	{
-		if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
+
+		if (SDL_PollEvent(&event)==0)
+			continue;
+		if (event.type == SDL_QUIT)
 			break;
 
 		Camera::instance->updatePixelMatrix(pixels);
-		Input::updateInput(event);
+		Input::updateInput(std::ref(event));
 
-		SDL_UpdateTexture(renderTexture, nullptr, pixels, resolution.x() * sizeof(Uint32));
-		SDL_Rect rect;
-		rect.x = 0;
-		rect.y = 0;
-		rect.w = resolution.x();
-		rect.h = resolution.y();
-		SDL_Rect bounds = rect;
-		SDL_RenderCopy(renderer, renderTexture, &rect, &bounds);
+		SDL_UpdateTexture(renderTexture, nullptr, pixels, pitch);
+		SDL_RenderCopy(renderer, renderTexture, nullptr, nullptr);
 		SDL_RenderPresent(renderer);
 	}
+	delete[] pixels;
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

@@ -69,11 +69,13 @@ Vec3 Vec3::normalized() const
 
 double Vec3::det(const Vec3& v1, const Vec3& v2, const Vec3& v3)
 {
-	const double x = v2[1] * v3[2] - v3[1] * v2[2];
-	const double y = v2[0] * v3[2] - v3[0] * v2[2];
-	const double z = v2[0] * v3[1] - v3[0] * v2[1];
+	//const double x = v2[1] * v3[2] - v3[1] * v2[2];
+	//const double y = v2[0] * v3[2] - v3[0] * v2[2];
+	//const double z = v2[0] * v3[1] - v3[0] * v2[1];
 
-	return v1[0] * x - v1[1] * y + v1[2] * z;
+	return v1[0] * (v2[1] * v3[2] - v3[1] * v2[2])
+	     - v1[1] * (v2[0] * v3[2] - v3[0] * v2[2])
+	     + v1[2] * (v2[0] * v3[1] - v3[0] * v2[1]);
 }
 
 Vec3 operator*(const double x, const Vec3& v)

@@ -10,20 +10,20 @@ include_directories(include/Vector)
 include_directories(include/Object)
 include_directories(include/Raycast)
 
-add_executable (${PROJECT_NAME} src/Vector/Vec3.cpp src/Vector/Vec2.cpp src/Vector/Vec2Int.cpp src/Screen.cpp src/main.cpp
-"src/Object/GraphicalObject.cpp" "src/Object/Object.cpp" "src/Ray/Ray.cpp" "src/Ray/Raycast.cpp" "src/Camera.cpp" "src/SDL_runner.cpp" "src/Scene.cpp" "include/Input.h" "src/Input.cpp" "include/Matrix.h"   "include/Square.h")
+add_executable (${PROJECT_NAME} src/Vector/Vec3.cpp src/Vector/Vec2.cpp src/Vector/Vec2Int.cpp src/main.cpp
+"src/Object/GraphicalObject.cpp" "src/Object/Object.cpp" "src/Ray/Ray.cpp" "src/Ray/Raycast.cpp" "src/Camera.cpp" "src/SDL_runner.cpp" "src/Scene.cpp" "include/Input.h" "src/Input.cpp" "include/Matrix.h"   "include/Square.h" include/Benchmark.h src/Benchmark.cpp)
 
-if(UNIX)
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(SDL_PKG REQUIRED IMPORTED_TARGET sdl2)
-  target_link_libraries(RayTracer PUBLIC PkgConfig::SDL_PKG)	
-endif()
-
-if(MINGW)
+#if(UNIX)
+#  find_package(PkgConfig REQUIRED)
+#  pkg_check_modules(SDL_PKG REQUIRED IMPORTED_TARGET sdl2)
+#  target_link_libraries(RayTracer PUBLIC PkgConfig::SDL_PKG)	
+#endif()
+#
+#if(MINGW)
 	find_package(SDL2 REQUIRED)
 	INCLUDE_DIRECTORIES(${PROJECT_NAME} "${SDL2_INCLUDE_DIR}")
 	target_link_libraries(${PROJECT_NAME} "${SDL2_LIBRARIES}")
-endif()
+#endif()
 
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

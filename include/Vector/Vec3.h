@@ -5,7 +5,7 @@
 class Vec3
 {
 public:
-	double val[3]{};
+	double val[3];
 
 	Vec3(const double x, const double y, const double z)
 	{
@@ -15,7 +15,7 @@ public:
 	}
 	Vec3(const double x, const double y) : Vec3(x, y, 0) {}
 	Vec3() : Vec3(0, 0, 0) {}
-
+	~Vec3() = default;
 	double x() const
 	{
 		return val[0];

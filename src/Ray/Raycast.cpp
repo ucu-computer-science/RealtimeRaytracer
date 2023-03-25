@@ -9,7 +9,7 @@ Raycast Raycast::castRay(Ray& ray)
 	{
 		for (const auto triangle : obj->triangles)
 		{
-			ray.intersects(*triangle);
+			ray.intersect(triangle);
 		}
 	}
 	return Raycast(ray);
