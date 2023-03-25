@@ -20,9 +20,9 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL_PKG REQUIRED IMPORTED_TARGET sdl2)
 target_link_libraries(RayTracer PUBLIC PkgConfig::SDL_PKG)
 
-#find_package(SDL2 REQUIRED)
-#INCLUDE_DIRECTORIES(${PROJECT_NAME} "${SDL2_INCLUDE_DIR}")
-#target_link_libraries(${PROJECT_NAME} "${SDL2_LIBRARIES}")
+#[[find_package(SDL2 REQUIRED)
+INCLUDE_DIRECTORIES(${PROJECT_NAME} "${SDL2_INCLUDE_DIR}")
+target_link_libraries(${PROJECT_NAME} "${SDL2_LIBRARIES}")]]
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET ${PROJECT_NAME}  PROPERTY CXX_STANDARD 20)

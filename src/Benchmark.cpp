@@ -43,7 +43,7 @@ std::vector<long long> Benchmark::measure_time(int ntimes, int wPixels, int hPix
 
     Camera camera{ { 0.5, 0, 0.5 }, fov, screenResolution, cameraSize };
     GraphicalObject obj{ Vec3{ 1, 1, 1 } };
-    //Square t1(Vec3(1, 1, 1), Vec3(1, 1, 1),
+    //Square (Vec3(1, 1, 1), Vec3(1, 1, 1),
     //          Vec3(-1, 1, 1),
     //          Vec3(0, 3, -1), Color::cyan());
     //Square t2(Vec3(1, 1, 1), Vec3(1, 1, 1),

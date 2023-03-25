@@ -18,7 +18,7 @@ public:
 	Ray() = default;
 	~Ray() = default;
 	double getT(const Triangle* triangle) const;
-	void intersect(const Triangle* triangle);
+	bool intersect(const Triangle* triangle);
 
 	bool hit() const
 	{

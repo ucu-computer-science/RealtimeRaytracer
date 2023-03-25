@@ -20,7 +20,7 @@ void GraphicalObject::intersect(Ray& ray)
 {
 	for (auto triangle : triangles)
 	{
-		ray.intersect(*triangle);
+		ray.intersect(triangle);
 	}
 }
 
@@ -70,7 +70,7 @@ void Cube::intersect(Ray& ray)
 	int interCount = 0;
 	for (auto triangle : triangles)
 	{
-		if (ray.intersect(*triangle))
+		if (ray.intersect(triangle))
 			interCount++;
 
 		if (interCount == 2)
