@@ -4,7 +4,7 @@
 #include "Triangle.h"
 
 
-GraphicalObject::GraphicalObject(const Vec3 pos) : Object(pos)
+GraphicalObject::GraphicalObject(const glm::vec3 pos) : Object(pos)
 {
 	Scene::graphicalObjects.emplace_back(this);
 }
@@ -25,28 +25,28 @@ void GraphicalObject::intersect(Ray& ray)
 }
 
 
-Square::Square(Vec3 pos, double side) : GraphicalObject(pos)
+Square::Square(glm::vec3 pos, float side) : GraphicalObject(pos)
 {
-	Vec3 p1 = pos + Vec3(-side / 2, 0, -side / 2);
-	Vec3 p2 = pos + Vec3(-side / 2, 0, side / 2);
-	Vec3 p3 = pos + Vec3(side / 2, 0, side / 2);
-	Vec3 p4 = pos + Vec3(side / 2, 0, -side / 2);
+	glm::vec3 p1 = pos + glm::vec3(-side / 2, 0, -side / 2);
+	glm::vec3 p2 = pos + glm::vec3(-side / 2, 0, side / 2);
+	glm::vec3 p3 = pos + glm::vec3(side / 2, 0, side / 2);
+	glm::vec3 p4 = pos + glm::vec3(side / 2, 0, -side / 2);
 	triangles.emplace_back(new Triangle(p1, p3, p2));
 	triangles.emplace_back(new Triangle(p1, p3, p4));
 }
 
 
-Cube::Cube(Vec3 pos, double side) : GraphicalObject(pos)
+Cube::Cube(glm::vec3 pos, float side) : GraphicalObject(pos)
 {
-	Vec3 p1 = pos + Vec3(-side / 2, -side / 2, -side / 2);
-	Vec3 p2 = pos + Vec3(-side / 2, -side / 2, side / 2);
-	Vec3 p3 = pos + Vec3(side / 2, -side / 2, side / 2);
-	Vec3 p4 = pos + Vec3(side / 2, -side / 2, -side / 2);
+	glm::vec3 p1 = pos + glm::vec3(-side / 2, -side / 2, -side / 2);
+	glm::vec3 p2 = pos + glm::vec3(-side / 2, -side / 2, side / 2);
+	glm::vec3 p3 = pos + glm::vec3(side / 2, -side / 2, side / 2);
+	glm::vec3 p4 = pos + glm::vec3(side / 2, -side / 2, -side / 2);
 
-	Vec3 p5 = pos + Vec3(-side / 2, side / 2, -side / 2);
-	Vec3 p6 = pos + Vec3(-side / 2, side / 2, side / 2);
-	Vec3 p7 = pos + Vec3(side / 2, side / 2, side / 2);
-	Vec3 p8 = pos + Vec3(side / 2, side / 2, -side / 2);
+	glm::vec3 p5 = pos + glm::vec3(-side / 2, side / 2, -side / 2);
+	glm::vec3 p6 = pos + glm::vec3(-side / 2, side / 2, side / 2);
+	glm::vec3 p7 = pos + glm::vec3(side / 2, side / 2, side / 2);
+	glm::vec3 p8 = pos + glm::vec3(side / 2, side / 2, -side / 2);
 
 	triangles.emplace_back(new Triangle(p1, p3, p2));
 	triangles.emplace_back(new Triangle(p1, p3, p4));

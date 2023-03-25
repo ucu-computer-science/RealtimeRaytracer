@@ -1,16 +1,11 @@
 #pragma once
 
-#include "Vec3.h"
+#include "glm/vec3.hpp"
 
-class Color : public Vec3
+class Color : public glm::vec3
 {
 public:
-	Color(const double r, const double g, const double b)
-	{
-		val[0] = r;
-		val[1] = g;
-		val[2] = b;
-	}
+	Color(const double r, const double g, const double b) : glm::vec3(r, g, b) {}
 	Color() : Color{ 0, 0, 0 } {}
 
 	static Color white() { return { 1, 1, 1 }; }
@@ -23,9 +18,9 @@ public:
 	static Color magenta() { return { 1, 0, 1 }; }
 	static Color gray() { return { 0.2, 0.2, 0.2 }; }
 
-	double r() const { return val[0]; }
-	double g() const { return val[1]; }
-	double b() const { return val[2]; }
+	float r() const { return x; }
+	float g() const { return y; }
+	float b() const { return z; }
 
 	uint32_t toColor32() const
 	{

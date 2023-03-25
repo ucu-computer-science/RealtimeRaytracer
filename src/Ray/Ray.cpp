@@ -1,8 +1,9 @@
 #include <cmath>
 #include "Ray.h"
 #include "Triangle.h"
+#include "glmExtension.h"
 
-double Ray::getT(const Triangle* triangle) const
+float Ray::getT(const Triangle* triangle) const
 {
 	const auto norm = triangle->getNorm();
 	return (triangle->getD() - norm * pos) / (norm * dir);
@@ -10,31 +11,30 @@ double Ray::getT(const Triangle* triangle) const
 
 bool Ray::intersect(const Triangle* triangle)
 {
-	double t = getT(triangle);
+	float t = getT(triangle);
 	if (std::isnan(t) || t <= 0 || t >= closestT)
 		return false;
 
 	auto p = pos + t * dir;
 
-	if (triangle->determinant > 0)
+	if (triangle->detPositive)
 	{
-		if (Vec3::det(p, triangle->P2(), triangle->P3()) < 0)
+		if (triangle.optimizedDet(p, 1) < 0)
 			return false;
-		if (Vec3::det(triangle->P1(), p, triangle->P3()) < 0)
+		if (triangle.optimizedDet(p, 2) < 0)
 			return false;
-		if (Vec3::det(triangle->P1(), triangle->P2(), p) < 0)
+		if (triangle.optimizedDet(p, 3) < 0)
 			return false;
 	}
 	else
 	{
-		if (Vec3::det(p, triangle->P2(), triangle->P3()) > 0)
+		if (triangle.optimizedDet(p, 1) > 0)
 			return false;
-		if (Vec3::det(triangle->P1(), p, triangle->P3()) > 0)
+		if (triangle.optimizedDet(p, 2) > 0)
 			return false;
-		if (Vec3::det(triangle->P1(), triangle->P2(), p) > 0)
+		if (triangle.optimizedDet(p, 3) > 0)
 			return false;
 	}
-
 
 	closestT = t;
 	closestTriangle = triangle;

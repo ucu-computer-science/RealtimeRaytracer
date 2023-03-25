@@ -1,11 +1,11 @@
+#include "Camera.h"
 
 #include "Benchmark.h"
-#include "Vec3.h"
-#include "Camera.h"
 #include "GraphicalObject.h"
 #include "SDL_runner.h"
 #include "Triangle.h"
 #include "Square.h"
+#include "glm/vec2.hpp"
 //#define BENCHMARK
 int main(int argv, char* args[])
 {
@@ -17,29 +17,19 @@ int main(int argv, char* args[])
 
 	constexpr double fov = 1;
 
-	Vec2Int screenResolution{ 1280, 720 };
-	Vec2 cameraSize{ 2, 1 };
+	glm::vec2 screenResolution{ 1280/2, 720/2 };
+	glm::vec2 cameraSize{ 2, 1 };
 
 	Camera camera{ { 0.5, 0, 0.5 }, fov, screenResolution, cameraSize };
     camera.setBackgroundColor(Color::gray());
 
-    /*	GraphicalObject obj{ Vec3{ 1, 1, 1 } };
-	Square t1(Vec3(1, 1, 1), Vec3(1, 1, 1),
-		Vec3(-1, 1, 1),
-		Vec3(0, 3, -1), Color::cyan());
-	Square t2(Vec3(1, 1, 1), Vec3(1, 1, 1),
-		Vec3(-1, 1, 1),
-		Vec3(-1, 4, 1), Color::magenta());
+	//GraphicalObject obj1{ glm::vec3{ 1, 1, 1 } };
+	//Triangle t1{ glm::vec3(0.2, 1, 0.2), glm::vec3(0.2, 1, 0.8), glm::vec3(0.8, 1, 0.5), Color::cyan() };
+	//Triangle t2{ glm::vec3(0.4, 1, 0.2), glm::vec3(0.4, 2, 0.8), glm::vec3(1, 1, 0.8), Color::magenta() };
+	//obj1.triangles.emplace_back(&t1);
+	//obj1.triangles.emplace_back(&t2);
 
-	Triangle t3({ -1, 1, 1 }, { -2, 3, -1 }, { -3, 4, 1 }, Color::white());
-	Triangle t4({ 1, 1, 1 }, { 0, 3, -1 }, { -1,  4, 1 }, Color::white());
-	Square t5(Vec3(1, 1, 1), { -3, 4, 1 },
-		{ -1, 4, 1 },
-		{ -2, 3, -1 }, Color::black());
-     obj.triangles.emplace_back(&t3);
-    obj.triangles.emplace_back(&t4);
-     */
-Cube obj2{ Vec3{ 1, 1, 1 }, 1 };
+	Cube obj2{ glm::vec3{ 1, 1, 1 }, 1 };
 	obj2.setColor(Color::green());
 	show(screenResolution);
 #endif //BENCHMARK

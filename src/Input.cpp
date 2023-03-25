@@ -23,23 +23,31 @@ void Input::updateInput(const SDL_Event& event)
 		{
 			Camera::instance->translate(Camera::instance->right() * moveSpeed);
 		}
+		if (event.key.keysym.sym == SDLK_q)
+		{
+			Camera::instance->translate(Camera::instance->up() * moveSpeed);
+		}
+		if (event.key.keysym.sym == SDLK_e)
+		{
+			Camera::instance->translate(Camera::instance->down() * moveSpeed);
+		}
 
 		// Rotation
 		if (event.key.keysym.sym == SDLK_UP)
 		{
-			Camera::instance->rotateBy(Vec3(-rotationSpeed, 0, 0));
+			Camera::instance->rotateBy(glm::vec3(-rotationSpeed, 0, 0));
 		}
 		if (event.key.keysym.sym == SDLK_DOWN)
 		{
-			Camera::instance->rotateBy(Vec3(rotationSpeed, 0, 0));
+			Camera::instance->rotateBy(glm::vec3(rotationSpeed, 0, 0));
 		}
 		if (event.key.keysym.sym == SDLK_LEFT)
 		{
-			Camera::instance->rotateBy(Vec3(0, 0, rotationSpeed));
+			Camera::instance->rotateBy(glm::vec3(0, 0, rotationSpeed));
 		}
 		if (event.key.keysym.sym == SDLK_RIGHT)
 		{
-			Camera::instance->rotateBy(Vec3(0, 0, -rotationSpeed));
+			Camera::instance->rotateBy(glm::vec3(0, 0, -rotationSpeed));
 		}
 
 		// Toggle Fullscreen
