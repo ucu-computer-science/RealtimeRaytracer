@@ -50,16 +50,16 @@ Cube::Cube(glm::vec3 pos, float side) : GraphicalObject(pos)
 
 	triangles.emplace_back(new Triangle(p1, p3, p2));
 	triangles.emplace_back(new Triangle(p1, p3, p4));
-	triangles.emplace_back(new Triangle(p5, p7, p6));
-	triangles.emplace_back(new Triangle(p5, p7, p8));
+	//triangles.emplace_back(new Triangle(p5, p7, p6));
+	//triangles.emplace_back(new Triangle(p5, p7, p8));
 
-	triangles.emplace_back(new Triangle(p1, p6, p2));
-	triangles.emplace_back(new Triangle(p1, p6, p5));
-	triangles.emplace_back(new Triangle(p4, p7, p3));
-	triangles.emplace_back(new Triangle(p4, p7, p8));
+	//triangles.emplace_back(new Triangle(p1, p6, p2));
+	//triangles.emplace_back(new Triangle(p1, p6, p5));
+	//triangles.emplace_back(new Triangle(p4, p7, p3));
+	//triangles.emplace_back(new Triangle(p4, p7, p8));
 
-	triangles.emplace_back(new Triangle(p2, p7, p3));
-	triangles.emplace_back(new Triangle(p2, p7, p6));
+	//triangles.emplace_back(new Triangle(p2, p7, p3));
+	//triangles.emplace_back(new Triangle(p2, p7, p6));
 	triangles.emplace_back(new Triangle(p1, p8, p4));
 	triangles.emplace_back(new Triangle(p1, p8, p5));
 }
