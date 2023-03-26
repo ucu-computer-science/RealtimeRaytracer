@@ -62,10 +62,6 @@ Cube::Cube(glm::vec3 pos, float side) : GraphicalObject(pos)
 	triangles.emplace_back(new Triangle(p2, p7, p6));
 	triangles.emplace_back(new Triangle(p1, p8, p4));
 	triangles.emplace_back(new Triangle(p1, p8, p5));
-    for (auto i: triangles) {
-        std::cout << *i << std::endl;
-    }
-    exit(0);
 }
 
 

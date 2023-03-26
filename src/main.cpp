@@ -32,9 +32,9 @@ int main(int argv, char* args[])
 	Cube obj3{ glm::vec3{ 0.5, 1.5, 1.5 }, 2 };
 	obj3.setColor(Color::magenta());
 	GraphicalObject obj(glm::vec3{ 1, 1, 1 });
-	//obj.triangles.emplace_back(
-		//new Triangle({ 1, 1, 1 }, { 1, 1, 1 }, { 1, 1, 1 }, Color::blue())
-//);
+	obj.triangles.emplace_back(
+		new Triangle({ 0, 0, 1 }, { 0, 0, 2 }, { 1, 0,  1 }, Color::blue())
+);
 	//Cube obj4{ glm::vec3{ 1.5, 0.5, 0.5 }, 1 };
 	//obj4.setColor(Color::yellow());
 	show(screenResolution);
