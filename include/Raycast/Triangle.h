@@ -91,6 +91,6 @@ public:
 
 inline std::ostream& operator<<(std::ostream& os, const Triangle& t)
 {
-	//os << "Triangle(" << to_string(t.P1()) << ", " << to_string(t.P2()) << ", " << to_string(t.P3()) << ")";
+''	os << "Triangle(" << to_string(t.P1()) << ", " << to_string(t.P2()) << ", " << to_string(t.P3()) << ")";
 	return os;
 }
