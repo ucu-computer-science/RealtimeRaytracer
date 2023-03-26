@@ -7,7 +7,6 @@
 #include "glm/gtx/string_cast.hpp"
 #include <iostream>
 
-//enum DeterminantState {  };
 class Triangle
 {
 	struct PlaneEq
@@ -31,20 +30,17 @@ class Triangle
 	}
 	int setDetSign() const
 	{
+		std::cout << to_string(p1) << ' ' << to_string(p2) << ' ' << to_string(p3) << '\n';
 		float d = det(p1, p2, p3);
 		if (d > 0)
-		{
 			return 1;
-		}
 		if (d < 0)
-		{
 			return -1;
-		}
 		return 0;
 	}
+
 public:
 	Color color;
-
 	int detSign;
 
 

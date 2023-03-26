@@ -2,6 +2,7 @@
 #include "Ray.h"
 #include "Triangle.h"
 #include "glmExtension.h"
+#include "iostream"
 
 float Ray::getT(const Triangle* triangle) const
 {
@@ -10,14 +11,13 @@ float Ray::getT(const Triangle* triangle) const
 
 bool Ray::intersect(const Triangle* triangle)
 {
-
 	float t = getT(triangle);
 
 	if (std::isnan(t) || t <= 0 || t >= closestT)
 		return false;
 
 	auto p = pos + t * dir;
-	
+
 	if (triangle->detSign > 0)
 	{
 		if (triangle->optimizedDet(p, 1) < 0)
