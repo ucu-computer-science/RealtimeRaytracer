@@ -19,7 +19,7 @@ public:
 inline std::ostream& operator<<(std::ostream& os, const Raycast& r)
 {
 	if (r.ray.hit())
-		os << "Raycast(hitPos: " << to_string(*r.ray.interPoint) << ")";
+		os << "Raycast(hitPos: " << to_string(r.ray.interPoint) << ")";
 	else
 		os << "Raycast(hitPos: NOHIT)";
 	return os;

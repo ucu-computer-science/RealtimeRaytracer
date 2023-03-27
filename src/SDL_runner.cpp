@@ -26,6 +26,7 @@ int show(const glm::vec2 resolution)
 	auto renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
 	auto pixels = new uint32_t[sizeY * sizeX];
 	const int pitch = sizeX * sizeof(uint32_t);
+	Camera::instance->setSkip(2);
 	while (true)
 	{
 		if (SDL_PollEvent(&event) == 0)

@@ -14,9 +14,9 @@ public:
 	glm::vec3 pos, dir;
 	float closestT;
 	const Triangle* closestTriangle;
-	glm::vec3* interPoint;
+	glm::vec3 interPoint;
 
-	Ray(glm::vec3 pos, glm::vec3 dir) : pos{ pos }, dir{ dir }, closestT(DBL_MAX), closestTriangle(nullptr), interPoint{ nullptr } {}
+	Ray(glm::vec3 pos, glm::vec3 dir) : pos{ pos }, dir{ dir }, closestT(DBL_MAX), closestTriangle(nullptr), interPoint{ } {}
 	Ray() = default;
 	~Ray() = default;
 	float getT(const Triangle* triangle) const;

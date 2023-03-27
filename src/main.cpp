@@ -15,7 +15,7 @@ int main(int argv, char* args[])
 
 	constexpr float fov = 1;
 
-	glm::vec2 screenResolution{ 1280 / 2, 720 / 2 };
+	glm::vec2 screenResolution{ 1280, 720 };
 	glm::vec2 cameraSize{ 2, 1 };
 
 	Camera camera{ { 0.5, 0, 0.5 }, fov, screenResolution, cameraSize };
@@ -27,13 +27,13 @@ int main(int argv, char* args[])
 	//obj1.triangles.emplace_back(&t1);
 	//obj1.triangles.emplace_back(&t2);
 
-	//Cube obj2{ glm::vec3{ 1, 1, 1 }, 1 };
-	//obj2.setColor(Color::green());
-	//Cube obj3{ glm::vec3{ 0.5, 1.5, 1.5 }, 1 };
-	//obj3.setColor(Color::magenta());
-	//GraphicalObject obj(glm::vec3{ 1, 1, 1 });
-	//obj.triangles.emplace_back(
-	//new Triangle({ 1, 1, 1 }, { 1, 1, 1 }, { 1, 1, 1 }, Color::blue()));
+	Cube obj2{ glm::vec3{ 1, 1, 1 }, 1 };
+	obj2.setColor(Color::green());
+	Cube obj3{ glm::vec3{ 0.5, 1.5, 1.5 }, 1 };
+	obj3.setColor(Color::magenta());
+	GraphicalObject obj(glm::vec3{ 1, 1, 1 });
+	obj.triangles.emplace_back(
+	new Triangle({ 0, -1, 0 }, { 0, 1, 1 }, { 0, 2, 0 }, Color::blue()));
 	Cube obj4{ glm::vec3{ 1.5, 0.5, 0.5 }, 1 };
 	obj4.setColor(Color::yellow());
 

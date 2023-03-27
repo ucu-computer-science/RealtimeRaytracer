@@ -20,13 +20,13 @@ void Camera::updatePixelMatrix(uint32_t* pixels) const
 	glm::vec3 focalPoint = getFocalPoint();
 	int sizeX = (int)resolution.x;
 	int sizeY = (int)resolution.y;
-	glm::vec3 dx = size.x / (float)sizeX * right();
-	glm::vec3 dy = size.y / (float)sizeY * up();
+	glm::vec3 dx = skip * size.x / (float)sizeX * right();
+	glm::vec3 dy = skip * size.y / (float)sizeY * up();
 	glm::vec3 pos1 = getBotLeftCorner() - focalPoint;
-	for (int y = 0; y < sizeY; ++y, pos1 += dy)
+	for (int y = 0; y < sizeY; y += skip, pos1 += dy)
 	{
 		glm::vec3 pos2 = pos1;
-		for (int x = 0; x < sizeX; ++x, pos2 += dx)
+		for (int x = 0; x < sizeX; x += skip, pos2 += dx)
 		{
             auto ray = Ray(focalPoint, pos2);
 			Raycast raycast = Raycast::castRay(ray);
