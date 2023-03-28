@@ -30,7 +30,7 @@ class Triangle
 	}
 	int setDetSign() const
 	{
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 		//std::cout << to_string(p1) << ' ' << to_string(p2) << ' ' << to_string(p3) << '\n';
 		std::cout << to_string(getNorm());

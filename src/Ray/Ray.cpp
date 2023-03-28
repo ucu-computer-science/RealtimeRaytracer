@@ -4,9 +4,10 @@
 #include "glmExtension.h"
 #include "iostream"
 //#define CROSS_DOT_METHOD
-#define BALDWIN_METHOD
 //#define DET_METHOD
 //#define MOLLER_TRUMBORE_METHOD
+#define BALDWIN_METHOD
+
 float Ray::getT(const Triangle* triangle) const
 {
 	return (triangle->getD() - dot(triangle->getNorm(), pos)) / dot(triangle->getNorm(), dir);
@@ -125,10 +126,11 @@ bool Ray::intersect(const Triangle* triangle)
 	// Point where ray hits triangle plane, in world coordinates
 
 	const float b1 = dot(triangle->row1, hit) + triangle->valRow1;
-
+	if (b1 < 0.0f || b1 > 1.0f)
+		return false;
 	const float b2 = dot(triangle->row2, hit) + triangle->valRow2;
 
-	if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f)
+	if (b2 < 0.0f || b1 + b2 > 1.0f)
 		return false;
 
 	closestT = t;
