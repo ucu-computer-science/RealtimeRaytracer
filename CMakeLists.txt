@@ -2,7 +2,15 @@
 cmake_minimum_required (VERSION 3.8)
 set(CXX_STANDARD 20)
 set(PROFILING TRUE)
+#if (MSVC)
+#  set(CMAKE_C_COMPILER "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.35.32215/bin/Hostx64/x64/cl.exe")
+#  set(CMAKE_CXX_COMPILER "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.35.32215/bin/Hostx64/x64/cl.exe")
+#endif ()
+#set(ENV{CC} ["C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.35.32215/bin/Hostx64/x64/cl.exe"])
+#set(ENV{CXX} ["C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.35.32215/bin/Hostx64/x64/cl.exe"])
 project ("RayTracer")
+
+
 
 include_directories(include)
 include_directories(include/Math)

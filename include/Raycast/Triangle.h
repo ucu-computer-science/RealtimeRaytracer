@@ -80,14 +80,10 @@ public:
 			row3 = {1.0f, normal.y / normal.x, normal.z / normal.x};
 			valRow3 = -dot(p1, normal) / normal.x;
 
-
-
-
 		}
 		else if (fabs(normal.y) > fabs(normal.z)) {
 			row1 = {-e2.z / normal.y, 0.0f, e2.x / normal.y};
 			valRow1 = cross(p3, p1).y / normal.y;
-
 
 			row2 = {e1.z / normal.y, 0.0f, -e1.x / normal.y};
 			valRow2 = -cross(p2, p1).y / normal.y;
@@ -95,13 +91,10 @@ public:
 			row3 = {normal.x / normal.y, 1.0f, normal.z / normal.y};
 			valRow3 = -dot(p1, normal) / normal.y;
 
-
-
 		}
 		else if (fabs(normal.z) > 0.0f) {
 			row1 = {e2.y / normal.z, -e2.x / normal.z, 0.0f};
 			valRow1 = cross(p3, p1).z / normal.z;
-
 
 			row2 = {-e1.y / normal.z, e1.x / normal.z, 0.0f};
 			valRow2 = -glm::cross(p2, p1).z / normal.z;
@@ -109,18 +102,13 @@ public:
 			row3 = {normal.x / normal.z, normal.y / normal.z, 1.0f};
 			valRow3 = -dot(p1, normal) / normal.z;
 
-
-
-
 		}
 		else {
 			// This triangle is degenerate. Set the transformation matrix to
 			// the 0 matrix, which in turn will yield 0 values in places that
 			// intersection calculations will detect and treat as a miss.
 			row1 = {};
-
 			valRow1 = 0.0f;
-
 
 			row2 = {};
 			valRow2 = 0.0f;

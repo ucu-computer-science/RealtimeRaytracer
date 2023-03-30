@@ -1,10 +1,11 @@
 #include "SDL_runner.h"
 
-#include <iostream>
 #include "Camera.h"
-#include "Matrix.h"
 #include "Input.h"
+#include "Matrix.h"
 #include "glm/vec2.hpp"
+#include <functional>
+#include <iostream>
 
 int frameCount = 0;
 uint32_t lastFrameTime = 0;

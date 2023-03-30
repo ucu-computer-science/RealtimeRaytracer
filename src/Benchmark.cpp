@@ -39,7 +39,7 @@ void Benchmark::show_stats(std::vector<long long int> &timeMeasurments, int ntim
 
 std::vector<long long> Benchmark::measure_time(int ntimes, int wPixels, int hPixels) {
     std::vector<long long> time_measurments;
-    auto screen = std::vector(hPixels, std::vector<float>(wPixels, 0));
+    auto screen = std::vector<std::vector<float>>(hPixels, std::vector<float>(wPixels, 0));
     constexpr float fov = 1;
     glm::vec2 screenResolution{ wPixels, hPixels };
     glm::vec2 cameraSize{ 2, 1 };
