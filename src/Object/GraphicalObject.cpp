@@ -78,3 +78,37 @@ void Cube::intersect(Ray& ray)
 
 	}
 }
+static bool solveQuadratic(float a, float b, float c,
+                           float &x0, float &x1)
+{
+  float discr = b * b - 4 * a * c;
+  if (discr < 0) return false;
+  else if (discr == 0) x0 = x1 = - 0.5 * b / a;
+  else {
+    float q = (b > 0) ?
+                      -0.5 * (b + sqrt(discr)) :
+                      -0.5 * (b - sqrt(discr));
+    x0 = q / a;
+    x1 = c / q;
+  }
+  if (x0 > x1) std::swap(x0, x1);
+
+  return true;
+}
+
+void Sphere::intersect(Ray &ray) {
+  float x0, x1;
+  auto inter = (ray.pos - pos) ;
+  float a = dot(ray.dir, ray.dir);
+  float b = dot(ray.dir + ray.dir, inter);
+  float c = fabsf(dot(inter, inter)) - radiusSquared;
+  if (solveQuadratic(a,b,c,x0,x1)) {
+      if (x0 < ray.closestT) {
+        ray.closestT = x0;
+        ray.closestGraphicalObject = this;
+        ray.interPoint = ray.pos + ray.dir;
+
+      }
+  }
+  GraphicalObject::intersect(ray);
+}

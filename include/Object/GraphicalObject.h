@@ -9,6 +9,7 @@ class Ray;
 class Triangle;
 
 
+
 class GraphicalObject : public Object
 {
 public:
@@ -35,4 +36,12 @@ public:
 	Cube(glm::vec3 pos, float side);
 
 	void intersect(Ray& ray) override;
+};
+
+class Sphere final: public GraphicalObject {
+  float radiusSquared;
+public:
+  Sphere(glm::vec3 pos, float radiusSquared): GraphicalObject(pos),
+                                               radiusSquared{radiusSquared}{};
+  void intersect(Ray& ray) override;
 };

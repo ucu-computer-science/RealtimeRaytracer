@@ -7,7 +7,7 @@
 #include "glm/gtx/string_cast.hpp"
 #include <iostream>
 
-class Triangle
+class Triangle: public GraphicalObject
 {
 	struct PlaneEq
 	{

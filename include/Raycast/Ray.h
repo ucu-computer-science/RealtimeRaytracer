@@ -1,10 +1,11 @@
 #pragma once
 
-#include <ostream>
+#include "Color.h"
 #include "cmath"
-#include <cfloat>
-#include "glm/vec3.hpp"
 #include "glm/gtx/string_cast.hpp"
+#include "glm/vec3.hpp"
+#include <cfloat>
+#include <ostream>
 
 class Triangle;
 
@@ -14,6 +15,8 @@ public:
 	glm::vec3 pos, dir;
 	float closestT;
 	const Triangle* closestTriangle;
+        glm::vec3 normal;
+        Color* color;
 	glm::vec3 interPoint;
 
 	Ray(glm::vec3 pos, glm::vec3 dir) : pos{ pos }, dir{ dir }, closestT(DBL_MAX), closestTriangle(nullptr), interPoint{ } {}
@@ -26,6 +29,7 @@ public:
 	{
 		return closestTriangle != nullptr;
 	}
+
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Ray& r)
