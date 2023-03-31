@@ -57,9 +57,8 @@ public:
 	float valRow3;
 
 
-
-
-	Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, Color color = Color::white()) : p1{ p1 }, p2{ p2 }, p3{ p3 },
+	Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, Color color = Color::white()) : p1{ p1 + 0.0001f },
+		p2{ p2 + 0.0001f }, p3{ p3 + 0.0001f },
 		planeEq{ calcPlaneEq() }, cofVec1(getRowCofactorVec(1)), cofVec2(getRowCofactorVec(2)),
 		cofVec3(getRowCofactorVec(3)), color{ color }, detSign(setDetSign()),
 	edge1(P2() - P1()), edge2(P3() - P1())

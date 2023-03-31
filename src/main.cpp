@@ -6,6 +6,7 @@
 #include "Triangle.h"
 #include "glm/vec2.hpp"
 //#define BENCHMARK
+
 int main(int argv, char* args[])
 {
 #ifdef BENCHMARK
@@ -14,7 +15,6 @@ int main(int argv, char* args[])
 #else
 
 	constexpr float fov = 1;
-
 	glm::vec2 screenResolution{ 1280, 720 };
 	glm::vec2 cameraSize{ 2, 1 };
 
@@ -31,12 +31,8 @@ int main(int argv, char* args[])
 	obj2.setColor(Color::green());
 	Cube obj3{ glm::vec3{ 0.5, 1.5, 1.5 }, 1 };
 	obj3.setColor(Color::magenta());
-	GraphicalObject obj(glm::vec3{ 1, 1, 1 });
-	obj.triangles.emplace_back(
-	new Triangle({ 0, -1, 0 }, { 0, 1, 1 }, { 0, 2, 0 }, Color::blue()));
 	Cube obj4{ glm::vec3{ 1.5, 0.5, 0.5 }, 1 };
 	obj4.setColor(Color::yellow());
-
 
 	show(screenResolution);
 

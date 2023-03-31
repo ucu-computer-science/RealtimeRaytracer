@@ -1,7 +1,7 @@
 
 cmake_minimum_required (VERSION 3.8)
 set(CXX_STANDARD 20)
-set(PROFILING TRUE)
+set(USING_VISUAL_STUDIO TRUE)
 project ("RayTracer")
 
 include_directories(include)
@@ -14,9 +14,9 @@ include_directories(SDL2/include)
 link_directories(SDL2/lib/x64)
 
 add_executable (${PROJECT_NAME} "src/main.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp" "src/Ray/Ray.cpp"
-"src/Ray/Raycast.cpp" "src/Camera.cpp" "src/SDL_runner.cpp" "src/Scene.cpp" "src/Input.cpp"  "include/Math/glmExtension.h" "src/Math/Vec3.cpp" "src/Benchmark.cpp" "include/Benchmark.h")
+"src/Ray/Raycast.cpp" "src/Camera.cpp" "src/SDL_runner.cpp" "src/Scene.cpp" "src/Input.cpp" "src/Math/Vec3.cpp" "src/Benchmark.cpp")
 
-if(${PROFILING})
+if(${USING_VISUAL_STUDIO})
   target_link_libraries(RayTracer SDL2)
   target_link_libraries(RayTracer SDL2main)
 else()

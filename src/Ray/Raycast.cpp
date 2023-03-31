@@ -3,7 +3,7 @@
 #include "Ray.h"
 #include "GraphicalObject.h"
 
-Raycast Raycast::castRay(Ray& ray)
+Raycast Raycast::castRay(Ray ray)
 {
 	for (const auto obj : Scene::graphicalObjects)
 	{
