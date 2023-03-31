@@ -17,7 +17,7 @@ glm::vec3 Camera::getFocalPoint() const
 uint32_t Camera::castRayAndGetColor32(Ray ray) const
 {
 	Raycast raycast = Raycast::castRay(ray);
-	return raycast.ray.hit() ? raycast.ray.closestTriangle->color.toColor32() : bgColor32;
+	return raycast.ray.color.toColor32();
 }
 
 

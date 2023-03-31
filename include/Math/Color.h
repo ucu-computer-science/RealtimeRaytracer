@@ -13,6 +13,8 @@ public:
 	static Color red() { return { 1, 0, 0 }; }
 	static Color green() { return { 0, 1, 0 }; }
 	static Color blue() { return { 0, 0, 1 }; }
+        static Color darkgreen() { return { 0, 0.5, 0 }; }
+        static Color skyblue() { return { 	.529, .808, .922 }; }
 	static Color yellow() { return { 1, 1, 0 }; }
 	static Color cyan() { return { 0, 1, 1 }; }
 	static Color magenta() { return { 1, 0, 1 }; }

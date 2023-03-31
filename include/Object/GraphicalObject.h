@@ -40,8 +40,35 @@ public:
 
 class Sphere final: public GraphicalObject {
   float radiusSquared;
+  Color color;
 public:
-  Sphere(glm::vec3 pos, float radiusSquared): GraphicalObject(pos),
-                                               radiusSquared{radiusSquared}{};
+  Sphere(glm::vec3 pos, float radiusSquared, Color color): GraphicalObject(pos),
+                                               radiusSquared{radiusSquared},
+                                                            color{color}{};
   void intersect(Ray& ray) override;
 };
+
+class Plane final: public GraphicalObject {
+  // note: the position is now the normal of the plane
+  Color color;
+  glm::vec3 normal;
+public:
+  Plane(glm::vec3 pos, glm::vec3 normal, Color color): GraphicalObject(pos),
+                                                       normal{normal},
+                                                        color{color}
+                                                        {};
+  void intersect(Ray& ray) override;
+};
+
+//class Box: public GraphicalObject
+//{
+//public:
+//  glm::vec3 bounds[2];
+//
+//  Box(glm::vec3 pos, glm::vec3 vmin, glm::vec3 vmax): GraphicalObject(pos)
+//  {
+//    bounds[0] = vmin;
+//    bounds[1] = vmax;
+//  }
+//  void intersect(Ray& ray) override;
+//};

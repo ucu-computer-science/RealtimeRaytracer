@@ -33,7 +33,12 @@ int main(int argv, char* args[])
 	obj3.setColor(Color::magenta());
 	Cube obj4{ glm::vec3{ 1.5, 0.5, 0.5 }, 1 };
 	obj4.setColor(Color::yellow());
-
+        Sphere obj5{{-2,0,6}, 10, Color::blue()};
+        Sphere obj6{{-5,4,-4}, 2, Color::yellow()};
+        Sphere obj7{{0,0,0}, 0.0625, Color::red()};
+        Plane obj8{{0, 0, 6}, {0,0,1}, Color::darkgreen()};
+        Plane obj9{{0, 0, -6}, {0,0,-1}, Color::skyblue()};
+//        Box obj10{};
 	show(screenResolution);
 
 #endif //BENCHMARK

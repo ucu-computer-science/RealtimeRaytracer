@@ -134,7 +134,9 @@ bool Ray::intersect(const Triangle* triangle)
 		return false;
 
 	closestT = t;
-	closestTriangle = triangle;
+//	closestTriangle = triangle;
+        color = triangle->color;
+        normal = triangle->getNorm();
 	interPoint = hit;
 	return true;
 #endif

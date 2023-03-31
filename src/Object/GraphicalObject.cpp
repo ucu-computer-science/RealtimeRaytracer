@@ -92,7 +92,6 @@ static bool solveQuadratic(float a, float b, float c,
     x1 = c / q;
   }
   if (x0 > x1) std::swap(x0, x1);
-
   return true;
 }
 
@@ -103,12 +102,57 @@ void Sphere::intersect(Ray &ray) {
   float b = dot(ray.dir + ray.dir, inter);
   float c = fabsf(dot(inter, inter)) - radiusSquared;
   if (solveQuadratic(a,b,c,x0,x1)) {
-      if (x0 < ray.closestT) {
+      if (x0 > 0 && x0 < ray.closestT) {
         ray.closestT = x0;
-        ray.closestGraphicalObject = this;
-        ray.interPoint = ray.pos + ray.dir;
-
+        ray.color = color;
+        ray.interPoint = ray.pos + x0 * ray.dir;
+        ray.normal = ray.interPoint - pos;
       }
   }
-  GraphicalObject::intersect(ray);
 }
+void Plane::intersect(Ray &ray) {
+//  if (dot(ray.dir, pos)!=0);
+  float denom = dot(normal, ray.dir);
+  if (denom > 1e-6) {
+    glm::vec3 p0l0 = pos - ray.pos;
+    float t = dot(p0l0, normal) / denom;
+    if (t < ray.closestT && t >= 0){
+      ray.closestT = t;
+      ray.color = color;
+      ray.interPoint = ray.pos + t*ray.dir;
+      ray.normal = normal;
+    };
+  }
+
+//  return false;
+}
+//void Box::intersect(Ray &ray) {
+//    float tmin, tmax, tymin, tymax, tzmin, tzmax;
+//
+//    tmin = (bounds[r.sign[0]].x - r.pos.x) * r.invdir.x;
+//    tmax = (bounds[1-r.sign[0]].x - r.pos.x) * r.invdir.x;
+//    tymin = (bounds[r.sign[1]].y - r.pos.y) * r.invdir.y;
+//    tymax = (bounds[1-r.sign[1]].y - r.pos.y) * r.invdir.y;
+//
+//    if ((tmin > tymax) || (tymin > tmax))
+//      return false;
+//
+//    if (tymin > tmin)
+//      tmin = tymin;
+//    if (tymax < tmax)
+//      tmax = tymax;
+//
+//    tzmin = (bounds[r.sign[2]].z - r.orig.z) * r.invdir.z;
+//    tzmax = (bounds[1-r.sign[2]].z - r.orig.z) * r.invdir.z;
+//
+//    if ((tmin > tzmax) || (tzmin > tmax))
+//      return false;
+//
+//    if (tzmin > tmin)
+//      tmin = tzmin;
+//    if (tzmax < tmax)
+//      tmax = tzmax;
+//
+//    return true;
+//  }
+//}
