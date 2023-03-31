@@ -1,12 +1,13 @@
 #pragma once
 
 #include "glm/vec3.hpp"
+#include "glm/gtc/quaternion.hpp"
 
 class Object
 {
 public:
 	glm::vec3 pos;
-	glm::vec3 rotation;
+	glm::quat rotation;
 
 	explicit Object(glm::vec3 pos);
 	virtual ~Object() = default;

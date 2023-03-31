@@ -3,34 +3,34 @@
 #include "Scene.h"
 
 
-Object::Object(const glm::vec3 pos) : pos(pos), rotation(0, 0, 0)
+Object::Object(const glm::vec3 pos) : pos(pos), rotation(1.0, 0.0, 0.0, 0.0)
 {
 	Scene::objects.emplace_back(this);
 }
 
 glm::vec3 Object::forward() const
 {
-	return Matrix<float>::getRotationMatrix(rotation) * glm::vec3(0, 1, 0);
+	return rotation * glm::vec3(0, 1, 0);
 }
 glm::vec3 Object::backward() const
 {
-	return Matrix<float>::getRotationMatrix(rotation) * glm::vec3(0, -1, 0);
+	return rotation * glm::vec3(0, -1, 0);
 }
 glm::vec3 Object::up() const
 {
-	return Matrix<float>::getRotationMatrix(rotation) * glm::vec3(0, 0, 1);
+	return rotation * glm::vec3(0, 0, 1);
 }
 glm::vec3 Object::down() const
 {
-	return Matrix<float>::getRotationMatrix(rotation) * glm::vec3(0, 0, -1);
+	return rotation * glm::vec3(0, 0, -1);
 }
 glm::vec3 Object::left() const
 {
-	return Matrix<float>::getRotationMatrix(rotation) * glm::vec3(-1, 0, 0);
+	return rotation * glm::vec3(-1, 0, 0);
 }
 glm::vec3 Object::right() const
 {
-	return Matrix<float>::getRotationMatrix(rotation) * glm::vec3(1, 0, 0);
+	return rotation * glm::vec3(1, 0, 0);
 }
 
 void Object::translate(const glm::vec3& v)
@@ -39,14 +39,14 @@ void Object::translate(const glm::vec3& v)
 }
 void Object::rotateBy(const glm::vec3& degrees)
 {
-	rotation += degrees;
+	rotation = normalize(rotation * glm::quat(degrees / 180.0f * PI));
 }
 
 glm::vec3 Object::localToGlobalPos(const glm::vec3& localPos) const
 {
-	return Matrix<float>::getRotationMatrix(rotation) * localPos + pos;
+	return rotation * localPos + pos;
 }
 glm::vec3 Object::globalToLocalPos(const glm::vec3& globalPos) const
 {
-	return Matrix<float>::getRotationMatrix(-rotation) * globalPos - pos;
+	return -rotation * globalPos - pos;
 }

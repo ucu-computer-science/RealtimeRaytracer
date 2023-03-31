@@ -13,7 +13,7 @@ public:
 
 	explicit Raycast(Ray& ray) : ray(ray) { }
 	~Raycast() = default;
-	static Raycast castRay(Ray& ray);
+	static Raycast castRay(Ray ray);
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Raycast& r)
