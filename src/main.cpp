@@ -37,21 +37,21 @@ int main(int argv, char* args[])
         Sphere obj5{{-2,0,6}, 10, Color::blue()};
         Sphere obj6{{-6,4,-5}, 2, Color::yellow()};
         Sphere obj7{{0,0,0}, 0.0625, Color::red()};
-        Plane obj8{{0, 0, 6}, {0,0,1}, Color::darkgreen()};
-        Plane obj9{{0, 0, -6}, {0,0,-1}, Color::skyblue()};
+        Plane obj8{{0, 0, 6}, {0,0,1}, Color::darkGreen()};
+        Plane obj9{{0, 0, -6}, {0,0,-1}, Color::skyBlue()};
 //        Square obj10 {{0,0,0}, {1,1,1}, {1,1,-1}};
         SquarePyramid obj11{{-8,2,6}, {-8,6,6}, {-4,2,6}, {-6,4,-5}};
         obj11.setColor(Color::black());
 //        Box obj10{};
-	show(screenResolution);
+//	show(screenResolution);
 	//Cube obj3{ glm::vec3{ 0.5, 1.5, 1.5 }, 1 };
 	//obj3.setColor(Color::magenta());
 	//Cube obj4{ glm::vec3{ 1.5, 0.5, 0.5 }, 1 };
 	//obj4.setColor(Color::yellow());
-	Sphere obj5{{-2, 1, 0}, 3, Color::blue()};
-	Sphere obj6{{-5, 3, 3}, 2, Color::yellow()};
-	Plane obj8{{0, 0, 0}, {0, 0, -1}, Color::darkGreen()};
-	Plane obj9{{0, 0, 256}, {0, 0, 1}, Color::skyBlue()};
+//	Sphere obj5{{-2, 1, 0}, 3, Color::blue()};
+//	Sphere obj6{{-5, 3, 3}, 2, Color::yellow()};
+//	Plane obj8{{0, 0, 0}, {0, 0, -1}, Color::darkGreen()};
+//	Plane obj9{{0, 0, 256}, {0, 0, 1}, Color::skyBlue()};
 
 	SDLDisplayer::display(width, height);
 	//Camera::instance->skip = 2;

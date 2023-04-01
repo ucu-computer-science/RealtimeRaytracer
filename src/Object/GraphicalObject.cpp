@@ -141,15 +141,18 @@ SquarePyramid::SquarePyramid(glm::vec3 P1, glm::vec3 P2, glm::vec3 P3,
     :Square(P1,P2,P3){
   auto ABC = triangles.at(0);
   auto BCD = triangles.at(1);
-  auto A = ABC->P1();
-  auto B = ABC->P2();
-  auto C = ABC->P3();
-  auto D = BCD->P3();
+  auto A = ABC->p1;
+  auto B = ABC->p2;
+  auto C = ABC->p3;
+  auto D = BCD->p3;
 
   triangles.emplace_back(new Triangle(A,B,peak));
   triangles.emplace_back(new Triangle(B,C,peak));
   triangles.emplace_back(new Triangle(C,D,peak));
-  triangles.emplace_back(new Triangle(A,D,peak));
+  triangles.emplace_back(new Triangle(D,A,peak));
+  for (auto i: triangles){
+    i->isTwoSided = true;
+  }
 
 
 }

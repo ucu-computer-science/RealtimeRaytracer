@@ -87,7 +87,7 @@ public:
 		}
 	}
 	Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, Color color = Color::white(),
-	         bool isTwoSided = false) : p1{p1 + 0.0001f}, p2{p2 + 0.0001f}, p3{p3 + 0.0001f}, planeEq{calcPlaneEq()},
+	         bool isTwoSided = false) : p1{p1}, p2{p2}, p3{p3}, planeEq{calcPlaneEq()},
 	                                    color{color}, isTwoSided(isTwoSided), edge1(p2 - p1), edge2(p3 - p1)
 	{
 		precalculateValues();
