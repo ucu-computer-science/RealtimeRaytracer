@@ -55,7 +55,7 @@ Square::Square(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) : GraphicalObject(p1)
 	triangles.emplace_back(new Triangle{p2, p3, p2 + p3 - p1});
 }
 
-Cube::Cube(glm::vec3 pos, float side, glm::quat rot) : GraphicalObject(pos, rot)
+Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(pos, rot)
 {
 	glm::vec3 p1 = pos + rot * glm::vec3(-side / 2, -side / 2, -side / 2);
 	glm::vec3 p2 = pos + rot * glm::vec3(-side / 2, -side / 2, side / 2);
@@ -133,23 +133,19 @@ void Plane::intersect(Ray& ray)
 	}
 }
 
-SquarePyramid::SquarePyramid(glm::vec3 pos, float side, float height): GraphicalObject(pos)
+SquarePyramid::SquarePyramid(glm::vec3 pos, glm::quat rot, float side, float height): GraphicalObject(pos, rot)
 {
 	auto p1 = pos + (left() + backward()) * side * 0.5f;
 	auto p2 = pos + (left() - backward()) * side * 0.5f;
-	auto p3 = pos + (-left() + backward()) * side * 0.5f;
-	auto p4 = pos + (-left() - backward()) * side * 0.5f;
+	auto p3 = pos + (-left() - backward()) * side * 0.5f;
+	auto p4 = pos + (-left() + backward()) * side * 0.5f;
 	auto peak = pos + up() * height;
 
 	triangles.emplace_back(new Triangle(p1, p3, p2));
-	triangles.emplace_back(new Triangle(p1, p2, p4));
+	triangles.emplace_back(new Triangle(p1, p4, p3));
 
 	triangles.emplace_back(new Triangle(p1, p2, peak));
 	triangles.emplace_back(new Triangle(p2, p3, peak));
 	triangles.emplace_back(new Triangle(p3, p4, peak));
 	triangles.emplace_back(new Triangle(p4, p1, peak));
-	for (auto i : triangles)
-	{
-		i->isTwoSided = true;
-	}
 }

@@ -40,15 +40,15 @@ int main(int argv, char* args[])
 	//SquarePyramid obj11{{-8, 2, 6}, {-8, 6, 6}, {-4, 2, 6}, {-6, 4, -5}};
 	//obj11.setColor(Color::black());
 
-	Cube obj3{glm::vec3{0.5, 1.5, 1.5}, 1};
+	Cube obj3{glm::vec3{0.5, 1.5, 1.5}, {{45 * DEG_TO_RAD, 45 * DEG_TO_RAD, 45 * DEG_TO_RAD}}, 1};
 	obj3.setColor(Color::magenta());
-	Cube obj4{glm::vec3{1.5, 0.5, 0.5}, 1};
-	obj4.setColor(Color::yellow());
+	//Cube obj4{glm::vec3{1.5, 0.5, 0.5}, 1};
+	//obj4.setColor(Color::yellow());
 	Sphere obj5{{-2, 1, 0}, 3, Color::blue()};
 	Sphere obj6{{-5, 3, 3}, 2, Color::yellow()};
 	Plane obj8{{0, 0, 0}, {0, 0, -1}, Color::darkGreen()};
 	Plane obj9{{0, 0, 256}, {0, 0, 1}, Color::skyBlue()};
-	SquarePyramid obj11{{2, 2, 2}, 1, 2};
+	SquarePyramid obj11{{2, 2, 2}, {{45 * DEG_TO_RAD, 45 * DEG_TO_RAD, 45 * DEG_TO_RAD}}, 1, 2};
 	obj11.setColor(Color::black());
 
 	SDLDisplayer::display(width, height);

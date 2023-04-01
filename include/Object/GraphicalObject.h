@@ -34,7 +34,7 @@ public:
 class Cube final : public GraphicalObject
 {
 public:
-	Cube(glm::vec3 pos, float side, glm::quat rot = {1, 0, 0, 0});
+	Cube(glm::vec3 pos, glm::quat rot, float side);
 
 	void intersect(Ray& ray) override;
 };
@@ -63,7 +63,7 @@ public:
 class SquarePyramid : public GraphicalObject
 {
 public:
-	SquarePyramid(glm::vec3 pos, float side, float height);
+	SquarePyramid(glm::vec3 pos, glm::quat rot, float side, float height);
 };
 
 
