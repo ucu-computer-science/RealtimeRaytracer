@@ -2,23 +2,24 @@
 
 #include "Benchmark.h"
 #include "GraphicalObject.h"
-#include "SDL_runner.h"
+#include "SDLDisplayer.h"
 #include "Triangle.h"
 #include "glm/vec2.hpp"
-//#define BENCHMARK
+
+void f(int a)
+{
+	std::cout << "yay: " << a << '\n';
+}
 
 int main(int argv, char* args[])
 {
-#ifdef BENCHMARK
-	Benchmark::benchmark(200);
+	//Benchmark::benchmark(200);
 	//Benchmark::benchmarkVectors(100);
-#else
 
 	constexpr float fov = 1;
-	glm::vec2 screenResolution{ 1280, 720 };
-	glm::vec2 cameraSize{ 2, 1 };
+	int width = 1280, height = 720;
 
-	Camera camera{ { 0.5, 0, 0.5 }, fov, screenResolution, cameraSize };
+	Camera camera{{0.5, 0, 0.5}, fov, glm::vec2(width / (float)height, 1)};
 	camera.setBackgroundColor(Color::gray());
 
 	//GraphicalObject obj1{ glm::vec3{ 1, 1, 1 } };
@@ -27,21 +28,19 @@ int main(int argv, char* args[])
 	//obj1.triangles.emplace_back(&t1);
 	//obj1.triangles.emplace_back(&t2);
 
-	Cube obj2{ glm::vec3{ 1, 1, 1 }, 1 };
+	Cube obj2{glm::vec3{1, 1, 0.5}, 1};
 	obj2.setColor(Color::green());
-	Cube obj3{ glm::vec3{ 0.5, 1.5, 1.5 }, 1 };
-	obj3.setColor(Color::magenta());
-	Cube obj4{ glm::vec3{ 1.5, 0.5, 0.5 }, 1 };
-	obj4.setColor(Color::yellow());
-        Sphere obj5{{-2,0,6}, 10, Color::blue()};
-        Sphere obj6{{-5,4,-4}, 2, Color::yellow()};
-        Sphere obj7{{0,0,0}, 0.0625, Color::red()};
-        Plane obj8{{0, 0, 6}, {0,0,1}, Color::darkgreen()};
-        Plane obj9{{0, 0, -6}, {0,0,-1}, Color::skyblue()};
-//        Box obj10{};
-	show(screenResolution);
+	//Cube obj3{ glm::vec3{ 0.5, 1.5, 1.5 }, 1 };
+	//obj3.setColor(Color::magenta());
+	//Cube obj4{ glm::vec3{ 1.5, 0.5, 0.5 }, 1 };
+	//obj4.setColor(Color::yellow());
+	Sphere obj5{{-2, 1, 0}, 3, Color::blue()};
+	Sphere obj6{{-5, 3, 3}, 2, Color::yellow()};
+	Plane obj8{{0, 0, 0}, {0, 0, -1}, Color::darkGreen()};
+	Plane obj9{{0, 0, 256}, {0, 0, 1}, Color::skyBlue()};
 
-#endif //BENCHMARK
+	SDLDisplayer::display(width, height);
+	//Camera::instance->skip = 2;
 
 	return 0;
 }

@@ -1,6 +1,8 @@
 #include "Camera.h"
 #include "Input.h"
 
+#include "SDLDisplayer.h"
+
 bool Input::isFullscreen = false;
 float Input::moveSpeed = 0.4f;
 float Input::rotationSpeed = 15.0f;
@@ -38,11 +40,11 @@ void Input::updateInput(const SDL_Event& event)
 		// Rotation
 		if (event.key.keysym.sym == SDLK_UP)
 		{
-			Camera::instance->rotateBy(glm::vec3(-rotationSpeed, 0, 0));
+			Camera::instance->rotateBy(glm::vec3(rotationSpeed, 0, 0));
 		}
 		if (event.key.keysym.sym == SDLK_DOWN)
 		{
-			Camera::instance->rotateBy(glm::vec3(rotationSpeed, 0, 0));
+			Camera::instance->rotateBy(glm::vec3(-rotationSpeed, 0, 0));
 		}
 		if (event.key.keysym.sym == SDLK_LEFT)
 		{
@@ -57,6 +59,7 @@ void Input::updateInput(const SDL_Event& event)
 		if (event.key.keysym.sym == SDLK_F11)
 		{
 			isFullscreen = !isFullscreen;
+			SDL_SetWindowFullscreen(SDLDisplayer::window, Input::isFullscreen ? 1 : 0);
 		}
 	}
 }

@@ -4,7 +4,7 @@
 class Input
 {
 public:
-        static bool isFullscreen;
+	static bool isFullscreen;
 	static float moveSpeed;
 	static float rotationSpeed;
 

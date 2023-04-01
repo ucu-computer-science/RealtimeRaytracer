@@ -16,15 +16,13 @@ public:
 	static Camera* instance;
 
 	float fov;
-	glm::vec2 resolution;
 	glm::vec2 size;
 	uint32_t bgColor32;
-	int skip;
+	float skip;
 	BS::thread_pool_light pool;
 
-	Camera(glm::vec3 pos, float fov, glm::vec2 resolution, glm::vec2 size) : Object(pos), fov(fov),
-	                                                                         resolution(resolution), size(size),
-	                                                                         bgColor32(Color::black().toColor32())
+	Camera(glm::vec3 pos, float fov, glm::vec2 size) : Object(pos), fov(fov), size{size},
+	                                                   bgColor32(Color::black().toColor32())
 	{
 		if (instance != nullptr)
 			throw std::runtime_error("Camera object already exists.");
@@ -32,10 +30,11 @@ public:
 		skip = 1;
 	}
 
-	void setBackgroundColor(Color color) { bgColor32 = color.toColor32(); }
+	glm::vec3 getLeftBotCorner() const;
+	glm::vec3 getRightTopCorner() const;
 
-	glm::vec3 getBotLeftCorner() const;
 	glm::vec3 getFocalPoint() const;
-	uint32_t castRayAndGetColor32(Ray ray) const;
-	void updatePixelMatrix(uint32_t* pixels);
+	void updatePixelMatrix(uint32_t* pixels, int width, int height);
+
+	void setBackgroundColor(Color color) { bgColor32 = color.toColor32(); }
 };
