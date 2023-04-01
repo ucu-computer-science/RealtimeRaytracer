@@ -29,14 +29,12 @@ void GraphicalObject::intersect(Ray& ray)
 }
 void GraphicalObject::updateCameraFacingTriangles()
 {
-	auto cameraLookDirLB = Camera::instance->getLeftBotCorner() - Camera::instance->getFocalPoint();
-	auto cameraLookDirRT = Camera::instance->getRightTopCorner() - Camera::instance->getFocalPoint();
 	cameraFacingTriangles.clear();
 	for (auto triangle : triangles)
 	{
+		auto dir = triangle->p1 - Camera::instance->pos;
 		if (!triangle->isTwoSided &&
-			dot(triangle->planeEq.norm, cameraLookDirLB) >= 0 &&
-			dot(triangle->planeEq.norm, cameraLookDirRT) >= 0)
+			dot(triangle->planeEq.norm, dir) >= 0)
 			continue;
 		cameraFacingTriangles.emplace_back(triangle);
 	}

@@ -31,9 +31,11 @@ public:
 	}
 
 	glm::vec3 getLeftBotCorner() const;
+	glm::vec3 getLeftTopCorner() const;
 	glm::vec3 getRightTopCorner() const;
+	glm::vec3 getRightBotCorner() const;
 
-	glm::vec3 getFocalPoint() const;
+	glm::vec3 getScreenCenter() const;
 	void updatePixelMatrix(uint32_t* pixels, int width, int height);
 
 	void setBackgroundColor(Color color) { bgColor32 = color.toColor32(); }
