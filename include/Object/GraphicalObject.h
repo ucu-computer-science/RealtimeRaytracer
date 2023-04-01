@@ -17,17 +17,13 @@ public:
 
 	explicit GraphicalObject(glm::vec3 pos);
 
-	void setColor(Color color) const;
+	virtual void setColor(Color color) const;
 
 	virtual void intersect(Ray& ray);
 };
 
 
-class Square final : public GraphicalObject
-{
-public:
-	Square(glm::vec3 pos, float side);
-};
+
 
 
 class Cube final : public GraphicalObject
@@ -48,7 +44,7 @@ public:
   void intersect(Ray& ray) override;
 };
 
-class Plane final: public GraphicalObject {
+class Plane: public GraphicalObject {
   // note: the position is now the normal of the plane
   Color color;
   glm::vec3 normal;
@@ -60,6 +56,33 @@ public:
   void intersect(Ray& ray) override;
 };
 
+class Square: public GraphicalObject
+{
+
+public:
+  Square(glm::vec3 pos, float side);
+//  Square(glm::vec3 P1, glm::vec3 P2);
+  Square(glm::vec3 P1, glm::vec3 P2, glm::vec3 P3);
+};
+
+class SquarePyramid: public Square{
+public:
+  SquarePyramid(glm::vec3 P1,
+                glm::vec3 P2,
+                glm::vec3 P3,
+                glm::vec3 peak);;
+};
+
+
+//class SquarePyramid final : public Square
+//{
+//public:
+//  SquarePyramid(glm::vec3 pos, float side): Square(pos, side){
+//
+//  };
+//
+//  void intersect(Ray& ray) override;
+//};
 //class Box: public GraphicalObject
 //{
 //public:
