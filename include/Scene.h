@@ -8,6 +8,6 @@ class GraphicalObject;
 class Scene
 {
 public:
-	static std::vector<Object*> objects;
-	static std::vector<GraphicalObject*> graphicalObjects;
+	inline static std::vector<Object*> objects{};
+	inline static std::vector<GraphicalObject*> graphicalObjects{};
 };

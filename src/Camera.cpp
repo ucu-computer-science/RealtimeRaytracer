@@ -1,43 +1,46 @@
 #include "Camera.h"
 #include "Ray.h"
 #include "Raycast.h"
+#include "SDLDisplayer.h"
 #include "Triangle.h"
 
 Camera* Camera::instance = nullptr;
 
-glm::vec3 Camera::getBotLeftCorner() const
+glm::vec3 Camera::getLeftBotCorner() const
 {
-	return pos - 0.5f * size.y * up() - 0.5f * size.x * right();
+	return getScreenCenter() - 0.5f * size.y * up() - 0.5f * size.x * right();
 }
-glm::vec3 Camera::getFocalPoint() const
+glm::vec3 Camera::getLeftTopCorner() const
 {
-	return pos + backward() * fov;
+	return getScreenCenter() + 0.5f * size.y * up() - 0.5f * size.x * right();
+}
+glm::vec3 Camera::getRightTopCorner() const
+{
+	return getScreenCenter() + 0.5f * size.y * up() + 0.5f * size.x * right();
+}
+glm::vec3 Camera::getRightBotCorner() const
+{
+	return getScreenCenter() - 0.5f * size.y * up() + 0.5f * size.x * right();
+}
+glm::vec3 Camera::getScreenCenter() const
+{
+	return pos + forward() * fov;
 }
 
-uint32_t Camera::castRayAndGetColor32(Ray ray) const
+void Camera::updatePixelMatrix(uint32_t* pixels, int width, int height)
 {
-	Raycast raycast = Raycast::castRay(ray);
-	return raycast.ray.color.toColor32();
-}
+	glm::vec3 dx = skip * size.x / (float)width * right();
+	glm::vec3 dy = skip * size.y / (float)height * up();
+	glm::vec3 lbDir = getLeftBotCorner() - pos;
 
-
-void Camera::updatePixelMatrix(uint32_t* pixels)
-{
-	glm::vec3 focalPoint = getFocalPoint();
-	int sizeX = (int)resolution.x;
-	int sizeY = (int)resolution.y;
-	glm::vec3 dx = skip * size.x / (float)sizeX * right();
-	glm::vec3 dy = skip * size.y / (float)sizeY * up();
-	glm::vec3 dir1 = getBotLeftCorner() - focalPoint;
-
-	for (int y = 0; y < sizeY; y += skip, dir1 += dy)
+	for (int y = 0; y < height; y += skip)
 	{
-		pool.push_task([this, focalPoint, pixels, sizeX, dir1, dx, y]
+		pool.push_task([this, pixels, width, lbDir, dx, y, dy, height]
 		{
-			auto dir2 = dir1;
-			for (int x = 0; x < sizeX; x += skip, dir2 += dx)
+			for (int x = 0; x < width; x += skip)
 			{
-				pixels[y * sizeX + x] = castRayAndGetColor32(Ray(focalPoint, dir2));
+				auto ray = Ray(pos, lbDir + (float)x * dx / skip + (float)y * dy / skip);
+				pixels[(height - y - 1) * width + x] = Raycast::castRay(ray).ray.color.toColor32();
 			}
 		});
 	}

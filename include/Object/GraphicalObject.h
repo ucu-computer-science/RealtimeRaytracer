@@ -14,12 +14,14 @@ class GraphicalObject : public Object
 {
 public:
 	std::vector<Triangle*> triangles{};
+	std::vector<Triangle*> cameraFacingTriangles{};
 
 	explicit GraphicalObject(glm::vec3 pos);
 
-	virtual void setColor(Color color) const;
-
+	void setColor(Color color) const;
 	virtual void intersect(Ray& ray);
+
+	void updateCameraFacingTriangles();
 };
 
 
@@ -34,26 +36,25 @@ public:
 	void intersect(Ray& ray) override;
 };
 
-class Sphere final: public GraphicalObject {
-  float radiusSquared;
-  Color color;
+class Sphere final : public GraphicalObject
+{
+	float radiusSquared;
+	Color color;
+
 public:
-  Sphere(glm::vec3 pos, float radiusSquared, Color color): GraphicalObject(pos),
-                                               radiusSquared{radiusSquared},
-                                                            color{color}{};
-  void intersect(Ray& ray) override;
+	Sphere(glm::vec3 pos, float radiusSquared, Color color) : GraphicalObject(pos), radiusSquared{ radiusSquared },
+	                                                          color{ color } {}
+	void intersect(Ray& ray) override;
 };
 
-class Plane: public GraphicalObject {
-  // note: the position is now the normal of the plane
-  Color color;
-  glm::vec3 normal;
+class Plane final : public GraphicalObject
+{
+	Color color;
+	glm::vec3 normal;
+
 public:
-  Plane(glm::vec3 pos, glm::vec3 normal, Color color): GraphicalObject(pos),
-                                                       normal{normal},
-                                                        color{color}
-                                                        {};
-  void intersect(Ray& ray) override;
+	Plane(glm::vec3 pos, glm::vec3 normal, Color color) : GraphicalObject(pos), color{ color }, normal{ normal } {}
+	void intersect(Ray& ray) override;
 };
 
 class Square: public GraphicalObject
