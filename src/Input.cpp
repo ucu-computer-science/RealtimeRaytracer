@@ -40,19 +40,19 @@ void Input::updateInput(const SDL_Event& event)
 		// Rotation
 		if (event.key.keysym.sym == SDLK_UP)
 		{
-			Camera::instance->rotateBy(glm::vec3(rotationSpeed, 0, 0));
+			Camera::instance->rotate(glm::vec3(rotationSpeed, 0, 0));
 		}
 		if (event.key.keysym.sym == SDLK_DOWN)
 		{
-			Camera::instance->rotateBy(glm::vec3(-rotationSpeed, 0, 0));
+			Camera::instance->rotate(glm::vec3(-rotationSpeed, 0, 0));
 		}
 		if (event.key.keysym.sym == SDLK_LEFT)
 		{
-			Camera::instance->rotateBy(glm::vec3(0, 0, rotationSpeed));
+			Camera::instance->rotate(glm::vec3(0, 0, rotationSpeed));
 		}
 		if (event.key.keysym.sym == SDLK_RIGHT)
 		{
-			Camera::instance->rotateBy(glm::vec3(0, 0, -rotationSpeed));
+			Camera::instance->rotate(glm::vec3(0, 0, -rotationSpeed));
 		}
 
 		// Toggle Fullscreen
@@ -60,6 +60,13 @@ void Input::updateInput(const SDL_Event& event)
 		{
 			isFullscreen = !isFullscreen;
 			SDL_SetWindowFullscreen(SDLDisplayer::window, Input::isFullscreen ? 1 : 0);
+		}
+
+		// Reset camera position and rotation
+		if (event.key.keysym.sym == SDLK_y)
+		{
+			Camera::instance->getPos() = {0.5, 0, 0.5};
+			Camera::instance->getRot() = {1, 0, 0, 0};
 		}
 	}
 }

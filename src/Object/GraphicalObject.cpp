@@ -7,7 +7,7 @@
 #include "Triangle.h"
 #include "mathExtensions.h"
 
-GraphicalObject::GraphicalObject(const glm::vec3 pos) : Object(pos)
+GraphicalObject::GraphicalObject(const glm::vec3 pos, glm::quat rot) : Object(pos, rot)
 {
 	Scene::graphicalObjects.emplace_back(this);
 	SDLDisplayer::onUpdate += [this] { updateCameraFacingTriangles(); };
@@ -32,7 +32,7 @@ void GraphicalObject::updateCameraFacingTriangles()
 	cameraFacingTriangles.clear();
 	for (auto triangle : triangles)
 	{
-		auto dir = triangle->p1 - Camera::instance->pos;
+		auto dir = triangle->p1 - Camera::instance->getPos();
 		if (!triangle->isTwoSided &&
 			dot(triangle->planeEq.norm, dir) >= 0)
 			continue;
@@ -40,8 +40,7 @@ void GraphicalObject::updateCameraFacingTriangles()
 	}
 }
 
-
-Square::Square(glm::vec3 pos, float side): GraphicalObject(pos)
+Square::Square(glm::vec3 pos, float side) : GraphicalObject(pos)
 {
 	glm::vec3 p1 = pos + glm::vec3(-side / 2, 0, -side / 2);
 	glm::vec3 p2 = pos + glm::vec3(-side / 2, 0, side / 2);
@@ -50,25 +49,23 @@ Square::Square(glm::vec3 pos, float side): GraphicalObject(pos)
 	triangles.emplace_back(new Triangle(p1, p3, p2));
 	triangles.emplace_back(new Triangle(p1, p3, p4));
 }
-Square::Square(glm::vec3 P1, glm::vec3 P2, glm::vec3 P3)
-  : GraphicalObject(P1) {
-  triangles.emplace_back(new Triangle{P1, P2, P3});
-  triangles.emplace_back(new Triangle{P2,P3,  P2 + P3 - P1});
-
+Square::Square(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) : GraphicalObject(p1)
+{
+	triangles.emplace_back(new Triangle{p1, p2, p3});
+	triangles.emplace_back(new Triangle{p2, p3, p2 + p3 - p1});
 }
 
-
-Cube::Cube(glm::vec3 pos, float side) : GraphicalObject(pos)
+Cube::Cube(glm::vec3 pos, float side, glm::quat rot) : GraphicalObject(pos, rot)
 {
-	glm::vec3 p1 = pos + glm::vec3(-side / 2, -side / 2, -side / 2);
-	glm::vec3 p2 = pos + glm::vec3(-side / 2, -side / 2, side / 2);
-	glm::vec3 p3 = pos + glm::vec3(side / 2, -side / 2, side / 2);
-	glm::vec3 p4 = pos + glm::vec3(side / 2, -side / 2, -side / 2);
+	glm::vec3 p1 = pos + rot * glm::vec3(-side / 2, -side / 2, -side / 2);
+	glm::vec3 p2 = pos + rot * glm::vec3(-side / 2, -side / 2, side / 2);
+	glm::vec3 p3 = pos + rot * glm::vec3(side / 2, -side / 2, side / 2);
+	glm::vec3 p4 = pos + rot * glm::vec3(side / 2, -side / 2, -side / 2);
 
-	glm::vec3 p5 = pos + glm::vec3(-side / 2, side / 2, -side / 2);
-	glm::vec3 p6 = pos + glm::vec3(-side / 2, side / 2, side / 2);
-	glm::vec3 p7 = pos + glm::vec3(side / 2, side / 2, side / 2);
-	glm::vec3 p8 = pos + glm::vec3(side / 2, side / 2, -side / 2);
+	glm::vec3 p5 = pos + rot * glm::vec3(-side / 2, side / 2, -side / 2);
+	glm::vec3 p6 = pos + rot * glm::vec3(-side / 2, side / 2, side / 2);
+	glm::vec3 p7 = pos + rot * glm::vec3(side / 2, side / 2, side / 2);
+	glm::vec3 p8 = pos + rot * glm::vec3(side / 2, side / 2, -side / 2);
 
 	triangles.emplace_back(new Triangle(p1, p3, p2));
 	triangles.emplace_back(new Triangle(p1, p4, p3));
@@ -136,23 +133,23 @@ void Plane::intersect(Ray& ray)
 	}
 }
 
-SquarePyramid::SquarePyramid(glm::vec3 P1, glm::vec3 P2, glm::vec3 P3,
-                             glm::vec3 peak)
-    :Square(P1,P2,P3){
-  auto ABC = triangles.at(0);
-  auto BCD = triangles.at(1);
-  auto A = ABC->p1;
-  auto B = ABC->p2;
-  auto C = ABC->p3;
-  auto D = BCD->p3;
+SquarePyramid::SquarePyramid(glm::vec3 pos, float side, float height): GraphicalObject(pos)
+{
+	auto p1 = pos + (left() + backward()) * side * 0.5f;
+	auto p2 = pos + (left() - backward()) * side * 0.5f;
+	auto p3 = pos + (-left() + backward()) * side * 0.5f;
+	auto p4 = pos + (-left() - backward()) * side * 0.5f;
+	auto peak = pos + up() * height;
 
-  triangles.emplace_back(new Triangle(A,B,peak));
-  triangles.emplace_back(new Triangle(B,C,peak));
-  triangles.emplace_back(new Triangle(C,D,peak));
-  triangles.emplace_back(new Triangle(D,A,peak));
-  for (auto i: triangles){
-    i->isTwoSided = true;
-  }
+	triangles.emplace_back(new Triangle(p1, p3, p2));
+	triangles.emplace_back(new Triangle(p1, p2, p4));
 
-
+	triangles.emplace_back(new Triangle(p1, p2, peak));
+	triangles.emplace_back(new Triangle(p2, p3, peak));
+	triangles.emplace_back(new Triangle(p3, p4, peak));
+	triangles.emplace_back(new Triangle(p4, p1, peak));
+	for (auto i : triangles)
+	{
+		i->isTwoSided = true;
+	}
 }

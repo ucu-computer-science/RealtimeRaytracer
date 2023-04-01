@@ -21,21 +21,14 @@ public:
 	float skip;
 	BS::thread_pool_light pool;
 
-	Camera(glm::vec3 pos, float fov, glm::vec2 size) : Object(pos), fov(fov), size{size},
-	                                                   bgColor32(Color::black().toColor32())
-	{
-		if (instance != nullptr)
-			throw std::runtime_error("Camera object already exists.");
-		instance = this;
-		skip = 1;
-	}
+	Camera(glm::vec3 pos, float fov, glm::vec2 size);
 
+	glm::vec3 getScreenCenter() const;
 	glm::vec3 getLeftBotCorner() const;
 	glm::vec3 getLeftTopCorner() const;
 	glm::vec3 getRightTopCorner() const;
 	glm::vec3 getRightBotCorner() const;
 
-	glm::vec3 getScreenCenter() const;
 	void updatePixelMatrix(uint32_t* pixels, int width, int height);
 
 	void setBackgroundColor(Color color) { bgColor32 = color.toColor32(); }

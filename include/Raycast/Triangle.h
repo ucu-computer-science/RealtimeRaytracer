@@ -18,7 +18,7 @@ class Triangle
 
 	PlaneEq calcPlaneEq() const
 	{
-		glm::vec3 normal = normalize(cross(p2 - p1, p3 - p1));
+		glm::vec3 normal = cross(p2 - p1, p3 - p1);
 		return {normal, dot(normal, p1)};
 	}
 
@@ -39,7 +39,7 @@ public:
 	float valRow3{};
 
 
-	void precalculateValues()
+	void recalculateValues()
 	{
 		auto e1 = edge1;
 		auto e2 = edge2;
@@ -86,11 +86,15 @@ public:
 			valRow3 = 0.0f;
 		}
 	}
+	void recalculatePlaneEq()
+	{
+		planeEq = calcPlaneEq();
+	}
 	Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, Color color = Color::white(),
 	         bool isTwoSided = false) : p1{p1}, p2{p2}, p3{p3}, planeEq{calcPlaneEq()},
 	                                    color{color}, isTwoSided(isTwoSided), edge1(p2 - p1), edge2(p3 - p1)
 	{
-		precalculateValues();
+		recalculateValues();
 	}
 
 	void setColor(const Color color) { this->color = color; }

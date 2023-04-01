@@ -6,6 +6,19 @@
 
 Camera* Camera::instance = nullptr;
 
+Camera::Camera(glm::vec3 pos, float fov, glm::vec2 size): Object(pos), fov(fov), size{size},
+                                                          bgColor32(Color::black().toColor32())
+{
+	if (instance != nullptr)
+		throw std::runtime_error("Camera object already exists.");
+	instance = this;
+	skip = 1;
+}
+
+glm::vec3 Camera::getScreenCenter() const
+{
+	return pos + forward() * fov;
+}
 glm::vec3 Camera::getLeftBotCorner() const
 {
 	return getScreenCenter() - 0.5f * size.y * up() - 0.5f * size.x * right();
@@ -21,10 +34,6 @@ glm::vec3 Camera::getRightTopCorner() const
 glm::vec3 Camera::getRightBotCorner() const
 {
 	return getScreenCenter() - 0.5f * size.y * up() + 0.5f * size.x * right();
-}
-glm::vec3 Camera::getScreenCenter() const
-{
-	return pos + forward() * fov;
 }
 
 void Camera::updatePixelMatrix(uint32_t* pixels, int width, int height)

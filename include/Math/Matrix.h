@@ -2,8 +2,7 @@
 #include <vector>
 #include <cmath>
 
-# define PI           3.14159265358979323846f
-constexpr float degToRad = 180 / PI;
+#include "mathExtensions.h"
 
 template <typename T>
 class Matrix : std::vector<std::vector<T>>
@@ -28,7 +27,7 @@ public:
 
 	static Matrix<float> getRotationMatrix(glm::vec3 angles)
 	{
-		float x = angles[0] / degToRad, y = angles[1] / degToRad, z = angles[2] / degToRad;
+		float x = angles[0] / DEG_TO_RAD, y = angles[1] / DEG_TO_RAD, z = angles[2] / DEG_TO_RAD;
 
 		float cosX = cos(x), cosY = cos(y), cosZ = cos(z);
 		float sinX = sin(x), sinY = sin(y), sinZ = sin(z);

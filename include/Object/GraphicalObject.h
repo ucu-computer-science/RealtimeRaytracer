@@ -16,7 +16,7 @@ public:
 	std::vector<Triangle*> triangles{};
 	std::vector<Triangle*> cameraFacingTriangles{};
 
-	explicit GraphicalObject(glm::vec3 pos);
+	explicit GraphicalObject(glm::vec3 pos, glm::quat rot = {1, 0, 0, 0});
 
 	void setColor(Color color) const;
 	virtual void intersect(Ray& ray);
@@ -24,14 +24,17 @@ public:
 	void updateCameraFacingTriangles();
 };
 
-
-
-
+class Square : public GraphicalObject
+{
+public:
+	Square(glm::vec3 pos, float side);
+	Square(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
+};
 
 class Cube final : public GraphicalObject
 {
 public:
-	Cube(glm::vec3 pos, float side);
+	Cube(glm::vec3 pos, float side, glm::quat rot = {1, 0, 0, 0});
 
 	void intersect(Ray& ray) override;
 };
@@ -42,8 +45,8 @@ class Sphere final : public GraphicalObject
 	Color color;
 
 public:
-	Sphere(glm::vec3 pos, float radiusSquared, Color color) : GraphicalObject(pos), radiusSquared{ radiusSquared },
-	                                                          color{ color } {}
+	Sphere(glm::vec3 pos, float radiusSquared, Color color) : GraphicalObject(pos), radiusSquared{radiusSquared},
+	                                                          color{color} {}
 	void intersect(Ray& ray) override;
 };
 
@@ -53,25 +56,14 @@ class Plane final : public GraphicalObject
 	glm::vec3 normal;
 
 public:
-	Plane(glm::vec3 pos, glm::vec3 normal, Color color) : GraphicalObject(pos), color{ color }, normal{ normal } {}
+	Plane(glm::vec3 pos, glm::vec3 normal, Color color) : GraphicalObject(pos), color{color}, normal{normal} {}
 	void intersect(Ray& ray) override;
 };
 
-class Square: public GraphicalObject
+class SquarePyramid : public GraphicalObject
 {
-
 public:
-  Square(glm::vec3 pos, float side);
-//  Square(glm::vec3 P1, glm::vec3 P2);
-  Square(glm::vec3 P1, glm::vec3 P2, glm::vec3 P3);
-};
-
-class SquarePyramid: public Square{
-public:
-  SquarePyramid(glm::vec3 P1,
-                glm::vec3 P2,
-                glm::vec3 P3,
-                glm::vec3 peak);;
+	SquarePyramid(glm::vec3 pos, float side, float height);
 };
 
 

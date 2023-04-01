@@ -2,6 +2,9 @@
 
 #include "glm/vec3.hpp"
 
+# define PI           3.14159265358979323846f
+# define DEG_TO_RAD     (1 / (180 / PI))
+
 inline float det(const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3)
 {
 	const float x = v2[1] * v3[2] - v3[1] * v2[2];
@@ -23,7 +26,7 @@ namespace vec3
 }
 
 static bool solveQuadratic(float a, float b, float c,
-	float& x0, float& x1)
+                           float& x0, float& x1)
 {
 	float discr = b * b - 4 * a * c;
 	if (discr < 0) return false;
