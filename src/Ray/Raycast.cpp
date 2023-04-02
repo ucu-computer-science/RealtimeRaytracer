@@ -1,7 +1,5 @@
 #include "Raycast.h"
 
-#include <iostream>
-
 #include "Camera.h"
 #include "Scene.h"
 #include "Ray.h"
@@ -14,7 +12,7 @@ Color Raycast::castRay(Ray ray, int bounce)
 
 	bool hit = false;
 	float colorImpact = 1;
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i < 3; ++i)
 	{
 		for (const auto obj : Scene::graphicalObjects)
 		{

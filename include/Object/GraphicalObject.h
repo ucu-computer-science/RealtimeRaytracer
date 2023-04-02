@@ -47,8 +47,8 @@ class Sphere final : public GraphicalObject
 	Color color;
 
 public:
-	Sphere(glm::vec3 pos, float radiusSquared, Color color) : GraphicalObject(pos), radiusSquared{radiusSquared},
-	                                                          color{color} {}
+	Sphere(glm::vec3 pos, float radius, Color color) : GraphicalObject(pos), radiusSquared{radius * radius},
+	                                                   color{color} {}
 	void intersect(Ray& ray, bool intersectAll) override;
 };
 
