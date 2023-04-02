@@ -2,23 +2,26 @@
 
 #include "Raycast.h"
 
-Light::Light(glm::vec3 pos) : Object(pos, {{0, 0, 0}})
+Light::Light(glm::vec3 pos, Color color) : Object(pos, {{0, 0, 0}})
 {
+	this->color = color;
 	lights.emplace_back(this);
 }
 
-float Light::getLightAtPoint(glm::vec3 p, glm::vec3 norm)
+Color Light::getLightAtPoint(glm::vec3 p, glm::vec3 norm)
 {
-	float v = 0;
+	Color v{1, 1, 1};
+	int count = 0;
 	for (auto light : lights)
 	{
 		auto dir = normalize(light->getPos() - p);
 		auto dirInv = p - light->getPos();
-		if (Raycast::intersectsObj({light->getPos(), normalize(dirInv), length(dirInv) - 0.001f}))
+		if (Raycast::intersectsObj({light->getPos(), dirInv, length(dirInv) - 0.001f}))
 			continue;
 
-		auto v_ = glm::clamp(dot(dir, norm), 0.0f, 1.0f);
-		v = std::max(v, v_);
+		count++;
+		auto v_ = light->color * glm::clamp(dot(dir, norm), 0.0f, 1.0f);
+		v *= v_;
 	}
-	return v;
+	return count == 0 ? Color::black() : v;
 }
