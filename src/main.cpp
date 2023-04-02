@@ -17,7 +17,6 @@ int main(int argv, char* args[])
 	int width = 1280, height = 720;
 
 	Camera camera{{0.5, 0, 0.5}, fov, glm::vec2((float)width / (float)height, 1)};
-
 	//{0.749, 0.616, 0.247}
 	Light light{{0, 0, 10}, {1, 1, 1}};
 
