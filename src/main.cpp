@@ -17,7 +17,7 @@ int main(int argv, char* args[])
 	int width = 1280, height = 720;
 
 	Camera camera{{0, -20, 0}, fov, glm::vec2((float)width / (float)height, 1)};
-	camera.setBackgroundColor(Color::gray());
+//	camera.setBackgroundColor(Color::gray());
 
 	Light light{{9, -9, 9}, {1, 1, 1}};
 //        Light light2{{-9, 9, 9}};
@@ -40,7 +40,12 @@ int main(int argv, char* args[])
         Plane plane6{{0, -10, 0}, {0, 1, 0}, Color::white()};
         Cube cube1{glm::vec3{4, -5, -6.7}, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, -15 * DEG_TO_RAD}}, 6.6};
         Sphere sphere1{{-4, 2, -5}, 36, Color::blue()};
+        cube1.setColor(Color::gray());
 //        Camera::instance->skip = 2;
+        cube1.setReflection(0.4);
+        sphere1.setReflection(1);
+        plane1.setReflection(0);
+        plane2.setReflection(0);
 
 	SDLDisplayer::display(width, height);
 
