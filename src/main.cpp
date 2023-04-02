@@ -11,7 +11,7 @@
 int main(int argv, char* args[])
 {
 	constexpr float fov = 1;
-	int width = 1280, height = 720;
+	int width = 640, height = 360;
 
 	Camera camera{{0, -30, 0}, fov, glm::vec2((float)width / (float)height, 1)};
 	//	camera.setBackgroundColor(Color::gray());
@@ -23,8 +23,8 @@ int main(int argv, char* args[])
 	Light light5{{-2, -2, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 35, 1};
 	Light light6{{2, -2, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 35, 1};
 
-	Square sq{{0, 0, 9.99f}, {{-90 * DEG_TO_RAD, 0, 0}}, 5};
-	sq.setColor({1.9, 1.9, 1.9 });
+	Square sq{{0, 0, 9.9999f}, {{-90 * DEG_TO_RAD, 0, 0}}, 5};
+	sq.setColor({3, 3,3});
 	//	Cube obj3{glm::vec3{0.5, 1.5, 1.5}, {{45 * DEG_TO_RAD, 45 * DEG_TO_RAD, 45 * DEG_TO_RAD}}, 1};
 	//	obj3.setColor(Color::magenta());
 	//	Sphere obj5{{-2, 1, 0}, 3, Color::blue()};
@@ -44,7 +44,7 @@ int main(int argv, char* args[])
 	cube1.setColor(Color::skyBlue());
 	//        Camera::instance->skip = 2;
 	cube1.setReflection(0.3f);
-	sphere1.setReflection(1);
+	sphere1.setReflection(0.3f);
 	plane1.setReflection(0);
 	plane2.setReflection(0);
 
