@@ -1,14 +1,11 @@
 #include "Camera.h"
 #include "Input.h"
-
-#include <iostream>
-
 #include "mathExtensions.h"
 #include "SDLDisplayer.h"
 #include "glm/gtx/string_cast.hpp"
 
 bool Input::isFullscreen = false;
-float Input::moveSpeed = 0.4f;
+float Input::moveSpeed = 1.0f;
 float Input::rotationSpeed = 15.0f;
 
 void Input::updateInput(const SDL_Event& event)

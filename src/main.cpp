@@ -10,9 +10,6 @@
 
 int main(int argv, char* args[])
 {
-	//Benchmark::benchmark(200);
-	//Benchmark::benchmarkVectors(100);
-
 	constexpr float fov = 1;
 	int width = 1280/2, height = 720/2;
 
