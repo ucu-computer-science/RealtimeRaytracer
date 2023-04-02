@@ -4,6 +4,7 @@
 
 # define PI           3.14159265358979323846f
 # define DEG_TO_RAD     (1 / (180 / PI))
+# define RAD_TO_DEG     (180 / PI)
 
 inline float det(const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3)
 {

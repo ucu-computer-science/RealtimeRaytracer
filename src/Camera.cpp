@@ -49,7 +49,7 @@ void Camera::updatePixelMatrix(uint32_t* pixels, int width, int height)
 			for (int x = 0; x < width; x += skip)
 			{
 				auto ray = Ray(pos, lbDir + (float)x * dx / skip + (float)y * dy / skip);
-				pixels[(height - y - 1) * width + x] = Raycast::castRay(ray).ray.color.toColor32();
+				pixels[(height - y - 1) * width + x] = Raycast::castRay(ray)	.toColor32();
 			}
 		});
 	}

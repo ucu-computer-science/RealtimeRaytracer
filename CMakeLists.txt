@@ -15,7 +15,7 @@ include_directories(SDL2/include)
 link_directories(SDL2/lib/x64)
 
 add_executable (${PROJECT_NAME} "src/main.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp" "src/Ray/Ray.cpp"
-"src/Ray/Raycast.cpp" "src/Camera.cpp" "src/SDLDisplayer.cpp"  "src/Input.cpp" "src/Math/Vec3.cpp" "src/Benchmark.cpp" "include/Action.h")
+"src/Ray/Raycast.cpp" "src/Camera.cpp" "src/SDLDisplayer.cpp"  "src/Input.cpp" "src/Math/Vec3.cpp" "src/Benchmark.cpp" "src/Light.cpp")
 
 if(${USING_VISUAL_STUDIO})
   target_link_libraries(RayTracer SDL2)

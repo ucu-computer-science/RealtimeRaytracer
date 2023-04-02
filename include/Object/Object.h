@@ -11,7 +11,6 @@ protected:
 
 public:
 	explicit Object(glm::vec3 pos, glm::quat rot = {1, 0, 0, 0});
-	virtual ~Object() = default;
 
 	glm::vec3 getPos() const { return pos; }
 	glm::quat getRot() const { return rot; }

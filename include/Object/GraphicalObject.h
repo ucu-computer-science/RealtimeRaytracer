@@ -19,7 +19,7 @@ public:
 	explicit GraphicalObject(glm::vec3 pos, glm::quat rot = {1, 0, 0, 0});
 
 	void setColor(Color color) const;
-	virtual void intersect(Ray& ray);
+	virtual void intersect(Ray& ray, bool intersectAll = false);
 
 	void updateCameraFacingTriangles();
 };
@@ -35,8 +35,6 @@ class Cube final : public GraphicalObject
 {
 public:
 	Cube(glm::vec3 pos, glm::quat rot, float side);
-
-	void intersect(Ray& ray) override;
 };
 
 class Sphere final : public GraphicalObject
@@ -47,7 +45,7 @@ class Sphere final : public GraphicalObject
 public:
 	Sphere(glm::vec3 pos, float radiusSquared, Color color) : GraphicalObject(pos), radiusSquared{radiusSquared},
 	                                                          color{color} {}
-	void intersect(Ray& ray) override;
+	void intersect(Ray& ray, bool intersectAll) override;
 };
 
 class Plane final : public GraphicalObject
@@ -57,7 +55,7 @@ class Plane final : public GraphicalObject
 
 public:
 	Plane(glm::vec3 pos, glm::vec3 normal, Color color) : GraphicalObject(pos), color{color}, normal{normal} {}
-	void intersect(Ray& ray) override;
+	void intersect(Ray& ray, bool intersectAll) override;
 };
 
 class SquarePyramid : public GraphicalObject

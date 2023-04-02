@@ -37,5 +37,4 @@ public:
 [[nodiscard]] Vec2 operator*(double x, const Vec2& v);
 [[nodiscard]] Vec2 operator*(const Vec2& v, double x);
 
-inline std::istream& operator>>(std::istream& is, Vec2& v);
 inline std::ostream& operator<<(std::ostream& os, const Vec2& v);

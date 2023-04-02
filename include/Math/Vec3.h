@@ -57,11 +57,6 @@ public:
 Vec3 operator*(float x, const Vec3& v);
 Vec3 operator*(const Vec3& v, float x);
 
-inline std::istream& operator>>(std::istream& is, Vec3& v)
-{
-	is >> v.val[0] >> v.val[1] >> v.val[2];
-	return is;
-}
 inline std::ostream& operator<<(std::ostream& os, const Vec3& v)
 {
 	os << "(" << v.val[0] << ", " << v.val[1] << ", " << v.val[2] << ")";

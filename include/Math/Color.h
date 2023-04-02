@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ostream>
+
 #include "glm/vec3.hpp"
 
 class Color : public glm::vec3
@@ -25,8 +27,32 @@ public:
 	float g() const { return y; }
 	float b() const { return z; }
 
+	Color& operator*=(float v)
+	{
+		x *= v;
+		y *= v;
+		z *= v;
+		return *this;
+	}
+
 	uint32_t toColor32() const
 	{
 		return ((int)(r() * 255) << 16) + ((int)(g() * 255) << 8) + ((int)(b() * 255) << 0);
 	}
 };
+
+inline Color operator*(float v, Color c)
+{
+	return {c.x * v, c.y * v, c.z * v};
+}
+
+inline Color operator*(Color c, float v)
+{
+	return {c.x * v, c.y * v, c.z * v};
+}
+
+inline std::ostream& operator<<(std::ostream& os, const Color& c)
+{
+	os << "(" << c.r() << ", " << c.g() << ", " << c.b() << ")";
+	return os;
+}

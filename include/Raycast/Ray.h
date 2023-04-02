@@ -14,14 +14,15 @@ class Ray
 public:
 	glm::vec3 pos, dir;
 	float closestT;
-	//	const Triangle* closestTriangle;
 	glm::vec3 normal;
 	Color color;
 	glm::vec3 interPoint;
+	float maxDist;
 
-	Ray(glm::vec3 pos, glm::vec3 dir) : pos{pos}, dir{dir}, closestT
-	                                    (DBL_MAX),
-	                                    color(Color::gray()) {}
+
+	Ray(glm::vec3 pos, glm::vec3 dir, float maxDist = FLT_MAX) : pos{pos}, dir{normalize(dir)}, closestT(FLT_MAX),
+	                                                             normal(), color(Color::gray()), interPoint(),
+	                                                             maxDist(maxDist) {}
 	Ray() = default;
 	~Ray() = default;
 	float getT(const Triangle* triangle) const;

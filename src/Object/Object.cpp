@@ -22,7 +22,7 @@ void Object::translate(const glm::vec3& v)
 }
 void Object::rotate(const glm::vec3& degrees)
 {
-	rot = normalize(rot * glm::quat(degrees * DEG_TO_RAD));
+	rot = glm::quat(eulerAngles(rot) + degrees * DEG_TO_RAD);
 }
 
 

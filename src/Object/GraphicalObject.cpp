@@ -20,9 +20,9 @@ void GraphicalObject::setColor(Color color) const
 	}
 }
 
-void GraphicalObject::intersect(Ray& ray)
+void GraphicalObject::intersect(Ray& ray, bool intersectAll)
 {
-	for (const auto triangle : cameraFacingTriangles)
+	for (const auto triangle : intersectAll ? triangles : cameraFacingTriangles)
 	{
 		ray.intersect(triangle);
 	}
@@ -84,21 +84,7 @@ Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(pos, rot)
 }
 
 
-void Cube::intersect(Ray& ray)
-{
-	int interCount = 0;
-	for (const auto triangle : cameraFacingTriangles)
-	{
-		if (ray.intersect(triangle))
-		{
-			if (++interCount == 2)
-				return;
-		}
-	}
-}
-
-
-void Sphere::intersect(Ray& ray)
+void Sphere::intersect(Ray& ray, bool intersectAll)
 {
 	float x0, x1;
 	auto inter = (ray.pos - pos);
@@ -107,7 +93,7 @@ void Sphere::intersect(Ray& ray)
 	float c = fabsf(dot(inter, inter)) - radiusSquared;
 	if (solveQuadratic(a, b, c, x0, x1))
 	{
-		if (x0 > 0 && x0 < ray.closestT)
+		if (x0 > 0 && x0 < ray.closestT && x0 < ray.maxDist)
 		{
 			ray.closestT = x0;
 			ray.color = color;
@@ -116,14 +102,14 @@ void Sphere::intersect(Ray& ray)
 		}
 	}
 }
-void Plane::intersect(Ray& ray)
+void Plane::intersect(Ray& ray, bool intersectAll)
 {
-	float denom = dot(normal, ray.dir);
+	float denom = -dot(normal, ray.dir);
 	if (denom > 1e-6)
 	{
 		glm::vec3 p0l0 = pos - ray.pos;
-		float t = dot(p0l0, normal) / denom;
-		if (t < ray.closestT && t >= 0)
+		float t = -dot(p0l0, normal) / denom;
+		if (t < ray.closestT && t >= 0 && t < ray.maxDist)
 		{
 			ray.closestT = t;
 			ray.color = color;
@@ -141,11 +127,11 @@ SquarePyramid::SquarePyramid(glm::vec3 pos, glm::quat rot, float side, float hei
 	auto p4 = pos + (-left() + backward()) * side * 0.5f;
 	auto peak = pos + up() * height;
 
-	triangles.emplace_back(new Triangle(p1, p3, p2));
-	triangles.emplace_back(new Triangle(p1, p4, p3));
+	triangles.emplace_back(new Triangle(p3, p1, p2));
+	triangles.emplace_back(new Triangle(p4, p1, p3));
 
-	triangles.emplace_back(new Triangle(p1, p2, peak));
-	triangles.emplace_back(new Triangle(p2, p3, peak));
-	triangles.emplace_back(new Triangle(p3, p4, peak));
-	triangles.emplace_back(new Triangle(p4, p1, peak));
+	triangles.emplace_back(new Triangle(p2, p1, peak));
+	triangles.emplace_back(new Triangle(p3, p2, peak));
+	triangles.emplace_back(new Triangle(p4, p3, peak));
+	triangles.emplace_back(new Triangle(p1, p4, peak));
 }

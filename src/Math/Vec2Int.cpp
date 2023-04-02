@@ -52,11 +52,6 @@ Vec2Int operator*(const Vec2Int& v, const int x)
 	return { x * v.x(), x * v.y() };
 }
 
-std::istream& operator>>(std::istream& is, Vec2Int& v)
-{
-	is >> v.val[0] >> v.val[1];
-	return is;
-}
 std::ostream& operator<<(std::ostream& os, const Vec2Int& v)
 {
 	os << "(" << v.val[0] << ", " << v.val[1] << ", " << ")";
