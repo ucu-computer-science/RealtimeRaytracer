@@ -58,7 +58,7 @@ class Plane final : public GraphicalObject
 	glm::vec3 normal;
 
 public:
-	Plane(glm::vec3 pos, glm::vec3 normal, Color color) : GraphicalObject(pos), color{color}, normal{normal} {}
+	Plane(glm::vec3 pos, glm::vec3 normal, Color color) : GraphicalObject(pos), color{color}, normal{normalize(normal)} {}
 	void intersect(Ray& ray, bool intersectAll) override;
 };
 

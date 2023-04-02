@@ -22,6 +22,8 @@ public:
 
 	static Color darkGreen() { return {0, 0.5f, 0}; }
 	static Color skyBlue() { return {.529f, .808f, .922f}; }
+        static Color gold() { return {1.f, .843f, 0}; }
+
 
 	float r() const { return x; }
 	float g() const { return y; }
