@@ -16,7 +16,7 @@ Color Light::getLightAtPoint(glm::vec3 p, glm::vec3 norm)
 	{
 		auto dir = normalize(light->getPos() - p);
 		auto dirInv = p - light->getPos();
-		if (Raycast::intersectsObj({light->getPos(), dirInv, length(dirInv) - 0.001f}))
+		if (Raycast::intersectsObj({light->getPos(), dirInv, length(dirInv) - 0.01f}))
 			continue;
 
 		hit = true;
