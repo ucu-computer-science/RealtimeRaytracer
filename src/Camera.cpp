@@ -42,14 +42,18 @@ void Camera::updatePixelMatrix(uint32_t* pixels, int width, int height)
 	glm::vec3 dy = skip * size.y / (float)height * up();
 	glm::vec3 lbDir = getLeftBotCorner() - pos;
 
-	for (int y = 0; y < height; y += skip)
+	for (int y = 0; y < height; y += 2*skip)
 	{
 		pool.push_task([this, pixels, width, lbDir, dx, y, dy, height]
 		{
 			for (int x = 0; x < width; x += skip)
 			{
-				auto ray = Ray(pos, lbDir + (float)x * dx / skip + (float)y * dy / skip);
-				pixels[(height - y - 1) * width + x] = Raycast::castRay(ray)	.toColor32();
+				auto ray1 = Ray(pos, lbDir + (float)x * dx / skip + (float)y * dy / skip);
+                                auto ray2 = Ray(pos, lbDir + (float)x * dx / skip + (float)(y+skip) * dy / skip);
+
+				pixels[(height - y - 1) * width + x] = Raycast::castRay(ray1)	.toColor32();
+                                pixels[(height - y - 1 - (int)skip) * width + x] = Raycast::castRay(ray2)	.toColor32();
+
 			}
 		});
 	}
