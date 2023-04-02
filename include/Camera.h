@@ -13,11 +13,11 @@ class Ray;
 class Camera : public Object
 {
 public:
-	static Camera* instance;
+	inline static Camera* instance = nullptr;
 
 	float fov;
 	glm::vec2 size;
-	uint32_t bgColor32;
+	Color bgColor;
 	float skip;
 	BS::thread_pool_light pool;
 
@@ -31,5 +31,5 @@ public:
 
 	void updatePixelMatrix(uint32_t* pixels, int width, int height);
 
-	void setBackgroundColor(Color color) { bgColor32 = color.toColor32(); }
+	void setBackgroundColor(Color color) { bgColor = color; }
 };

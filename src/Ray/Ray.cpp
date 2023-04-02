@@ -125,7 +125,8 @@ bool Ray::intersect(const Triangle* triangle)
 
 	closestT = t;
 	color = triangle->color;
-	normal = triangle->planeEq.norm;
+	surfaceNormal = triangle->planeEq.norm;
 	interPoint = hit;
+	reflection = triangle->reflection;
 	return true;
 }

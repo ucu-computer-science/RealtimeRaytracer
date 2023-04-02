@@ -11,7 +11,7 @@ Light::Light(glm::vec3 pos, Color color) : Object(pos, {{0, 0, 0}})
 Color Light::getLightAtPoint(glm::vec3 p, glm::vec3 norm)
 {
 	Color v{1, 1, 1};
-	int count = 0;
+	bool hit = false;
 	for (auto light : lights)
 	{
 		auto dir = normalize(light->getPos() - p);
@@ -19,9 +19,9 @@ Color Light::getLightAtPoint(glm::vec3 p, glm::vec3 norm)
 		if (Raycast::intersectsObj({light->getPos(), dirInv, length(dirInv) - 0.001f}))
 			continue;
 
-		count++;
+		hit = true;
 		auto v_ = light->color * glm::clamp(dot(dir, norm), 0.0f, 1.0f);
 		v *= v_;
 	}
-	return count == 0 ? Color::black() : v;
+	return hit ? v : Color::black();
 }

@@ -4,10 +4,8 @@
 #include "SDLDisplayer.h"
 #include "Triangle.h"
 
-Camera* Camera::instance = nullptr;
-
 Camera::Camera(glm::vec3 pos, float fov, glm::vec2 size) : Object(pos), fov(fov), size{size},
-                                                           bgColor32(Color::black().toColor32())
+                                                           bgColor(Color::black())
 {
 	if (instance != nullptr)
 		throw std::runtime_error("Camera object already exists.");
