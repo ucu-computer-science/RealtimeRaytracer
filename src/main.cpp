@@ -17,7 +17,6 @@ int main(int argv, char* args[])
 	int width = 1280, height = 720;
 
 	Camera camera{{0.5, 0, 0.5}, fov, glm::vec2((float)width / (float)height, 1)};
-	camera.setBackgroundColor(Color::gray());
 
 	//{0.749, 0.616, 0.247}
 	Light light{{0, 0, 10}, {1, 1, 1}};
@@ -26,6 +25,8 @@ int main(int argv, char* args[])
 	obj3.setColor(Color::magenta());
 	Sphere obj5{{-2, 1, 0}, 3, Color::blue()};
 	Sphere obj6{{-5, 3, 3}, 2, Color::yellow()};
+	obj5.setReflection(0);
+	obj6.setReflection(0.5);
 	Plane obj8{{0, 0, 0}, {0, 0, 1}, Color::darkGreen()};
 	//Plane obj9{{0, 0, 256}, {0, 0, -1}, Color::skyBlue()};
 	SquarePyramid obj11{{2, 2, 2}, {{45 * DEG_TO_RAD, 45 * DEG_TO_RAD, 45 * DEG_TO_RAD}}, 1, 2};

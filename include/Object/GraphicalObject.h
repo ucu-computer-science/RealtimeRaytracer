@@ -13,12 +13,16 @@ class Triangle;
 class GraphicalObject : public Object
 {
 public:
+	float reflection;
+	Color color;
 	std::vector<Triangle*> triangles{};
 	std::vector<Triangle*> cameraFacingTriangles{};
 
-	explicit GraphicalObject(glm::vec3 pos, glm::quat rot = {1, 0, 0, 0});
+	explicit GraphicalObject(glm::vec3 pos, glm::quat rot = {1, 0, 0, 0}, Color color = {1, 1, 1},
+	                         float reflection = 0);
 
-	void setColor(Color color) const;
+	void setColor(Color color);
+	void setReflection(float reflection);
 	virtual void intersect(Ray& ray, bool intersectAll = false);
 
 	void updateCameraFacingTriangles();

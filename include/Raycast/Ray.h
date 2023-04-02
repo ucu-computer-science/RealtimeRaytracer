@@ -14,24 +14,25 @@ class Ray
 public:
 	glm::vec3 pos, dir;
 	float closestT;
-	glm::vec3 normal;
+	float reflection;
+	glm::vec3 surfaceNormal;
 	Color color;
 	glm::vec3 interPoint;
 	float maxDist;
 
 
 	Ray(glm::vec3 pos, glm::vec3 dir, float maxDist = FLT_MAX) : pos{pos}, dir{normalize(dir)}, closestT(FLT_MAX),
-	                                                             normal(), color(Color::gray()), interPoint(),
+	                                                             surfaceNormal(), color(Color::gray()), interPoint(),
 	                                                             maxDist(maxDist) {}
 	Ray() = default;
 	~Ray() = default;
 	float getT(const Triangle* triangle) const;
 	bool intersect(const Triangle* triangle);
 
-	//	bool hit() const
-	//	{
-	//		return closestTriangle != nullptr;
-	//	}
+	bool hit() const
+	{
+		return surfaceNormal != glm::vec3();
+	}
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Ray& r)

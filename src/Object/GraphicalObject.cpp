@@ -7,17 +7,25 @@
 #include "Triangle.h"
 #include "mathExtensions.h"
 
-GraphicalObject::GraphicalObject(const glm::vec3 pos, glm::quat rot) : Object(pos, rot)
+GraphicalObject::GraphicalObject(const glm::vec3 pos, glm::quat rot, Color color, float reflection) : Object(pos, rot)
 {
+	setColor(color);
+	setReflection(reflection);
+
 	Scene::graphicalObjects.emplace_back(this);
 	SDLDisplayer::onUpdate += [this] { updateCameraFacingTriangles(); };
 }
-void GraphicalObject::setColor(Color color) const
+void GraphicalObject::setColor(Color color)
 {
+	this->color = color;
 	for (const auto triangle : triangles)
-	{
 		triangle->color = color;
-	}
+}
+void GraphicalObject::setReflection(float reflection)
+{
+	this->reflection = reflection;
+	for (const auto triangle : triangles)
+		triangle->reflection = reflection;
 }
 
 void GraphicalObject::intersect(Ray& ray, bool intersectAll)
@@ -98,7 +106,8 @@ void Sphere::intersect(Ray& ray, bool intersectAll)
 			ray.closestT = x0;
 			ray.color = color;
 			ray.interPoint = ray.pos + x0 * ray.dir;
-			ray.normal = ray.interPoint - pos;
+			ray.surfaceNormal = ray.interPoint - pos;
+			ray.reflection = reflection;
 		}
 	}
 }
@@ -114,7 +123,8 @@ void Plane::intersect(Ray& ray, bool intersectAll)
 			ray.closestT = t;
 			ray.color = color;
 			ray.interPoint = ray.pos + t * ray.dir;
-			ray.normal = normal;
+			ray.surfaceNormal = normal;
+			ray.reflection = reflection;
 		}
 	}
 }
