@@ -31,7 +31,7 @@ public:
 class Square : public GraphicalObject
 {
 public:
-	Square(glm::vec3 pos, float side);
+	Square(glm::vec3 pos, glm::quat rot, float side);
 	Square(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
 };
 

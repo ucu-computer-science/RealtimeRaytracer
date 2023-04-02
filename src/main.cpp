@@ -18,11 +18,13 @@ int main(int argv, char* args[])
 
 	//	Light light{{9, -9, 9}, {1, 1, 1} };
 	//        Light light2{{-9, 9, 9}, {1, 1, 1}};
-	Light light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 35, 1};
+	Light light3{{2, 2, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 35, 1};
+	Light light4{{-2, 2, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 35, 1};
+	Light light5{{-2, -2, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 35, 1};
+	Light light6{{2, -2, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 35, 1};
 
-
-	//        Light ligh3{{0, 0, 0}};
-
+	Square sq{{0, 0, 9.99f}, {{-90 * DEG_TO_RAD, 0, 0}}, 5};
+	sq.setColor({1.9, 1.9, 1.9 });
 	//	Cube obj3{glm::vec3{0.5, 1.5, 1.5}, {{45 * DEG_TO_RAD, 45 * DEG_TO_RAD, 45 * DEG_TO_RAD}}, 1};
 	//	obj3.setColor(Color::magenta());
 	//	Sphere obj5{{-2, 1, 0}, 3, Color::blue()};
