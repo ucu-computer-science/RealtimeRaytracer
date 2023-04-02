@@ -11,8 +11,10 @@ class Light : Object
 
 public:
 	Color color;
+	float distance;
+	float intensity;
 
-	explicit Light(glm::vec3 pos, Color color);
+	explicit Light(glm::vec3 pos, Color color, float distance, float intensity);
 
 	static Color getLightAtPoint(glm::vec3 p, glm::vec3 norm);
 };
