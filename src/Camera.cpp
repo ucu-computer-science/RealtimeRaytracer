@@ -6,8 +6,8 @@
 
 Camera* Camera::instance = nullptr;
 
-Camera::Camera(glm::vec3 pos, float fov, glm::vec2 size): Object(pos), fov(fov), size{size},
-                                                          bgColor32(Color::black().toColor32())
+Camera::Camera(glm::vec3 pos, float fov, glm::vec2 size) : Object(pos), fov(fov), size{size},
+                                                           bgColor32(Color::black().toColor32())
 {
 	if (instance != nullptr)
 		throw std::runtime_error("Camera object already exists.");
@@ -36,34 +36,38 @@ glm::vec3 Camera::getRightBotCorner() const
 	return getScreenCenter() - 0.5f * size.y * up() + 0.5f * size.x * right();
 }
 
+constexpr int TASK_COUNT = 72;
 void Camera::updatePixelMatrix(uint32_t* pixels, int width, int height)
 {
 	glm::vec3 dx = skip * size.x / (float)width * right();
 	glm::vec3 dy = skip * size.y / (float)height * up();
 	glm::vec3 lbDir = getLeftBotCorner() - pos;
 
-	for (int y = 0; y < height; y += 2*skip)
+#define MT
+#ifdef MT
+	for (int yStart = 0; yStart < TASK_COUNT; yStart += 1)
 	{
-		pool.push_task([this, pixels, width, lbDir, dx, y, dy, height]
+		pool.push_task([this, pixels, width, lbDir, dx, dy, height, yStart]
 		{
-			for (int x = 0; x < width; x += skip)
+			for (int y = yStart; y < height; y += TASK_COUNT)
 			{
-				auto ray1 = Ray(pos, lbDir + (float)x * dx / skip + (float)y * dy / skip);
-                                auto ray2 = Ray(pos, lbDir + (float)x * dx / skip + (float)(y+skip) * dy / skip);
-
-				pixels[(height - y - 1) * width + x] = Raycast::castRay(ray1)	.toColor32();
-                                pixels[(height - y - 1 - (int)skip) * width + x] = Raycast::castRay(ray2)	.toColor32();
-
+				for (int x = 0; x < width; x += 1)
+				{
+					auto ray1 = Ray(pos, lbDir + (float)x * dx / skip + (float)y * dy / skip);
+					pixels[(height - y - 1) * width + x] = Raycast::castRay(ray1).toColor32();
+				}
 			}
 		});
 	}
 	pool.wait_for_tasks();
-	/*for (int y = 0; y < sizeY; y += skip, dir1 += dy)
+#else
+	for (int y = 0; y < height; y += skip)
 	{
-		auto dir2 = dir1;
-		for (int x = 0; x < sizeX; x += skip, dir2 += dx)
+		for (int x = 0; x < width; x += skip)
 		{
-			pixels[y * sizeX + x] = castRayAndGetColor32(Ray(focalPoint, dir2));
+			pixels[(height - y - 1) * width + x] =
+				Raycast::castRay(Ray(pos, lbDir + (float)x * dx / skip + (float)y * dy / skip)).toColor32();
 		}
-	}*/
+	}
+#endif
 }

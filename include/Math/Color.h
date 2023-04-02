@@ -34,6 +34,31 @@ public:
 		z *= v;
 		return *this;
 	}
+	Color& operator*=(Color c)
+	{
+		x *= c.x;
+		y *= c.y;
+		z *= c.z;
+		return *this;
+	}
+
+	Color operator*(Color c) const
+	{
+		return {x * c.x, y * c.y, z * c.z};
+	}
+
+	Color& operator+=(Color c)
+	{
+		x += c.x;
+		y += c.y;
+		z += c.z;
+		return *this;
+	}
+	Color operator+(Color c) const
+	{
+		return {x + c.x, y + c.y, z + c.z};
+	}
+
 
 	uint32_t toColor32() const
 	{
