@@ -1,5 +1,7 @@
 #include "Raycast.h"
 
+#include <iostream>
+
 #include "Camera.h"
 #include "Scene.h"
 #include "Ray.h"
@@ -12,7 +14,7 @@ Color Raycast::castRay(Ray ray, int bounce)
 
 	bool hit = false;
 	float colorImpact = 1;
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i < 5; ++i)
 	{
 		for (const auto obj : Scene::graphicalObjects)
 		{
@@ -27,7 +29,7 @@ Color Raycast::castRay(Ray ray, int bounce)
 		if (colorImpact == 0.0f)
 			break;
 
-		auto dir = ray.dir - 2 * dot(ray.dir, ray.surfaceNormal) * ray.surfaceNormal;
+		auto dir = ray.dir - (2 * dot(ray.dir, ray.surfaceNormal) * ray.surfaceNormal);
 		ray = Ray(ray.interPoint, dir);
 	}
 	v += colorImpact * Camera::instance->bgColor;

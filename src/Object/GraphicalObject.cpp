@@ -106,7 +106,7 @@ void Sphere::intersect(Ray& ray, bool intersectAll)
 			ray.closestT = x0;
 			ray.color = color;
 			ray.interPoint = ray.pos + x0 * ray.dir;
-			ray.surfaceNormal = ray.interPoint - pos;
+			ray.surfaceNormal = normalize(ray.interPoint - pos);
 			ray.reflection = reflection;
 		}
 	}

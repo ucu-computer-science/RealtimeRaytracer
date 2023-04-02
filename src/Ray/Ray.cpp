@@ -110,7 +110,7 @@ bool Ray::intersect(const Triangle* triangle)
 	const float oz = dot(triangle->row3, pos) + triangle->valRow3;
 	const float t = -oz / dz;
 
-	if (t < 0 || closestT < t || t >= maxDist)
+	if (t < 0.001f || closestT < t || t >= maxDist)
 		return false;
 
 	const glm::vec3 hit = pos + dir * t;

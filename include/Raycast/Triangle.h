@@ -16,10 +16,10 @@ class Triangle
 		PlaneEq(glm::vec3 norm, float d) : norm{norm}, d{d} {}
 	};
 
-	PlaneEq calcPlaneEq() const
+	PlaneEq calcPlaneEq(bool normalize) const
 	{
 		glm::vec3 normal = cross(p2 - p1, p3 - p1);
-		return {normal, dot(normal, p1)};
+		return {normalize ? glm::normalize(normal) : normal, dot(normal, p1)};
 	}
 
 public:
@@ -44,7 +44,7 @@ public:
 	{
 		auto e1 = edge1;
 		auto e2 = edge2;
-		auto normal = planeEq.norm;
+		auto normal = calcPlaneEq(false).norm;
 
 		// Depending on which component of the normal is largest, calculate coefficients:
 		if (fabs(normal.x) > fabs(normal.y) && fabs(normal.x) > fabs(normal.z))
@@ -89,10 +89,10 @@ public:
 	}
 	void recalculatePlaneEq()
 	{
-		planeEq = calcPlaneEq();
+		planeEq = calcPlaneEq(true);
 	}
 	Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, Color color = Color::white(),
-	         bool isTwoSided = false) : p1{p1}, p2{p2}, p3{p3}, planeEq{calcPlaneEq()},
+	         bool isTwoSided = false) : p1{p1}, p2{p2}, p3{p3}, planeEq{calcPlaneEq(true)},
 	                                    color{color}, reflection{0}, isTwoSided(isTwoSided), edge1(p2 - p1),
 	                                    edge2(p3 - p1)
 	{
