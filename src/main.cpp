@@ -11,14 +11,14 @@
 int main(int argv, char* args[])
 {
 	constexpr float fov = 1;
-	int width = 1280/2, height = 720/2;
+	int width = 1920, height = 1080;
 
 	Camera camera{{0, -20, 0}, fov, glm::vec2((float)width / (float)height, 1)};
 //	camera.setBackgroundColor(Color::gray());
 
 //	Light light{{9, -9, 9}, {1, 1, 1} };
 //        Light light2{{-9, 9, 9}, {1, 1, 1}};
-        Light light3{{0, 0, 9}, {1, 1, 1}};
+        Light light3{{0, 0, 9}, {1, 1, 1}, 30, 1};
 
 
 //        Light ligh3{{0, 0, 0}};
