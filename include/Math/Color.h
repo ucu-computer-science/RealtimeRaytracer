@@ -2,6 +2,7 @@
 
 #include <ostream>
 
+#include "glm/common.hpp"
 #include "glm/vec3.hpp"
 
 class Color : public glm::vec3
@@ -64,7 +65,7 @@ public:
 
 	uint32_t toColor32() const
 	{
-		return ((int)(r() * 255) << 16) + ((int)(g() * 255) << 8) + ((int)(b() * 255) << 0);
+		return ((int)(glm::clamp(r(), 0.0f, 1.0f) * 255) << 16) + ((int)(glm::clamp(g(), 0.0f, 1.0f) * 255) << 8) + ((int)(glm::clamp(b(), 0.0f, 1.0f) * 255) << 0);
 	}
 };
 
