@@ -12,7 +12,7 @@ Color Raycast::castRay(Ray ray, int bounce)
 
 	bool hit = false;
 	float colorImpact = 1;
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < 5; ++i)
 	{
 		for (const auto obj : Scene::graphicalObjects)
 		{

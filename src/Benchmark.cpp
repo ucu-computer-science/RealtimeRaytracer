@@ -3,11 +3,14 @@
 #include "Benchmark.h"
 #include "GraphicalObject.h"
 #include <cmath>
-
+#include "immintrin.h"
+#include "Light.h"
+//#include "SDLDisplayer.h"
 #include "Triangle.h"
-#include "glm/vec3.hpp"
-#include "glm/vec2.hpp"
 #include "glm/gtx/string_cast.hpp"
+#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
+#include "mathExtensions.h"
 void Benchmark::benchmark(int ntimes)
 {
 	auto timeMeasurments = measure_time(ntimes, 1920, 1080);
@@ -41,46 +44,49 @@ void Benchmark::show_stats(std::vector<long long int>& timeMeasurments, int ntim
 
 std::vector<long long> Benchmark::measure_time(int ntimes, int wPixels, int hPixels)
 {
-	std::vector<long long> time_measurments;
-	auto screen = std::vector(hPixels, std::vector<float>(wPixels, 0));
-	constexpr float fov = 1;
-	int width = 1280, height = 720;
-	glm::vec2 cameraSize{width / (float)height, 1};
+  std::vector<long long> time_measurments;
+      constexpr float fov = 1;
+      int width = 640 * 2, height = 360 * 2;
 
-	Camera camera{{0.5, 0, 0.5}, fov, cameraSize};
-	GraphicalObject obj{glm::vec3{1, 1, 1}};
-	//Square (Vec3(1, 1, 1), Vec3(1, 1, 1),
-	//          Vec3(-1, 1, 1),
-	//          Vec3(0, 3, -1), Color::cyan());
-	//Square t2(Vec3(1, 1, 1), Vec3(1, 1, 1),
-	//          Vec3(-1, 1, 1),
-	//          Vec3(-1, 4, 1), Color::magenta());
+      Camera camera{{0, -38, 0}, fov, glm::vec2((float)width / (float)height, 1)};
 
-	Triangle t3(glm::vec3(1, 1, 1),
-	            glm::vec3(-1, 1, 1),
-	            glm::vec3(0, 3, -1), Color::white());
-	//Triangle t4({ 1, 1, 1 }, { 0, 3, -1 }, { -1,  4, 1 }, Color::white());
-	Triangle t4(glm::vec3(1, 1, 1),
-	            glm::vec3(3, 1, 0),
-	            glm::vec3(0, 3, -1), Color::white());
+      Light light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 35, 1, {0, 0, 0}, {1, 1, 1}};
 
-	//Square t1{ Vec3(1, 1, 1), Vec3(0.2, 1, 0.8), Vec3(0.8, 1, 0.5), Color::cyan() };
-	//Square t2{Vec3(1, 1, 1), Vec3(1, 1, 0.8), Vec3(0.4, 1, 0.2), Color::magenta() };
+      Square sq{{0, 0, 9.9999f}, {{-90 * DEG_TO_RAD, 0, 0}}, 5};
+      sq.setColor({3, 3, 3});
+      Plane plane1{{-10, 0, 0}, {1, 0, 0}, Color::red()};
+      Plane plane2{{10, 0, 0}, {-1, 0, 0}, Color::green()};
+      Plane plane3{{0, 0, 10}, {0, 0, -1}, Color::white()};
+      Plane plane4{{0, 0, -10}, {0, 0, 1}, Color::white()};
+      Plane plane5{{0, 10, 0}, {0, -1, 0}, Color::white()};
+      Plane plane6{{0, -10, 0}, {0, 1, 0}, Color::white()};
+      Cube cube1{glm::vec3{4, -4, -6.7}, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}, 6.6f};
+      Sphere sphere1{{-4, 2, -5}, 5, Color::skyBlue()};
+      cube1.setColor(Color::skyBlue());
+      cube1.setReflection(0.3f);
+      sphere1.setReflection(0.3f);
+      plane1.setReflection(0);
+      plane2.setReflection(0);
+      auto pixels = new uint32_t[height * width];
+      const int pitch = width * sizeof(uint32_t);
+//      while (true)
+//      {
+////        onUpdate();
+//        Camera::instance->updatePixelMatrix(pixels, width, height);
+//      }
 
-	obj.triangles.emplace_back(&t3);
-	obj.triangles.emplace_back(&t4);
 
-	auto pixels = new uint32_t[wPixels * hPixels];
 
 	for (int i = 0; i < ntimes; ++i)
 	{
 		auto start_time = get_current_time_fenced();
-		Camera::instance->updatePixelMatrix(pixels, width, height);
+                Camera::instance->updatePixelMatrix(pixels, width, height);
 		auto finish_time = get_current_time_fenced();
 		auto total_time = finish_time - start_time;
 		time_measurments.push_back(to_ms(total_time));
 	}
-	delete[] pixels;
+      delete[] pixels;
+
 	return time_measurments;
 }
 
@@ -112,7 +118,7 @@ std::vector<long long> Benchmark::measure_time_our_vector(int ntimes)
 		auto total_time = finish_time - start_time;
 		time_measurments.push_back(to_ms(total_time));
 		//std::cout << v1;
-		std::cout << (v1);
+//		std::cout << (v1);
 	}
 	std::cout << std::endl;
 
@@ -162,4 +168,42 @@ std::vector<long long> Benchmark::measure_time_glm_vector(int ntimes)
 	std::cout << std::endl;
 
 	return time_measurments;
+}
+
+int main(){
+//  Benchmark::benchmark(1000);
+//  float r3data[8] = {10,10,10,0,12,12,12,12};
+//  float dirdata[8] = {2,2,2,1,2,2,2,1};
+//  float resdata[8];
+//  float resdata4[4];
+//  float res5data4[8];
+//
+//
+//  __m256 r3;
+//  __m256 dir;
+//
+//  r3 = _mm256_load_ps(r3data);
+//  dir = _mm256_load_ps(dirdata);
+//
+//  r3 = _mm256_mul_ps(r3, dir);
+//
+//  __m128 res0 = _mm256_extractf32x4_ps(r3, 0);
+////  _mm_testc_ps()
+//  __m256 res5 = _mm256_cmp_ps(r3, _mm256_setzero_ps(), 0);
+//
+//      _mm256_store_ps(resdata, res5);
+////      _mm256_store_ps(resdata, r3);
+//  _mm_store_ps(resdata4, res0);
+//  for (int i = 0; i < 8; ++i) {
+//    printf("%f ", resdata[i]);
+//  }
+//  printf("\n");
+//  for (int i = 0; i < 4; ++i) {
+//    printf("%f ", resdata4[i]);
+//  }
+printf("%llu", sizeof(Triangle));
+  //  auto res = Benchmark::measure_time_our_vector(1000);
+//  Benchmark::show_stats(res, 100);
+
+  return 0;
 }

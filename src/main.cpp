@@ -9,23 +9,25 @@
 
 int main(int argv, char* args[])
 {
+
 	constexpr float fov = 1;
-	int width = 640 * 2, height = 360 * 2;
+	int width = 640, height = 360;
 
 	Camera camera{{0, -38, 0}, fov, glm::vec2((float)width / (float)height, 1)};
 
-	Light light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 35, 1, {0, 0, 0}, {1, 1, 1}};
 
-	Square sq{{0, 0, 9.9999f}, {{-90 * DEG_TO_RAD, 0, 0}}, 5};
-	sq.setColor({3, 3, 3});
-	//	Cube obj3{glm::vec3{0.5, 1.5, 1.5}, {{45 * DEG_TO_RAD, 45 * DEG_TO_RAD, 45 * DEG_TO_RAD}}, 1};
-	//	obj3.setColor(Color::magenta());
-	//	Sphere obj5{{-2, 1, 0}, 3, Color::blue()};
-	//	Sphere obj6{{-5, 3, 3}, 2, Color::yellow()};
-	//	Plane obj8{{0, 0, 0}, {0, 0, 1}, Color::darkGreen()};
-	//	Plane obj9{{0, 0, 256}, {0, 0, -1}, Color::skyBlue()};
-	//	SquarePyramid obj11{{2, 2, 2}, {{45 * DEG_TO_RAD, 45 * DEG_TO_RAD, 45 * DEG_TO_RAD}}, 1, 2};
-	//	obj11.setColor(Color::cyan());
+//		Cube obj3{glm::vec3{0.5, 1.5, 1.5}, {{45 * DEG_TO_RAD, 45 * DEG_TO_RAD, 45 * DEG_TO_RAD}}, 1};
+//		obj3.setColor(Color::magenta());
+//		Sphere obj5{{-2, 1, 0}, 3, Color::blue()};
+//		Sphere obj6{{-5, 3, 3}, 2, Color::yellow()};
+//		Plane obj8{{0, 0, 0}, {0, 0, 1}, Color::darkGreen()};
+//		Plane obj9{{0, 0, 256}, {0, 0, -1}, Color::skyBlue()};
+//		SquarePyramid obj11{{2, 2, 2}, {{45 * DEG_TO_RAD, 45 * DEG_TO_RAD, 45 * DEG_TO_RAD}}, 1, 2};
+//		obj11.setColor(Color::cyan());
+        Light light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 50, 1, {0, 0, 0}, {1, 1, 1}};
+
+        Square sq{{0, 0, 9.9999f}, {{-90 * DEG_TO_RAD, 0, 0}}, 5};
+        sq.setColor({3, 3, 3});
 	Plane plane1{{-10, 0, 0}, {1, 0, 0}, Color::red()};
 	Plane plane2{{10, 0, 0}, {-1, 0, 0}, Color::green()};
 	Plane plane3{{0, 0, 10}, {0, 0, -1}, Color::white()};
@@ -37,8 +39,12 @@ int main(int argv, char* args[])
 	cube1.setColor(Color::skyBlue());
 	cube1.setReflection(0.3f);
 	sphere1.setReflection(0.3f);
-	plane1.setReflection(0);
-	plane2.setReflection(0);
+//	plane1.setReflection(1);
+//	plane2.setReflection(1);
+//        plane3.setReflection(1);
+//        plane4.setReflection(0);
+//        plane5.setReflection(1);
+//        plane6.setReflection(1);
 
 	/*
 	 Cube obj3{glm::vec3{0.5, 1.5, 1.5}, {{45 * DEG_TO_RAD, 45 * DEG_TO_RAD, 45 * DEG_TO_RAD}}, 1};

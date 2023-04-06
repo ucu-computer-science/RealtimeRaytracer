@@ -21,7 +21,7 @@ class Triangle
 		glm::vec3 normal = cross(p2 - p1, p3 - p1);
 		return {normalize ? glm::normalize(normal) : normal, dot(normal, p1)};
 	}
-
+      int64_t filler{};
 public:
 	glm::vec3 p1, p2, p3;
 	PlaneEq planeEq;
@@ -30,8 +30,6 @@ public:
 	bool isTwoSided;
 
 	// precalculated
-	glm::vec3 edge1;
-	glm::vec3 edge2;
 	glm::vec3 row1{};
 	glm::vec3 row2{};
 	glm::vec3 row3{};
@@ -40,10 +38,11 @@ public:
 	float valRow3{};
 
 
+
 	void recalculateValues()
 	{
-		auto e1 = edge1;
-		auto e2 = edge2;
+		auto e1 = p2 - p1;
+		auto e2 = p3 - p1;
 		auto normal = calcPlaneEq(false).norm;
 
 		// Depending on which component of the normal is largest, calculate coefficients:
@@ -93,8 +92,7 @@ public:
 	}
 	Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, Color color = Color::white(),
 	         bool isTwoSided = false) : p1{p1}, p2{p2}, p3{p3}, planeEq{calcPlaneEq(true)},
-	                                    color{color}, reflection{0}, isTwoSided(isTwoSided), edge1(p2 - p1),
-	                                    edge2(p3 - p1)
+	                                    color{color}, reflection{0}, isTwoSided(isTwoSided)
 	{
 		recalculateValues();
 	}

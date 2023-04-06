@@ -3,6 +3,7 @@ cmake_minimum_required (VERSION 3.8)
 set(CXX_STANDARD 20)
 set(PROFILING TRUE)
 set(USING_VISUAL_STUDIO TRUE)
+set(ENABLE_FAST_MATH ON)
 project ("RayTracer")
 
 include_directories(include)
@@ -15,11 +16,13 @@ include_directories(SDL2/include)
 link_directories(SDL2/lib/x64)
 
 add_executable (${PROJECT_NAME} "src/main.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp" "src/Ray/Ray.cpp"
-"src/Ray/Raycast.cpp" "src/Camera.cpp" "src/SDLDisplayer.cpp"  "src/Input.cpp" "src/Math/Vec3.cpp" "src/Benchmark.cpp" "src/Light.cpp")
+"src/Ray/Raycast.cpp" "src/Camera.cpp" "src/SDLDisplayer.cpp"  "src/Input.cpp" "src/Math/Vec3.cpp" "src/Light.cpp")
+add_executable (Benchmark "src/Benchmark.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp" "src/Ray/Ray.cpp"
+        "src/Ray/Raycast.cpp" "src/Camera.cpp" "src/Math/Vec3.cpp" "src/Light.cpp")
 
 if(${USING_VISUAL_STUDIO})
-  target_link_libraries(RayTracer SDL2)
-  target_link_libraries(RayTracer SDL2main)
+  target_link_libraries(${PROJECT_NAME} SDL2)
+  target_link_libraries(${PROJECT_NAME} SDL2main)
 else()
   find_package(PkgConfig REQUIRED)
   pkg_check_modules(SDL_PKG REQUIRED IMPORTED_TARGET sdl2)
@@ -37,5 +40,6 @@ endif()
 #target_link_libraries(${PROJECT_NAME} "${SDL2_LIBRARIES}")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
+  set_property(TARGET Benchmark  PROPERTY CXX_STANDARD 20)
   set_property(TARGET ${PROJECT_NAME}  PROPERTY CXX_STANDARD 20)
 endif()
