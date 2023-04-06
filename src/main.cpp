@@ -10,9 +10,9 @@
 int main(int argv, char* args[])
 {
 	constexpr float fov = 1;
-	int width = 640 * 2, height = 360 * 2;
+	int width = 640 * 1, height = 360 * 1;
 
-	Camera camera{{0, -38, 0}, fov, glm::vec2((float)width / (float)height, 1)};
+	Camera camera{{0, -38, 3}, fov, glm::vec2((float)width / (float)height, 1)};
 
 	Light light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 35, 1, {0, 0, 0}, {1, 1, 1}};
 
@@ -39,6 +39,10 @@ int main(int argv, char* args[])
 	sphere1.setReflection(0.3f);
 	plane1.setReflection(0);
 	plane2.setReflection(0);
+	plane3.setReflection(0);
+	plane4.setReflection(0);
+	plane5.setReflection(0);
+	plane6.setReflection(0);
 
 	/*
 	 Cube obj3{glm::vec3{0.5, 1.5, 1.5}, {{45 * DEG_TO_RAD, 45 * DEG_TO_RAD, 45 * DEG_TO_RAD}}, 1};

@@ -3,7 +3,6 @@
 #include "Camera.h"
 #include "Input.h"
 #include "Matrix.h"
-#include <functional>
 #include <iostream>
 
 #include "GraphicalObject.h"
@@ -36,13 +35,12 @@ void SDLDisplayer::loop()
 	while (true)
 	{
 		SDL_PollEvent(&event);
-		/*if (SDL_PollEvent(&event) == 0)
-			continue;*/
 		if (event.type == SDL_QUIT)
 			break;
 
 
-		Input::updateInput(event);
+		Time::updateTime();
+		Input::updateInput();
 		onUpdate();
 		Camera::instance->updatePixelMatrix(pixels, width, height);
 
@@ -76,4 +74,11 @@ void TriangleCounter::updateTriangleCounter()
 	triangleCount = 0;
 	for (auto obj : Scene::graphicalObjects)
 		triangleCount += (int)obj->cameraFacingTriangles.size();
+}
+
+void Time::updateTime()
+{
+	auto new_time = (float)SDL_GetTicks() / 1000.0f;
+	deltaTime = new_time - time;
+	time = new_time;
 }

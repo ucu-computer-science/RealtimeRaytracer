@@ -7,6 +7,7 @@ public:
 	static bool isFullscreen;
 	static float moveSpeed;
 	static float rotationSpeed;
+	inline static const Uint8* keyboardState;
 
-	static void updateInput(const SDL_Event& event);
+	static void updateInput();
 };
