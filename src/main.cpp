@@ -10,7 +10,7 @@
 int main(int argv, char* args[])
 {
 	constexpr float fov = 1;
-	int width = 640 * 1, height = 360 * 1;
+	int width = 640 * 2, height = 360 * 2;
 
 	Camera camera{{0, -38, 3}, fov, glm::vec2((float)width / (float)height, 1)};
 

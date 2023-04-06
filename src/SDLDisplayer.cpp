@@ -34,7 +34,8 @@ void SDLDisplayer::loop()
 	const int pitch = width * sizeof(uint32_t);
 	while (true)
 	{
-		SDL_PollEvent(&event);
+		while (SDL_PollEvent(&event))
+			continue;
 		if (event.type == SDL_QUIT)
 			break;
 

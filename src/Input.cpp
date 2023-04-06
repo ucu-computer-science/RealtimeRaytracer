@@ -62,7 +62,7 @@ void Input::updateInput()
 	}
 
 	// Toggle Fullscreen
-	if (keyboardState[SDL_SCANCODE_F11])
+	if (SDLDisplayer::event.key.keysym.sym == SDLK_F11)
 	{
 		isFullscreen = !isFullscreen;
 		SDL_SetWindowFullscreen(SDLDisplayer::window, Input::isFullscreen ? 1 : 0);
