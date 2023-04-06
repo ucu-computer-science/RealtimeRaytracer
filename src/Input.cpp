@@ -5,75 +5,73 @@
 #include "glm/gtx/string_cast.hpp"
 
 bool Input::isFullscreen = false;
-float Input::moveSpeed = 1.0f;
-float Input::rotationSpeed = 15.0f;
+float Input::moveSpeed = 40.0f;
+float Input::rotationSpeed = 90.0f;
 
-void Input::updateInput(const SDL_Event& event)
+void Input::updateInput()
 {
-	if (event.type == SDL_KEYDOWN)
+	auto camera = Camera::instance;
+	keyboardState = SDL_GetKeyboardState(nullptr);
+
+	// Movement
+	if (keyboardState[SDL_SCANCODE_W])
 	{
-		auto camera = Camera::instance;
+		camera->translate(camera->forward() * moveSpeed * Time::deltaTime);
+	}
+	if (keyboardState[SDL_SCANCODE_S])
+	{
+		camera->translate(camera->backward() * moveSpeed * Time::deltaTime);
+	}
+	if (keyboardState[SDL_SCANCODE_A])
+	{
+		camera->translate(camera->left() * moveSpeed * Time::deltaTime);
+	}
+	if (keyboardState[SDL_SCANCODE_D])
+	{
+		camera->translate(camera->right() * moveSpeed * Time::deltaTime);
+	}
+	if (keyboardState[SDL_SCANCODE_Q])
+	{
+		camera->translate(camera->up() * moveSpeed * Time::deltaTime);
+	}
+	if (keyboardState[SDL_SCANCODE_E])
+	{
+		camera->translate(camera->down() * moveSpeed * Time::deltaTime);
+	}
 
-		// Movement
-		if (event.key.keysym.sym == SDLK_w)
-		{
-			camera->translate(camera->forward() * moveSpeed);
-		}
-		if (event.key.keysym.sym == SDLK_s)
-		{
-			camera->translate(camera->backward() * moveSpeed);
-		}
-		if (event.key.keysym.sym == SDLK_a)
-		{
-			camera->translate(camera->left() * moveSpeed);
-		}
-		if (event.key.keysym.sym == SDLK_d)
-		{
-			camera->translate(camera->right() * moveSpeed);
-		}
-		if (event.key.keysym.sym == SDLK_q)
-		{
-			camera->translate(camera->up() * moveSpeed);
-		}
-		if (event.key.keysym.sym == SDLK_e)
-		{
-			camera->translate(camera->down() * moveSpeed);
-		}
+	// Rotation
+	if (keyboardState[SDL_SCANCODE_UP])
+	{
+		auto rot = eulerAngles(camera->getRot()) * RAD_TO_DEG;
+		auto newRot = glm::vec3(glm::clamp(rot.x + rotationSpeed * Time::deltaTime, -90.0f, 90.0f), rot.y, rot.z);
+		camera->setRot({newRot * DEG_TO_RAD});
+	}
+	if (keyboardState[SDL_SCANCODE_DOWN])
+	{
+		auto rot = eulerAngles(camera->getRot()) * RAD_TO_DEG;
+		auto newRot = glm::vec3(glm::clamp(rot.x - rotationSpeed * Time::deltaTime, -90.0f, 90.0f), rot.y, rot.z);
+		camera->setRot({newRot * DEG_TO_RAD});
+	}
+	if (keyboardState[SDL_SCANCODE_LEFT])
+	{
+		camera->rotate({0, 0, rotationSpeed * Time::deltaTime});
+	}
+	if (keyboardState[SDL_SCANCODE_RIGHT])
+	{
+		camera->rotate({0, 0, -rotationSpeed * Time::deltaTime});
+	}
 
-		// Rotation
-		if (event.key.keysym.sym == SDLK_UP)
-		{
-			auto rot = eulerAngles(camera->getRot()) * RAD_TO_DEG;
-			auto newRot = glm::vec3(glm::clamp(rot.x + rotationSpeed, -90.0f, 90.0f), rot.y, rot.z);
-			camera->setRot({newRot * DEG_TO_RAD});
-		}
-		if (event.key.keysym.sym == SDLK_DOWN)
-		{
-			auto rot = eulerAngles(camera->getRot()) * RAD_TO_DEG;
-			auto newRot = glm::vec3(glm::clamp(rot.x - rotationSpeed, -90.0f, 90.0f), rot.y, rot.z);
-			camera->setRot({newRot * DEG_TO_RAD});
-		}
-		if (event.key.keysym.sym == SDLK_LEFT)
-		{
-			camera->rotate({0, 0, rotationSpeed});
-		}
-		if (event.key.keysym.sym == SDLK_RIGHT)
-		{
-			camera->rotate({0, 0, -rotationSpeed});
-		}
+	// Toggle Fullscreen
+	if (keyboardState[SDL_SCANCODE_F11])
+	{
+		isFullscreen = !isFullscreen;
+		SDL_SetWindowFullscreen(SDLDisplayer::window, Input::isFullscreen ? 1 : 0);
+	}
 
-		// Toggle Fullscreen
-		if (event.key.keysym.sym == SDLK_F11)
-		{
-			isFullscreen = !isFullscreen;
-			SDL_SetWindowFullscreen(SDLDisplayer::window, Input::isFullscreen ? 1 : 0);
-		}
-
-		// Reset camera position and rotation
-		if (event.key.keysym.sym == SDLK_y)
-		{
-			camera->getPos() = {0.5, 0, 0.5};
-			camera->getRot() = {1, 0, 0, 0};
-		}
+	// Reset camera position and rotation
+	if (keyboardState[SDLK_y])
+	{
+		camera->getPos() = {0.5, 0, 0.5};
+		camera->getRot() = {1, 0, 0, 0};
 	}
 }
