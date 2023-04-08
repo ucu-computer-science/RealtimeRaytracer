@@ -32,7 +32,7 @@ namespace Benchmark {
 
     void benchmark(int ntimes);
     void show_stats(std::vector<long long>& timeMeasurments, int ntimes);;
-    std::vector<long long> measure_time(int n, int wPixels, int hPixels);
+//    std::vector<long long> measure_time(int n, int wPixels, int hPixels);
     std::vector<long long> measure_time_our_vector(int);
     std::vector<long long> measure_time_dx_vector(int);
     std::vector<long long> measure_time_glm_vector(int);
@@ -40,5 +40,5 @@ namespace Benchmark {
     void benchmarkVectors(int ntimes);;
 };
 
-
+void measure_time();
 #endif //RAYTRACER_BENCHMARK_H

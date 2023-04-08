@@ -1,6 +1,6 @@
 #include "Ray.h"
 #include "Triangle.h"
-
+#include "immintrin.h"
 float Ray::getT(const Triangle* triangle) const
 {
 	return (triangle->planeEq.d - dot(triangle->planeEq.norm, pos)) / dot(triangle->planeEq.norm, dir);
@@ -103,22 +103,31 @@ bool Ray::intersect(const Triangle* triangle)
 	//   #ifdef BALDWIN_METHOD
 
 	const float dz = dot(triangle->row3, dir);
+//        const float dz = triangle->row3[0]*dir[0] + triangle->row3[1]*dir[1] + triangle->row3[2]*dir[2];
+//        const auto& tr3 = reinterpret_cast<const __m128&>(triangle->row3);
+//        const auto& d = reinterpret_cast<const __m128&>(dir);
+//        __m128 mul =  _mm_mul_ps(tr3, d);
+//        const auto dz = mul.m128_f32[1] + mul.m128_f32[2] +  mul.m128_f32[3];
 
 	if (dz == 0.0f)
 		return false;
 
 	const float oz = dot(triangle->row3, pos) + triangle->valRow3;
+//        const float oz = triangle->row3[0]*pos[0] + triangle->row3[1]*pos[1] + triangle->row3[2]*pos[2] + triangle->valRow3;
 	const float t = -oz / dz;
 
-	if (t < 0.001f || closestT < t || t >= maxDist)
+	if (t < 0 || closestT < t || t >= maxDist)
 		return false;
 
-	const glm::vec3 hit = pos + dir * t;
+	const auto hit = pos + dir * t;
 
 	const float b1 = dot(triangle->row1, hit) + triangle->valRow1;
+//        const float b1 = triangle->row1[0]*hit[0] + triangle->row1[1]*hit[1] + triangle->row1[2]*hit[2] + triangle->valRow1;
+
 	if (b1 < 0.0f || b1 > 1.0f)
 		return false;
 	const float b2 = dot(triangle->row2, hit) + triangle->valRow2;
+//        const float b2 = triangle->row2[0]*hit[0] + triangle->row2[1]*hit[1] + triangle->row2[2]*hit[2] + triangle->valRow2;
 
 	if (b2 < 0.0f || b1 + b2 > 1.0f)
 		return false;

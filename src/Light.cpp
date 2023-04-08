@@ -4,9 +4,9 @@
 
 #include "Raycast.h"
 
-Light::Light(glm::vec3 pos, Color color, float distance, float intensity, glm::vec3 size,
-             glm::vec3 pointSize) : Object(pos, {{0, 0, 0}}), color(color), distance(distance),
-                                    intensity(intensity), size(size), pointSize(pointSize)
+Light::Light(glm::vec3 pos, Color wholeColor, float distance, float wholeIntensity, glm::vec3 size,
+             glm::vec3 pointSize) : Object(pos, {{0, 0, 0}}), distance(distance),
+                                    size(size), pointSize(pointSize)
 {
 	lights.emplace_back(this);
 
@@ -24,30 +24,35 @@ Light::Light(glm::vec3 pos, Color color, float distance, float intensity, glm::v
 			}
 		}
 	}
+        intensity = wholeIntensity/points.size();
+        color = (intensity*wholeColor);
 }
 
 Color Light::getLightAtPoint(glm::vec3 p, glm::vec3 norm)
 {
 	Color v{0, 0, 0};
-	int lightCount = 0;
-	for (auto light : lights)
+	for (const auto light : lights)
 	{
-		bool hit = false;
-		for (glm::vec3 point : light->points)
+		for (const auto &lightPoint : light->points)
 		{
-			auto dir = normalize(point - p);
-			auto dirInv = p - point;
-			auto dist = length(dirInv);
-			if (Raycast::intersectsObj({/*light->getPos()*/ point, dirInv, dist - 0.01f}))
+			auto dist = length(lightPoint - p);
+                        // why should we reduce distance to avoid intersection with itself
+                        //
+                        if (dist > light->distance) {
+                          continue ;
+                        }
+                        auto dir = normalize(lightPoint - p);
+			if (Raycast::castShadowRays({/*light->getPos()*/ lightPoint, -dir,dist }))
 				continue;
-			hit = true;
-
-			auto distanceImpact = 1 - glm::clamp(dist / light->distance, 0.0f, 1.0f);
-			auto lightFacing = glm::clamp(dot(dir, norm), 0.0f, 1.0f);
-			v += distanceImpact * (light->intensity / (float)light->points.size()) * light->color * lightFacing;
+                        //clamp is not needed for the lower bound
+			auto distanceImpact = std::min(1 - (dist / light->distance), 1.f);
+			auto lightFacingAtPoint = std::max(dot(dir, norm), 0.f);
+                        // moved intensity calculations into constructor
+			v += distanceImpact * light->color * lightFacingAtPoint;
 		}
-		if (hit)
-			lightCount++;
 	}
-	return lightCount != 0 ? v * (1 / (float)lightCount) : Color::black();
+        //for some reason to have non-negative shadows i have to add 1 to lightCount
+        // is fixed only for two lightsourcess
+        // and still i get peaches
+	return v;
 }

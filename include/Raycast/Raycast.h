@@ -11,5 +11,5 @@ class Raycast
 {
 public:
 	static Color castRay(Ray ray, int bounce = 1);
-	static bool intersectsObj(Ray ray);
+	static bool castShadowRays(Ray ray);
 };

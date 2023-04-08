@@ -119,7 +119,7 @@ void Plane::intersect(Ray& ray, bool intersectAll)
 	{
 		glm::vec3 p0l0 = pos - ray.pos;
 		float t = -dot(p0l0, normal) / denom;
-		if (t < ray.closestT && t >= 0 && t < ray.maxDist)
+		if (t < ray.closestT && t > 0 && t < ray.maxDist)
 		{
 			ray.closestT = t;
 			ray.color = color;

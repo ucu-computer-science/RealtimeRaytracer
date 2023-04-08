@@ -51,8 +51,26 @@ void Camera::updatePixelMatrix(uint32_t* pixels, int width, int height)
 			{
 				for (int x = 0; x < width; x += 1)
 				{
-					auto ray1 = Ray(pos, lbDir + (float)x * dx / skip + (float)y * dy / skip);
-					pixels[(height - y - 1) * width + x] = Raycast::castRay(ray1).toColor32();
+//                                  auto ray1 = Ray(pos, lbDir + ((float)x+ ((float)(rand()%100) / 100))
+//                                                                   * dx / skip + ((float)y + ((float)(rand()%100) / 100))
+//                                                               * dy / skip);
+					auto ray1 = Ray(pos, lbDir + ((float)x)
+                                                                   * dx / skip + ((float)y)
+                                                               * dy / skip);
+//                                        auto ray2 = Ray(pos, lbDir + ((float)x+ ((float)(rand()%100) / 100))
+//                                                                         * dx / skip + ((float)y + ((float)(rand()%100) / 100))
+//                                                                     * dy / skip);
+//                                        auto ray3 = Ray(pos, lbDir + ((float)x+ ((float)(rand()%100) / 100))
+//                                                                         * dx / skip + ((float)y + ((float)(rand()%100) / 100))
+//                                                                     * dy / skip);
+//                                        auto ray4 = Ray(pos, lbDir + ((float)x+ ((float)(rand()%100) / 100))
+//                                                                         * dx / skip + ((float)y + ((float)(rand()%100) / 100))
+//                                                                     * dy / skip);
+//                                        pixels[(height - y - 1) * width + x] = ((Raycast::castRay(ray1)+Raycast::castRay(ray2) +Raycast::castRay(ray3)+Raycast::castRay(ray4))*0.25).toColor32();
+
+//					pixels[(height - y - 1) * width + x] = ((Raycast::castRay(ray1)+Raycast::castRay(ray2))*0.5).toColor32();
+                                        pixels[(height - y - 1) * width + x] = ((Raycast::castRay(ray1)).toColor32());
+
 				}
 			}
 		});
