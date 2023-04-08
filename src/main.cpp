@@ -12,6 +12,7 @@ int main(int argv, char* args[])
 	constexpr float fov = 1;
 	int width = 640 * 2, height = 360 * 2;
         srand(time(NULL));
+
 	Camera camera{{0, -38, 3}, fov, glm::vec2((float)width / (float)height, 1)};
         Light light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 50, 1, {0, 0, 0}, {1, 1, 1}};
 //        Light light3{{0, 0, 8}, {1,1,1}, 50, 0.4, {5, 5, 0}, {10, 10, 1}};
