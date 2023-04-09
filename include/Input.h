@@ -1,4 +1,6 @@
 #pragma once
+#ifndef RAYTRACER_INPUT_H
+#define RAYTRACER_INPUT_H
 #include <SDL_events.h>
 
 class Input
@@ -11,3 +13,5 @@ public:
 
 	static void updateInput();
 };
+
+#endif // RAYTRACER_INPUT_H

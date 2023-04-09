@@ -1,5 +1,6 @@
 #pragma once
-
+#ifndef RAYTRACER_OBJECT_H
+#define RAYTRACER_OBJECT_H
 #include "glm/vec3.hpp"
 #include "glm/gtc/quaternion.hpp"
 
@@ -30,3 +31,4 @@ public:
 	glm::vec3 localToGlobalPos(const glm::vec3& localPos) const;
 	glm::vec3 globalToLocalPos(const glm::vec3& globalPos) const;
 };
+#endif // RAYTRACER_OBJECT_H

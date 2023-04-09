@@ -1,4 +1,6 @@
 #pragma once
+#ifndef RAYTRACER_RAY_H
+#define RAYTRACER_RAY_H
 
 #include "Color.h"
 #include "cmath"
@@ -40,3 +42,4 @@ inline std::ostream& operator<<(std::ostream& os, const Ray& r)
 	os << "Ray(pos: " << to_string(r.pos) << ", dir: " << to_string(r.dir) << ")";
 	return os;
 }
+#endif // RAYTRACER_RAY_H

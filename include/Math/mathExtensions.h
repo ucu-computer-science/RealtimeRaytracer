@@ -1,10 +1,11 @@
 #pragma once
-
+#ifndef RAYTRACER_MATHEXTENSIONS_H
+#define RAYTRACER_MATHEXTENSIONS_H
 #include "glm/vec3.hpp"
 
-# define PI           3.14159265358979323846f
-# define DEG_TO_RAD     (1 / (180 / PI))
-# define RAD_TO_DEG     (180 / PI)
+const float PI         =    3.14159265358979323846f;
+const float DEG_TO_RAD =    (1 / (180 / PI));
+const float RAD_TO_DEG =    (180 / PI);
 
 inline float det(const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3)
 {
@@ -31,13 +32,14 @@ static bool solveQuadratic(float a, float b, float c,
 {
 	float discr = b * b - 4 * a * c;
 	if (discr < 0) return false;
-	else if (discr == 0) x0 = x1 = -0.5 * b / a;
+	else if (discr == 0) x0 = x1 = -0.5f * b / a;
 	else
 	{
-		float q = (b > 0) ? -0.5 * (b + sqrt(discr)) : -0.5 * (b - sqrt(discr));
+		float q = (b > 0) ? -0.5f * (b + sqrt(discr)) : -0.5f * (b - sqrt(discr));
 		x0 = q / a;
 		x1 = c / q;
 	}
 	if (x0 > x1) std::swap(x0, x1);
 	return true;
 }
+#endif // RAYTRACER_MATHEXTENSIONS_H

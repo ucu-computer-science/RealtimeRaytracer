@@ -1,5 +1,6 @@
 #pragma once
-
+#ifndef RAYTRACER_COLOR_H
+#define RAYTRACER_COLOR_H
 #include <ostream>
 
 #include "glm/common.hpp"
@@ -84,3 +85,4 @@ inline std::ostream& operator<<(std::ostream& os, const Color& c)
 	os << "(" << c.r() << ", " << c.g() << ", " << c.b() << ")";
 	return os;
 }
+#endif // RAYTRACER_COLOR_H

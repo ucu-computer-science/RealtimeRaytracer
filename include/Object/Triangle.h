@@ -1,5 +1,6 @@
 #pragma once
-
+#ifndef RAYTRACER_TRIANGLE_H
+#define RAYTRACER_TRIANGLE_H
 #include "Color.h"
 #include "glm/vec3.hpp"
 #include "glm/geometric.hpp"
@@ -103,3 +104,5 @@ inline std::ostream& operator<<(std::ostream& os, const Triangle& t)
 	os << "Triangle(" << to_string(t.p1) << ", " << to_string(t.p2) << ", " << to_string(t.p3) << ")";
 	return os;
 }
+
+#endif // RAYTRACER_TRIANGLE_H

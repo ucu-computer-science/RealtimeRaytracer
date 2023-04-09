@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef RAYTRACER_SDL_DISPLAYER_H
+#define RAYTRACER_SDL_DISPLAYER_H
 #include <functional>
 #include <SDL.h>
 #include "Action.h"
@@ -47,3 +49,4 @@ public:
 
 	static void updateTime();
 };
+#endif // RAYTRACER_SDL_DISPLAYER_H

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <utility>
-
+#ifndef RAYTRACER_ACTION_H
+#define RAYTRACER_ACTION_H
 template <typename... Ts>
 class Action
 {
@@ -29,3 +30,4 @@ public:
 			func(args...);
 	}
 };
+#endif // RAYTRACER_ACTION_H

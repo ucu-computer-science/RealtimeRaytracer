@@ -1,6 +1,9 @@
 #pragma once
 
 //#include <SDL_stdinc.h>
+#ifndef RAYTRACER_CAMERA_H
+#define RAYTRACER_CAMERA_H
+
 #include <stdexcept>
 #include "Color.h"
 #include "Object.h"
@@ -33,3 +36,4 @@ public:
 
 	void setBackgroundColor(Color color) { bgColor = color; }
 };
+#endif // RAYTRACER_CAMERA_H

@@ -1,5 +1,6 @@
 #pragma once
-
+#ifndef RAYTRACER_GRAPHICALOBJECT_H
+#define RAYTRACER_GRAPHICALOBJECT_H
 #include <vector>
 #include "Color.h"
 #include "Object.h"
@@ -90,3 +91,4 @@ public:
 //  }
 //  void intersect(Ray& ray) override;
 //};
+#endif //RAYTRACER_GRAPHICALOBJECT_H
