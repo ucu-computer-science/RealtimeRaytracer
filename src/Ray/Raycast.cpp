@@ -13,11 +13,11 @@ Color Raycast::castRay(Ray ray, int bounce)
 
 	bool hit = false;
 	float colorImpact = 1;
-	for (int i = 0; i < 5; ++i)
+	for (int i = 0; i < bounce; ++i)
 	{
 		for (const auto obj : Scene::graphicalObjects)
 		{
-			obj->intersect(ray, hit);
+			obj->findIntersectionWith(ray, hit);
 		}
 		if (!ray.hit())
 			break;
@@ -42,7 +42,7 @@ bool Raycast::castShadowRays(Ray ray)
 {
 	for (const auto obj : Scene::graphicalObjects)
 	{
-		obj->intersect(ray, true);
+		obj->findIntersectionWith(ray, true);
 		if (ray.hit())
 			return true;
 	}

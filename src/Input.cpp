@@ -5,14 +5,16 @@
 #include "glm/gtx/string_cast.hpp"
 
 bool Input::isFullscreen = false;
-float Input::moveSpeed = 40.0f;
+float Input::defaultMoveSpeed = 40.0f;
 float Input::rotationSpeed = 90.0f;
 
 void Input::updateInput()
 {
+        auto moveSpeed = defaultMoveSpeed;
 	auto camera = Camera::instance;
 	keyboardState = SDL_GetKeyboardState(nullptr);
-
+       if (keyboardState[SDL_SCANCODE_LSHIFT])
+         moveSpeed *=4;
 	// Movement
 	if (keyboardState[SDL_SCANCODE_W])
 	{

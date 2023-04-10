@@ -3,9 +3,9 @@
 #define RAYTRACER_MATHEXTENSIONS_H
 #include "glm/vec3.hpp"
 
-const float PI         =    3.14159265358979323846f;
-const float DEG_TO_RAD =    (1 / (180 / PI));
-const float RAD_TO_DEG =    (180 / PI);
+constexpr float PI         =    3.14159265358979323846f;
+constexpr float DEG_TO_RAD =    (1 / (180 / PI));
+constexpr float RAD_TO_DEG =    (180 / PI);
 
 inline float det(const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3)
 {

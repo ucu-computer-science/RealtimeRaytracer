@@ -50,7 +50,7 @@ void Light::getIlluminationAtPoint(const glm::vec3 &interPoint,
     if (Raycast::castShadowRays({lightPoint, -dir, dist}))
       continue;
 
-    auto distanceImpact = std::min(1 - (dist / distance), 1.f);
+    auto distanceImpact = std::max(1 - (dist / distance), 0.f);
     auto lightFacingAtPoint = std::max(dot(dir, surfaceNorm), 0.f);
 
     inColor += (distanceImpact * lightFacingAtPoint) * color;

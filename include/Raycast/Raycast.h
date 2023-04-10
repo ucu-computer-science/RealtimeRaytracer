@@ -6,7 +6,7 @@
 #include "Ray.h"
 
 class Triangle;
-class Ray;
+struct Ray;
 
 class Raycast
 {

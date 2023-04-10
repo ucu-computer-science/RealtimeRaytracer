@@ -13,8 +13,6 @@ public:
     float distance;
     float intensity;
     Color color;
-
-
 	PointLight(glm::vec3 pos, Color color, float distance, float intensity);
         virtual void getIlluminationAtPoint(const glm::vec3 &interPoint, const glm::vec3 &surfaceNorm, Color &inColor);
 

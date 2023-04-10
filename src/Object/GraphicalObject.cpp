@@ -28,11 +28,11 @@ void GraphicalObject::setReflection(float reflection)
 		triangle->reflection = reflection;
 }
 
-void GraphicalObject::intersect(Ray& ray, bool intersectAll)
+void GraphicalObject::findIntersectionWith(Ray& ray, bool intersectAll)
 {
 	for (const auto triangle : intersectAll ? triangles : cameraFacingTriangles)
 	{
-		ray.intersect(triangle);
+            triangle->findIntersectionWith(ray);
 	}
 }
 void GraphicalObject::updateCameraFacingTriangles()
@@ -93,7 +93,7 @@ Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(pos, rot)
 }
 
 
-void Sphere::intersect(Ray& ray, bool intersectAll)
+void Sphere::findIntersectionWith(Ray& ray, bool intersectAll)
 {
 	float x0, x1;
 	auto inter = (ray.pos - pos);
@@ -112,7 +112,7 @@ void Sphere::intersect(Ray& ray, bool intersectAll)
 		}
 	}
 }
-void Plane::intersect(Ray& ray, bool intersectAll)
+void Plane::findIntersectionWith(Ray& ray, bool intersectAll)
 {
 	float denom = -dot(normal, ray.dir);
 	if (denom > 1e-6)

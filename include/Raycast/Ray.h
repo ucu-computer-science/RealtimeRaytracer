@@ -9,11 +9,8 @@
 #include <cfloat>
 #include <ostream>
 
-class Triangle;
-
-class Ray
+struct Ray
 {
-public:
 	glm::vec3 pos, dir;
 	float closestT;
 	float reflection;
@@ -28,8 +25,6 @@ public:
 	                                                             maxDist(maxDist) {}
 	Ray() = default;
 	~Ray() = default;
-	float getT(const Triangle* triangle) const;
-	bool intersect(const Triangle* triangle);
 
 	bool hit() const
 	{

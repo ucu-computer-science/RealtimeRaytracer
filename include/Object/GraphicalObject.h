@@ -24,7 +24,7 @@ public:
 
 	void setColor(Color color);
 	void setReflection(float reflection);
-	virtual void intersect(Ray& ray, bool intersectAll = false);
+	virtual void findIntersectionWith(Ray& ray, bool intersectAll = false);
 
 	void updateCameraFacingTriangles();
 };
@@ -50,7 +50,7 @@ class Sphere final : public GraphicalObject
 public:
 	Sphere(glm::vec3 pos, float radius, Color color) : GraphicalObject(pos), radiusSquared{radius * radius},
 	                                                   color{color} {}
-	void intersect(Ray& ray, bool intersectAll) override;
+	void findIntersectionWith(Ray& ray, bool intersectAll) override;
 };
 
 class Plane final : public GraphicalObject
@@ -60,7 +60,7 @@ class Plane final : public GraphicalObject
 
 public:
 	Plane(glm::vec3 pos, glm::vec3 normal, Color color) : GraphicalObject(pos), color{color}, normal{normalize(normal)} {}
-	void intersect(Ray& ray, bool intersectAll) override;
+	void findIntersectionWith(Ray& ray, bool intersectAll) override;
 };
 
 class SquarePyramid : public GraphicalObject
@@ -77,7 +77,7 @@ public:
 //
 //  };
 //
-//  void intersect(Ray& ray) override;
+//  void findIntersectionWith(Ray& ray) override;
 //};
 //class Box: public GraphicalObject
 //{
@@ -89,6 +89,6 @@ public:
 //    bounds[0] = vmin;
 //    bounds[1] = vmax;
 //  }
-//  void intersect(Ray& ray) override;
+//  void findIntersectionWith(Ray& ray) override;
 //};
 #endif //RAYTRACER_GRAPHICALOBJECT_H
