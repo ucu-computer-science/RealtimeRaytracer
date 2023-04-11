@@ -40,13 +40,11 @@ void Camera::updatePixelMatrix(uint32_t *pixels, int width, int height) {
       for (int y = yStart; y < height; y += TASK_COUNT) {
         for (int x = 0; x < width; x += 1) {
 #ifdef ANTIALIASING
-          auto ray1 = Ray(
-              pos, lbDir +
-                       ((float)x + ((float)(rand() % 100) / 100)) * dx +
-                       ((float)y + ((float)(rand() % 100) / 100)) * dy);
-#else
           auto ray1 =
-              Ray(pos, lbDir + ((float)x) * dx  + ((float)y) * dy);
+              Ray(pos, lbDir + ((float)x + ((float)(rand() % 100) / 100)) * dx +
+                           ((float)y + ((float)(rand() % 100) / 100)) * dy);
+#else
+          auto ray1 = Ray(pos, lbDir + ((float)x) * dx + ((float)y) * dy);
 #endif
 
           pixels[(height - y - 1) * width + x] =
