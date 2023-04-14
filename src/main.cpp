@@ -6,6 +6,8 @@
 #include "SDLDisplayer.h"
 #include "Triangle.h"
 #include "mathExtensions.h"
+#include "ObjectParser.h"
+
 void createBlueBallScene(float fov, int width, int height) {
   Camera camera{{0, -28, -5}, fov, glm::vec2((float)width / (float)height, 1)};
   GlobalLight light8{{-0.1, -0.9, 1}, Color::white(), 1};
@@ -66,24 +68,62 @@ inline void createFirstSceene(float fov, int width, int height) {
 int main(int argv, char *args[]) {
   constexpr float fov = 1;
   int width = 640 * 2, height = 360 * 2;
+      Camera camera{{0, -28, -5}, fov, glm::vec2((float)width / (float)height, 1)};
+    GlobalLight light8{{-0.1, -0.9, 1}, Color::white(), 2};
+    GlobalLight light9{{-0.3, -0.1, 1}, Color::white(), 2};
+    Plane plane1{{-100, 0, 0}, {1, 0, 1}, Color::skyBlue()};
+    Plane plane2{{0, -100, 0}, {0, 1, 1}, Color::skyBlue()};
+    Plane plane3{{100, 0, 0}, {-1, 0, 1}, Color::skyBlue()};
+    Plane plane45{{0, 100, 0}, {0, -1, 1}, Color::skyBlue()};
+    Plane plane4{{0, 0, -10}, {0, 0, 1}, Color::white()};
+  Model model("../models/Man.obj");
+//  for (auto i : model.triangles){
+//      std::cout << *i << std::endl;
+//  }
+  GraphicalObject cube({0,0,0},{{0,0,0}}, Color::black(), 0.7f);
+  cube.triangles = model.triangles;
+
+
+  SDLDisplayer::display(width, height);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   //        createBlueBallScene(fov, width, height);
-  Camera camera{{0, -28, -5}, fov, glm::vec2((float)width / (float)height, 1)};
-  GlobalLight light8{{-0.1, -0.9, 1}, Color::white(), 2};
-  GlobalLight light9{{-0.3, -0.1, 1}, Color::white(), 2};
-  Plane plane1{{-100, 0, 0}, {1, 0, 1}, Color::skyBlue()};
-  Plane plane2{{0, -100, 0}, {0, 1, 1}, Color::skyBlue()};
-  Plane plane3{{100, 0, 0}, {-1, 0, 1}, Color::skyBlue()};
-  Plane plane45{{0, 100, 0}, {0, -1, 1}, Color::skyBlue()};
-  Plane plane4{{0, 0, -10}, {0, 0, 1}, Color::white()};
-  Sphere sphere1{
-      {-4, 2, -5}, 5, Color{100.f / 100.f, 49.8f / 100.f, 31.4f / 100.f}};
-  Sphere sphere2{{-6, -10, -9}, 1, Color::gold()};
-  Sphere sphere3{{7, 7, -4}, 6, Color::hotpink()};
-  Sphere sphere4{{7, -5, -7}, 3, Color::pink()};
-  sphere1.setReflection(.3f);
-  sphere2.setReflection(.3f);
-  sphere3.setReflection(.3f);
-  sphere4.setReflection(.3f);
+//  Camera camera{{0, -28, -5}, fov, glm::vec2((float)width / (float)height, 1)};
+//  GlobalLight light8{{-0.1, -0.9, 1}, Color::white(), 2};
+//  GlobalLight light9{{-0.3, -0.1, 1}, Color::white(), 2};
+//  Plane plane1{{-100, 0, 0}, {1, 0, 1}, Color::skyBlue()};
+//  Plane plane2{{0, -100, 0}, {0, 1, 1}, Color::skyBlue()};
+//  Plane plane3{{100, 0, 0}, {-1, 0, 1}, Color::skyBlue()};
+//  Plane plane45{{0, 100, 0}, {0, -1, 1}, Color::skyBlue()};
+//  Plane plane4{{0, 0, -10}, {0, 0, 1}, Color::white()};
+//  Sphere sphere1{
+//      {-4, 2, -5}, 5, Color{100.f / 100.f, 49.8f / 100.f, 31.4f / 100.f}};
+//  Sphere sphere2{{-6, -10, -9}, 1, Color::gold()};
+//  Sphere sphere3{{7, 7, -4}, 6, Color::hotpink()};
+//  Sphere sphere4{{7, -5, -7}, 3, Color::pink()};
+//  sphere1.setReflection(.3f);
+//  sphere2.setReflection(.3f);
+//  sphere3.setReflection(.3f);
+//  sphere4.setReflection(.3f);
   //        createFirstSceene(fov, width, height);
   //	Camera camera{{0, -28, 3}, fov, glm::vec2((float)width / (float)height,
   //1)};
@@ -102,17 +142,17 @@ int main(int argv, char *args[]) {
 
   //        sq2.setColor({3, 3, 3});
 
-  //        Cube cube2{glm::vec3{4, -4, 0}, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD,
-  //        -28 * DEG_TO_RAD}}, 6.6f}; Cube cube3{glm::vec3{4, -4, 6.6}, {{0 *
-  //        DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}, 6.6f};
-  ////        plane4.setReflection(.5f);
+//          Cube cube2{glm::vec3{4, -4, 0}, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD,
+//          -28 * DEG_TO_RAD}}, 6.6f}; Cube cube3{glm::vec3{4, -4, 6.6}, {{0 *
+//          DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}, 6.6f};
+//  ////        plane4.setReflection(.5f);
   //
   //
   //
   //        Plane planeWhite2{{0, 200, 200}, {0, -0.5, -1}, Color::skyBlue()};;
   //
-  //        cube2.setReflection(0.3f);
-  //        cube3.setReflection(0.3f);
+//          cube2.setReflection(0.3f);
+//          cube3.setReflection(0.3f);
 
   //        Sphere sphere2{{5, 5, -5}, 5, Color::gold()};
   //	plane1.setReflection(0);
@@ -122,6 +162,6 @@ int main(int argv, char *args[]) {
   //	plane5.setReflection(0);
   //	plane6.setReflection(0);
 
-  SDLDisplayer::display(width, height);
+//  SDLDisplayer::display(width, height);
   return 0;
 }
