@@ -4,7 +4,7 @@
 #include "Scene.h"
 #include "Triangle.h"
 #include "mathExtensions.h"
-
+#include "BoundingBox.h"
 
 GraphicalObject::GraphicalObject(const glm::vec3 pos, glm::quat rot,
                                  Color color, float reflection) : Object(pos, rot)
@@ -12,13 +12,13 @@ GraphicalObject::GraphicalObject(const glm::vec3 pos, glm::quat rot,
 	setColor(color);
 	setReflection(reflection);
 
-	Scene::graphicalObjects.emplace_back(this);
+	Scene::graphicalObjects.emplace_back(std::shared_ptr<GraphicalObject>(this));
 	SDLDisplayer::onUpdate += [this] { updateCameraFacingTriangles(); };
 }
 void GraphicalObject::setColor(Color color)
 {
 	this->material.color = color;
-	for (const auto triangle : triangles)
+	for (const auto& triangle : triangles)
 		triangle->color = color;
 }
 void GraphicalObject::setReflection(float reflection)
@@ -26,12 +26,18 @@ void GraphicalObject::setReflection(float reflection)
 	this->material.reflection = reflection;
 }
 
-void GraphicalObject::findIntersectionWith(Ray& ray, bool intersectAll)
+bool GraphicalObject::intersect(Ray& ray, bool intersectAll)
 {
+	bool intersects = false;
 	for (const auto triangle : intersectAll ? triangles : cameraFacingTriangles)
 	{
-		if (triangle->findIntersectionWith(ray)) ray.material = &material;
+		if (triangle->findIntersectionWith(ray))
+		{
+			ray.material = &material;
+			intersects = true;
+		}
 	}
+	return intersects;
 }
 void GraphicalObject::updateCameraFacingTriangles()
 {
@@ -43,6 +49,29 @@ void GraphicalObject::updateCameraFacingTriangles()
 			continue;
 		cameraFacingTriangles.emplace_back(triangle);
 	}
+}
+bool GraphicalObject::getBoundingBox(AABB& box) const
+{
+	float x_min = FLT_MAX, x_max = FLT_MIN;
+	float y_min = FLT_MAX, y_max = FLT_MIN;
+	float z_min = FLT_MAX, z_max = FLT_MIN;
+
+	for (auto triangle : triangles)
+	{
+		for (auto p : std::vector{triangle->p1, triangle->p2, triangle->p3})
+		{
+			x_min = std::min(x_min, p.x);
+			x_max = std::max(x_max, p.x);
+
+			y_min = std::min(y_min, p.y);
+			y_max = std::max(y_max, p.y);
+
+			z_min = std::min(z_min, p.z);
+			z_max = std::max(z_max, p.z);
+		}
+	}
+	box = {{x_min, y_min, z_min}, {x_max, y_max, z_max}};
+	return true;
 }
 
 void GraphicalObject::setMaterial(Material material)
@@ -65,7 +94,6 @@ Square::Square(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) : GraphicalObject(p1)
 	triangles.emplace_back(new Triangle{p1, p2, p3});
 	triangles.emplace_back(new Triangle{p2, p3, p2 + p3 - p1});
 }
-
 Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(pos, rot)
 {
 	glm::vec3 p1 = pos + rot * glm::vec3(-side / 2, -side / 2, -side / 2);
@@ -94,7 +122,7 @@ Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(pos, rot)
 	triangles.emplace_back(new Triangle(p1, p5, p8));
 }
 
-void Sphere::findIntersectionWith(Ray& ray, bool intersectAll)
+bool Sphere::intersect(Ray& ray, bool intersectAll)
 {
 	float x0, x1;
 	auto inter = (ray.pos - pos);
@@ -110,10 +138,20 @@ void Sphere::findIntersectionWith(Ray& ray, bool intersectAll)
 			ray.interPoint = ray.pos + x0 * ray.dir;
 			ray.surfaceNormal = normalize(ray.interPoint - pos);
 			ray.material = &material;
+
+			return true;
 		}
 	}
+	return false;
 }
-void Plane::findIntersectionWith(Ray& ray, bool intersectAll)
+bool Sphere::getBoundingBox(AABB& box) const
+{
+	glm::vec3 min = pos - glm::vec3(radius, radius, radius);
+	glm::vec3 max = pos + glm::vec3(radius, radius, radius);
+	box = {min, max};
+	return true;
+}
+bool Plane::intersect(Ray& ray, bool intersectAll)
 {
 	float denom = -dot(normal, ray.dir);
 	if (denom > 1e-6)
@@ -127,24 +165,9 @@ void Plane::findIntersectionWith(Ray& ray, bool intersectAll)
 			ray.interPoint = ray.pos + t * ray.dir;
 			ray.surfaceNormal = normal;
 			ray.material = &material;
+
+			return true;
 		}
 	}
-}
-
-SquarePyramid::SquarePyramid(glm::vec3 pos, glm::quat rot, float side,
-                             float height) : GraphicalObject(pos, rot)
-{
-	auto p1 = pos + (left() + backward()) * side * 0.5f;
-	auto p2 = pos + (left() - backward()) * side * 0.5f;
-	auto p3 = pos + (-left() - backward()) * side * 0.5f;
-	auto p4 = pos + (-left() + backward()) * side * 0.5f;
-	auto peak = pos + up() * height;
-
-	triangles.emplace_back(new Triangle(p3, p1, p2));
-	triangles.emplace_back(new Triangle(p4, p1, p3));
-
-	triangles.emplace_back(new Triangle(p2, p1, peak));
-	triangles.emplace_back(new Triangle(p3, p2, peak));
-	triangles.emplace_back(new Triangle(p4, p3, peak));
-	triangles.emplace_back(new Triangle(p1, p4, peak));
+	return false;
 }

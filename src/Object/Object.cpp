@@ -1,10 +1,13 @@
 #include "Object.h"
+
+#include <memory>
+
 #include "Matrix.h"
 #include "Scene.h"
 
 Object::Object(const glm::vec3 pos, glm::quat rot) : pos(pos), rot(rot)
 {
-	Scene::objects.emplace_back(this);
+	Scene::objects.emplace_back(std::shared_ptr<Object>(this));
 }
 
 void Object::setPos(glm::vec3 pos) { this->pos = pos; }

@@ -3,6 +3,8 @@
 #include "Input.h"
 #include "Matrix.h"
 #include <iostream>
+
+#include "BoundingBox.h"
 #include "GraphicalObject.h"
 #include "Scene.h"
 
@@ -20,6 +22,7 @@ int SDLDisplayer::display(int width, int height)
 	renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
 	//    renderTexture= SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
 
+	BVHNode::buildTree(Scene::graphicalObjects);
 	loop();
 
 	SDL_DestroyRenderer(renderer);
