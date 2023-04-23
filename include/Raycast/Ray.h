@@ -14,16 +14,11 @@ struct Ray {
     glm::vec3 pos, dir;
     float closestT;
     glm::vec3 surfaceNormal;
-    Color color;
-    float K_d;
-    float K_s;
-    float N;
-    float reflection;
-
-
     glm::vec3 interPoint;
     float maxDist;
 
+    Color color;
+    const Material *material;
 
     Ray(glm::vec3 pos, glm::vec3 dir, float maxDist = FLT_MAX)
             : pos{pos}, dir{normalize(dir)}, closestT(FLT_MAX), surfaceNormal(),

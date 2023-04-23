@@ -33,10 +33,11 @@ public:
 
 class GlobalLight : public PointLight {
 public:
+
   // pos is the inverse direction of the light
   GlobalLight(glm::vec3 dirInv, Color color, float intensity)
       : PointLight(normalize(dirInv), color, FLT_MAX, intensity) {}
   void getIlluminationAtPoint(const Ray &ray, Color &inColor,
                               Color &inSpecular) override;
 };
-Color getIlluminationAtPoint(const Ray &ray);
+std::pair<Color, Color> getIlluminationAtPoint(const Ray &ray);

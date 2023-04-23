@@ -17,19 +17,17 @@ GraphicalObject::GraphicalObject(const glm::vec3 pos, glm::quat rot,
   SDLDisplayer::onUpdate += [this] { updateCameraFacingTriangles(); };
 }
 void GraphicalObject::setColor(Color color) {
-  this->color = color;
+  this->material.color = color;
   for (const auto triangle : triangles)
     triangle->color = color;
 }
 void GraphicalObject::setReflection(float reflection) {
-  this->reflection = reflection;
-  for (const auto triangle : triangles)
-    triangle->reflection = reflection;
+  this->material.reflection = reflection;
 }
 
 void GraphicalObject::findIntersectionWith(Ray &ray, bool intersectAll) {
   for (const auto triangle : intersectAll ? triangles : cameraFacingTriangles) {
-    triangle->findIntersectionWith(ray);
+    if (triangle->findIntersectionWith(ray)) ray.material = &material;
   }
 }
 void GraphicalObject::updateCameraFacingTriangles() {
@@ -40,6 +38,10 @@ void GraphicalObject::updateCameraFacingTriangles() {
       continue;
     cameraFacingTriangles.emplace_back(triangle);
   }
+}
+
+void GraphicalObject::setMaterial(Material material) {
+    this->material = material;
 }
 
 Square::Square(glm::vec3 pos, glm::quat rot, float side)
@@ -97,7 +99,7 @@ void Sphere::findIntersectionWith(Ray &ray, bool intersectAll) {
       ray.color = color;
       ray.interPoint = ray.pos + x0 * ray.dir;
       ray.surfaceNormal = normalize(ray.interPoint - pos);
-      ray.reflection = reflection;
+      ray.material = &material;
     }
   }
 }
@@ -111,7 +113,7 @@ void Plane::findIntersectionWith(Ray &ray, bool intersectAll) {
       ray.color = color;
       ray.interPoint = ray.pos + t * ray.dir;
       ray.surfaceNormal = normal;
-      ray.reflection = reflection;
+      ray.material = &material;
     }
   }
 }

@@ -53,7 +53,7 @@ void Camera::updatePixelMatrix(uint32_t *pixels, int width, int height) {
 #endif
 
           pixels[(height - y - 1) * width + x] =
-              ((Raycast::castRay(ray1, 3)).toColor32());
+              ((Raycast::castRay(ray1, 5)).toColor32());
         }
       }
     });

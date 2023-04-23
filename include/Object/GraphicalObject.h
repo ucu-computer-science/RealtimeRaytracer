@@ -4,6 +4,7 @@
 #include "Color.h"
 #include "Object.h"
 #include "glm/vec3.hpp"
+#include "Material.h"
 #include <vector>
 
 class Ray;
@@ -11,8 +12,8 @@ class Triangle;
 
 class GraphicalObject : public Object {
 public:
-  float reflection;
-  Color color;
+
+  Material material;
   std::vector<Triangle *> triangles{};
   std::vector<Triangle *> cameraFacingTriangles{};
 
@@ -21,7 +22,9 @@ public:
 
   void setColor(Color color);
   void setReflection(float reflection);
-  virtual void findIntersectionWith(Ray &ray, bool intersectAll = false);
+  void setMaterial(Material material);
+
+    virtual void findIntersectionWith(Ray &ray, bool intersectAll = false);
 
   void updateCameraFacingTriangles();
 };

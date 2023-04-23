@@ -34,7 +34,7 @@ void PointLight::getIlluminationAtPoint(const Ray &ray, Color &inColor,
   // TODO get coefs from material
   auto R = normalize(2 * lightFacingAtPoint * ray.surfaceNormal - (dir));
   inSpecular +=
-      distanceImpact * std::pow(std::max(dot(R, -ray.dir), 0.0f), 2) * color;
+      distanceImpact * std::pow(std::max(dot(R, -ray.dir), 0.0f), ray.material->specular_degree) * color;
 }
 
 void Light::getIlluminationAtPoint(const Ray &ray, Color &inSpecular,
@@ -61,7 +61,7 @@ void Light::getIlluminationAtPoint(const Ray &ray, Color &inSpecular,
     auto R = normalize(2 * lightFacingAtPoint * ray.surfaceNormal - (dir));
     //todo
     inSpecular += distanceImpact *
-                  std::pow(std::max(dot(R, -ray.dir), 0.0f), 250) * color;
+                  std::pow(std::max(dot(R, -ray.dir), 0.0f), ray.material->specular_degree) * color;
   }
 }
 
@@ -88,7 +88,7 @@ Light::Light(glm::vec3 pos, Color color, float distance, float intensity,
   //    this->intensity /= points.size();
 }
 
-Color getIlluminationAtPoint(const Ray &ray) {
+std::pair<Color, Color> getIlluminationAtPoint(const Ray &ray) {
   // todo decide wether this function can be delegated to Ray
   Color color{};
   Color specular{};
@@ -99,7 +99,7 @@ Color getIlluminationAtPoint(const Ray &ray) {
     //    color += std::pow(dot(surfaceNorm, normalize(light->getPos())),
     //    1000)*light->color;
   }
-  return color + (specular * 1);
+  return {color, specular};
 }
 void GlobalLight::getIlluminationAtPoint(const Ray &ray, Color &inSpecular,
                                          Color &inColor) {
@@ -109,5 +109,5 @@ void GlobalLight::getIlluminationAtPoint(const Ray &ray, Color &inSpecular,
   inColor += lightFacingAtPoint * color;
 
   auto R = normalize(2 * lightFacingAtPoint * ray.surfaceNormal - (pos));
-  inSpecular += std::pow(std::max(dot(R, -ray.dir), 0.0f), 250) * color;
+  inSpecular += std::pow(std::max(dot(R, -ray.dir), 0.0f), ray.material->specular_degree) * color;
 }

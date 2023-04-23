@@ -51,11 +51,10 @@ Color Raycast::castRay(Ray ray, int bounce) {
     // slightly above the surface, thus there are slightly more directions to
     // hit
     ray.interPoint += ray.surfaceNormal * .001f;
-//    auto hitinfo = getIlluminationAtPoint(ray.interPoint, ray.surfaceNormal);
-    color += colorImpact * (1 - ray.reflection) * ray.color *
-         getIlluminationAtPoint(ray);
-
-    colorImpact *= ray.reflection;
+    auto hitinfo = getIlluminationAtPoint(ray);
+    color += colorImpact * (1 - ray.material->reflection) * ray.color * (hitinfo.first) * ray.material->diffuse_coeff;
+    color += hitinfo.second * ray.material->specular_coeff;
+    colorImpact *= ray.material->reflection;
     if (colorImpact <= 1e-6)
       break;
     // TODO specular, diffuse, random rays
