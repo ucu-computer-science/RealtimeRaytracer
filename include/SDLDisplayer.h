@@ -1,47 +1,47 @@
 #pragma once
 
-#ifndef RAYTRACER_SDL_DISPLAYER_H
-#define RAYTRACER_SDL_DISPLAYER_H
 #include "Action.h"
 #include <SDL.h>
-#include <functional>
 
-class SDLDisplayer {
+class SDLDisplayer
+{
 public:
-  inline static SDL_Renderer *renderer;
-  inline static SDL_Window *window;
-  inline static SDL_Event event;
-  inline static SDL_Texture *renderTexture;
+	inline static SDL_Renderer* renderer;
+	inline static SDL_Window* window;
+	inline static SDL_Event event;
+	inline static SDL_Texture* renderTexture;
 
-  inline static int width, height;
+	inline static int width, height;
 
-  inline static Action onUpdate{};
+	inline static Action onUpdate{};
 
-  static int display(int width, int height);
-  static void loop();
+	static int display(int width, int height);
+	static void loop();
 };
 
-class FPSCounter {
-  inline static int frameCount = 0;
-  inline static uint32_t lastFrameTime = 0;
+class FPSCounter
+{
+	inline static int frameCount = 0;
+	inline static uint32_t lastFrameTime = 0;
 
 public:
-  inline static uint32_t fps = 0;
-  static void updateFPSCounter();
+	inline static uint32_t fps = 0;
+	static void updateFPSCounter();
 };
 
-class TriangleCounter {
+class TriangleCounter
+{
 public:
-  inline static int triangleCount = 0;
+	inline static int triangleCount = 0;
 
-  static void updateTriangleCounter();
+	static void updateTriangleCounter();
 };
 
-class Time {
+class Time
+{
 public:
-  inline static float time = 0;
-  inline static float deltaTime = 0;
+	inline static float time = 0;
+	inline static float deltaTime = 0;
 
-  static void updateTime();
+	static void updateTime();
 };
-#endif // RAYTRACER_SDL_DISPLAYER_H
