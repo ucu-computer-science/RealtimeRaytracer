@@ -68,22 +68,42 @@ int main(int argv, char *args[]) {
   int width = 640 * 2, height = 360 * 2;
   //        createBlueBallScene(fov, width, height);
   Camera camera{{0, -28, -5}, fov, glm::vec2((float)width / (float)height, 1)};
-  GlobalLight light8{{-0.1, -0.9, 1}, Color::white(), 2};
-  GlobalLight light9{{-0.3, -0.1, 1}, Color::white(), 2};
+//  PointLight light6{
+//      {-2, -4, 10}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, FLT_MAX, 1};
+//  PointLight light6{
+//      {-2, -4, 10}, Color::white(), FLT_MAX, 1};
+  GlobalLight light8{{-0.1, -0.9, 1}, Color::white(), 1};
+
   Plane plane1{{-100, 0, 0}, {1, 0, 1}, Color::skyBlue()};
   Plane plane2{{0, -100, 0}, {0, 1, 1}, Color::skyBlue()};
   Plane plane3{{100, 0, 0}, {-1, 0, 1}, Color::skyBlue()};
   Plane plane45{{0, 100, 0}, {0, -1, 1}, Color::skyBlue()};
   Plane plane4{{0, 0, -10}, {0, 0, 1}, Color::white()};
+//  Plane plane45g{{0, 0, 100}, {0, 0, -1}, Color::skyBlue()};
+
+//  Sphere sphere1{
+//      {-4, 2, -5}, 5, Color{100.f / 100.f, 49.8f / 100.f, 31.4f / 100.f}};
+
+//  Sphere sphere1{
+//      {-4, 2, -5}, 5, Color(0.1f, 0.1f, 0.1f)};
+//  Sphere sphere2{{-6, -10, -9}, 1, Color(0.1f, 0.1f, 0.1f)};
+//  Sphere sphere3{{7, 7, -4}, 6, Color(0.1f, 0.1f, 0.1f)};
+//  Sphere sphere4{{7, -5, -7}, 3, Color(0.1f, 0.1f, 0.1f)};
   Sphere sphere1{
-      {-4, 2, -5}, 5, Color{100.f / 100.f, 49.8f / 100.f, 31.4f / 100.f}};
-  Sphere sphere2{{-6, -10, -9}, 1, Color::gold()};
-  Sphere sphere3{{7, 7, -4}, 6, Color::hotpink()};
-  Sphere sphere4{{7, -5, -7}, 3, Color::pink()};
-  sphere1.setReflection(.3f);
-  sphere2.setReflection(.3f);
-  sphere3.setReflection(.3f);
-  sphere4.setReflection(.3f);
+      {-4, 2, -5}, 5, Color::yellow()};
+  Sphere sphere2{{-6, -10, -9}, 1, Color::yellow()};
+  Sphere sphere3{{7, 7, -4}, 6, Color::yellow()};
+  Sphere sphere4{{7, -5, -7}, 3, Color::yellow()};
+//  sphere1.setReflection(.9f);
+//  sphere2.setReflection(.7f);
+//  sphere3.setReflection(.5f);
+//  sphere4.setReflection(.3f);
+    sphere1.setReflection(.5f);
+    sphere2.setReflection(.5f);
+    sphere3.setReflection(.5f);
+    sphere4.setReflection(.5f);
+    plane4.setReflection(0.5f);
+
   //        createFirstSceene(fov, width, height);
   //	Camera camera{{0, -28, 3}, fov, glm::vec2((float)width / (float)height,
   //1)};

@@ -35,10 +35,15 @@ void Camera::updatePixelMatrix(uint32_t *pixels, int width, int height) {
 #define MT
 // #define ANTIALIASING
 #ifdef MT
+
   for (int yStart = 0; yStart < TASK_COUNT; yStart += 1) {
+
     pool.push_task([this, pixels, width, lbDir, dx, dy, height, yStart] {
       for (int y = yStart; y < height; y += TASK_COUNT) {
+//        srand(0);
+
         for (int x = 0; x < width; x += 1) {
+
 #ifdef ANTIALIASING
           auto ray1 =
               Ray(pos, lbDir + ((float)x + ((float)(rand() % 100) / 100)) * dx +

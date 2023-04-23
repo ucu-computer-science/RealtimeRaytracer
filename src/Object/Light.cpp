@@ -14,13 +14,14 @@ PointLight::PointLight(glm::vec3 pos, Color color, float distance,
 }
 void PointLight::getIlluminationAtPoint(const Ray &ray, Color &inColor,
                                         Color &inSpecular) {
-  auto dist = length(pos - ray.interPoint);
+  auto dir = pos - ray.interPoint;
+  auto dist = length(dir);
 
   if (dist > distance) {
     return;
   }
 
-  auto dir = normalize(pos - ray.interPoint);
+  dir = normalize(dir);
 
   if (Raycast::castShadowRays({pos, -dir, dist}))
     return;
@@ -30,9 +31,10 @@ void PointLight::getIlluminationAtPoint(const Ray &ray, Color &inColor,
 
   inColor += (distanceImpact * lightFacingAtPoint) * color;
 
-  //TODO get coefs from material
-  auto R =  normalize(2*lightFacingAtPoint*ray.surfaceNormal - (dir));
-  inSpecular += distanceImpact*std::pow(std::max(dot(R, -ray.dir), 0.0f), 250)*color;
+  // TODO get coefs from material
+  auto R = normalize(2 * lightFacingAtPoint * ray.surfaceNormal - (dir));
+  inSpecular +=
+      distanceImpact * std::pow(std::max(dot(R, -ray.dir), 0.0f), 2) * color;
 }
 
 void Light::getIlluminationAtPoint(const Ray &ray, Color &inSpecular,
@@ -56,8 +58,10 @@ void Light::getIlluminationAtPoint(const Ray &ray, Color &inSpecular,
 
     inColor += (distanceImpact * lightFacingAtPoint) * color;
 
-    auto R =  normalize(2*lightFacingAtPoint*ray.surfaceNormal - (dir));
-    inSpecular += distanceImpact*std::pow(std::max(dot(R, -ray.dir), 0.0f), 250)*color;
+    auto R = normalize(2 * lightFacingAtPoint * ray.surfaceNormal - (dir));
+    //todo
+    inSpecular += distanceImpact *
+                  std::pow(std::max(dot(R, -ray.dir), 0.0f), 250) * color;
   }
 }
 
@@ -77,22 +81,25 @@ Light::Light(glm::vec3 pos, Color color, float distance, float intensity,
       }
     }
   }
-  this->intensity /= points.size();
-  this->color /= points.size();
+  //  this->intensity /= (float)points.size();
+  // todo weird multiplication by 2
+  this->color =
+      this->color * (2 * intensity / (this->intensity * (float)points.size()));
+  //    this->intensity /= points.size();
 }
 
 Color getIlluminationAtPoint(const Ray &ray) {
-  //todo decide wether this function can be delegated to Ray
+  // todo decide wether this function can be delegated to Ray
   Color color{};
   Color specular{};
   for (const auto light : Scene::lights) {
     light->getIlluminationAtPoint(ray, color, specular);
-    //TODO get coefs from material and move into getIlluminationAtPoint functions
-//    color += std::pow(dot(surfaceNorm, normalize(light->getPos())), 1000)*light->color;
-
-
+    // TODO get coefs from material and move into getIlluminationAtPoint
+    // functions
+    //    color += std::pow(dot(surfaceNorm, normalize(light->getPos())),
+    //    1000)*light->color;
   }
-  return color+(specular*0.25);
+  return color + (specular * 1);
 }
 void GlobalLight::getIlluminationAtPoint(const Ray &ray, Color &inSpecular,
                                          Color &inColor) {
@@ -101,6 +108,6 @@ void GlobalLight::getIlluminationAtPoint(const Ray &ray, Color &inSpecular,
   auto lightFacingAtPoint = std::max(dot(pos, ray.surfaceNormal), 0.f);
   inColor += lightFacingAtPoint * color;
 
-  auto R =  normalize(2*lightFacingAtPoint*ray.surfaceNormal - (pos));
-  inSpecular += std::pow(std::max(dot(R, -ray.dir), 0.0f), 250)*color;
+  auto R = normalize(2 * lightFacingAtPoint * ray.surfaceNormal - (pos));
+  inSpecular += std::pow(std::max(dot(R, -ray.dir), 0.0f), 250) * color;
 }
