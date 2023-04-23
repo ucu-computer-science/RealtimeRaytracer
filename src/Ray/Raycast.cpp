@@ -10,8 +10,7 @@
 
 Color Raycast::castRay(Ray ray, int bounce)
 {
-	Color color{0, 0, 0};
-	Color specular{};
+	Color color;
 
 	bool hit = false;
 	float colorImpact = 1;
@@ -28,18 +27,19 @@ Color Raycast::castRay(Ray ray, int bounce)
 		hit = true;
 
 		ray.interPoint += ray.surfaceNormal * .001f;
-		auto hitInfo = getIlluminationAtPoint(ray);
-		color += colorImpact * (1 - ray.material->reflection) * ray.color * (hitInfo.first) * ray.material->
-			diffuse_coeff;
-		color += hitInfo.second * ray.material->specular_coeff;
-		colorImpact *= ray.material->reflection;
+		auto [diff, spec] = getIlluminationAtPoint(ray);
+		auto& mat = ray.closestObj->material;
+		color += colorImpact * (1 - mat.reflection) * mat.color * diff * mat.diffuseCoeff;
+		color += spec * mat.specularCoeff;
+
+		colorImpact *= ray.closestObj->material.reflection;
 		if (colorImpact <= 1e-6f)
 			break;
 
-		auto dir = ray.dir - (2 * dot(ray.dir, ray.surfaceNormal) * ray.surfaceNormal);
+		auto dir = ray.dir - 2 * dot(ray.dir, ray.surfaceNormal) * ray.surfaceNormal;
 		ray = Ray(ray.interPoint, dir);
 	}
-	color += colorImpact * Camera::instance->bgColor + specular;
+	color += colorImpact * Camera::instance->bgColor;
 	return hit ? color : Camera::instance->bgColor;
 }
 

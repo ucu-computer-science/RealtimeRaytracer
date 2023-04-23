@@ -9,7 +9,7 @@ class Model
 {
 public:
 	explicit Model(std::string path);
-	std::vector<Triangle*> triangles;
+	std::vector<std::shared_ptr<Triangle>> triangles;
 	std::vector<glm::vec3> vertices;
 	std::string path;
 

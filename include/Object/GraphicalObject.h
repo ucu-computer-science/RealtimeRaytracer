@@ -12,17 +12,17 @@ class Triangle;
 
 class GraphicalObject : public Object
 {
+protected:
+	std::vector<std::shared_ptr<Triangle>> triangles{};
+
 public:
+	std::vector<std::shared_ptr<Triangle>> cameraFacingTriangles{};
 	Material material;
-	std::vector<Triangle*> triangles{};
-	std::vector<Triangle*> cameraFacingTriangles{};
 
-	explicit GraphicalObject(glm::vec3 pos = {0, 0, 0}, glm::quat rot = {1, 0, 0, 0},
-	                         Color color = {1, 1, 1}, float reflection = 0);
+	explicit GraphicalObject(glm::vec3 pos = {0, 0, 0}, glm::quat rot = {1, 0, 0, 0}, Material material = {});
 
-	void setColor(Color color);
-	void setReflection(float reflection);
 	void setMaterial(Material material);
+	void addTriangles(std::vector<std::shared_ptr<Triangle>>& triangles);
 
 	virtual bool intersect(Ray& ray, bool intersectAll = false);
 	virtual bool getBoundingBox(AABB& box) const;
@@ -35,7 +35,6 @@ class Square : public GraphicalObject
 {
 public:
 	Square(glm::vec3 pos, glm::quat rot, float side);
-	Square(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
 };
 
 class Cube final : public GraphicalObject
@@ -47,13 +46,13 @@ public:
 class Sphere final : public GraphicalObject
 {
 	float radius;
-	Color color;
-
 	float radiusSquared;
 
 public:
-	Sphere(glm::vec3 pos, float radius, Color color) : GraphicalObject(pos), radius(radius), color{color},
-	                                                   radiusSquared{radius * radius} {}
+	Sphere(glm::vec3 pos, float radius, Color color) : GraphicalObject(pos), radius(radius), radiusSquared{radius * radius}
+	{
+		material.color = color;
+	}
 
 	bool intersect(Ray& ray, bool intersectAll) override;
 	bool getBoundingBox(AABB& box) const override;
@@ -61,12 +60,13 @@ public:
 
 class Plane final : public GraphicalObject
 {
-	Color color;
 	glm::vec3 normal;
 
 public:
-	Plane(glm::vec3 pos, glm::vec3 normal, Color color) : GraphicalObject(pos), color{color},
-	                                                      normal{normalize(normal)} {}
+	Plane(glm::vec3 pos, glm::vec3 normal, Color color) : GraphicalObject(pos), normal{normalize(normal)}
+	{
+		material.color = color;
+	}
 
 	bool intersect(Ray& ray, bool intersectAll) override;
 	bool getBoundingBox(AABB& box) const override { return false; }

@@ -39,8 +39,8 @@ void Model::parseObject()
 				int index = std::stoi(token.substr(0, pos)) - 1; // OBJ indices are 1-based, so subtract 1
 				triangle.push_back(index);
 			}
-			auto a = new Triangle(vertices[triangle[0]], vertices[triangle[1]], vertices[triangle[2]]);
-			a->isTwoSided = true;
+			auto a = std::make_shared<Triangle>(nullptr, vertices[triangle[0]], vertices[triangle[1]], vertices[triangle[2]]);
+			//a->isTwoSided = true;
 			triangles.emplace_back(a);
 		}
 	}

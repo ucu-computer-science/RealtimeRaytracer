@@ -5,23 +5,27 @@
 struct Material
 {
 	Color color;
-	float diffuse_coeff;
-	float specular_coeff;
-	int specular_degree;
+	float alpha;
+	float diffuseCoeff;
+	float specularCoeff;
+	int specularDegree;
 	float reflection;
 
 	Material(Color color,
-	         float diffuse_coeff,
-	         float specular_coeff,
-	         int specular_degree,
+	         float transparency,
+	         float diffuseCoeff,
+	         float specularCoeff,
+	         int specularDegree,
 	         float reflection) : color{color},
-	                             diffuse_coeff{diffuse_coeff},
-	                             specular_coeff{specular_coeff},
-	                             specular_degree{specular_degree},
+	                             alpha(transparency),
+	                             diffuseCoeff{diffuseCoeff},
+	                             specularCoeff{specularCoeff},
+	                             specularDegree{specularDegree},
 	                             reflection{reflection} {}
-	Material(): color{},
-	            diffuse_coeff{1},
-	            specular_coeff{0},
-	            specular_degree{0},
-	            reflection{0} {};
+	Material(): color(Color::white()),
+	            alpha(1),
+	            diffuseCoeff{1},
+	            specularCoeff{0},
+	            specularDegree{0},
+	            reflection{0} {}
 };

@@ -25,8 +25,6 @@ class BVHNode : GraphicalObject
 	bool isLeaf;
 	std::shared_ptr<GraphicalObject> leafObj;
 
-	 bool includeInBVH() override { return true; }
-
 public:
 	BVHNode(std::vector<std::shared_ptr<GraphicalObject>>& objects, size_t start, size_t end);
 

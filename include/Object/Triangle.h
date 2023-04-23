@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Color.h"
+#include "GraphicalObject.h"
 #include "Ray.h"
 #include "glm/geometric.hpp"
 #include "glm/gtx/string_cast.hpp"
 #include "glm/vec3.hpp"
-#include <iostream>
 
 class Triangle
 {
@@ -23,11 +23,10 @@ class Triangle
 		return {normalize ? glm::normalize(normal) : normal, dot(normal, p1)};
 	}
 
-
 public:
+	GraphicalObject* obj;
 	glm::vec3 p1, p2, p3;
 	PlaneEq planeEq;
-	Color color;
 	bool isTwoSided;
 
 	// precalculated
@@ -37,6 +36,7 @@ public:
 	float valRow1{};
 	float valRow2{};
 	float valRow3{};
+
 
 	void recalculateValues()
 	{
@@ -86,13 +86,10 @@ public:
 			valRow3 = 0.0f;
 		}
 	}
-
 	void recalculatePlaneEq() { planeEq = calcPlaneEq(true); }
 
-	Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3,
-	         Color color = Color::white(), bool isTwoSided = false) : p1{p1}, p2{p2}, p3{p3},
-	                                                                  planeEq{calcPlaneEq(true)}, color{color},
-	                                                                  isTwoSided(isTwoSided)
+	Triangle(GraphicalObject* obj, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, bool isTwoSided = false) : obj(obj), p1{p1}, p2{p2}, p3{p3},
+		planeEq{calcPlaneEq(true)}, isTwoSided(isTwoSided)
 	{
 		recalculateValues();
 	}
@@ -100,29 +97,24 @@ public:
 	bool findIntersectionWith(Ray& ray) const
 	{
 		const float dz = dot(row3, ray.dir);
-
 		if (dz == 0.0f)
 			return false;
 
 		const float oz = dot(row3, ray.pos) + valRow3;
 		const float t = -oz / dz;
-
 		if (t < 0 || ray.closestT < t || t >= ray.maxDist)
 			return false;
 
 		const auto hit = ray.pos + ray.dir * t;
-
 		const float b1 = dot(row1, hit) + valRow1;
-
 		if (b1 < 0.0f || b1 > 1.0f)
 			return false;
-		const float b2 = dot(row2, hit) + valRow2;
 
+		const float b2 = dot(row2, hit) + valRow2;
 		if (b2 < 0.0f || b1 + b2 > 1.0f)
 			return false;
 
 		ray.closestT = t;
-		ray.color = color;
 		ray.surfaceNormal = planeEq.norm;
 		ray.interPoint = hit;
 		return true;

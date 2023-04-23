@@ -1,5 +1,6 @@
 #include "Light.h"
 
+#include "GraphicalObject.h"
 #include "Material.h"
 #include "Raycast.h"
 #include "Scene.h"
@@ -15,23 +16,19 @@ void PointLight::getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& i
 {
 	auto dir = pos - ray.interPoint;
 	auto dist = length(dir);
-
 	if (dist > distance)
 		return;
 
 	dir = normalize(dir);
-
 	if (Raycast::castShadowRays({pos, -dir, dist}))
 		return;
 
 	auto distanceImpact = std::min(1 - (dist / distance), 1.f);
 	auto lightFacingAtPoint = std::max(dot(dir, ray.surfaceNormal), 0.f);
-
 	inColor += (distanceImpact * lightFacingAtPoint) * color;
 
-	// TODO get coefs from material
 	auto R = normalize(2 * lightFacingAtPoint * ray.surfaceNormal - (dir));
-	inSpecular += distanceImpact * std::pow(std::max(dot(R, -ray.dir), 0.0f), ray.material->specular_degree) * color;
+	inSpecular += distanceImpact * (float)std::pow(std::max(dot(R, -ray.dir), 0.0f), ray.closestObj->material.specularDegree) * color;
 }
 
 void Light::getIlluminationAtPoint(const Ray& ray, Color& inSpecular, Color& inColor)
@@ -39,7 +36,6 @@ void Light::getIlluminationAtPoint(const Ray& ray, Color& inSpecular, Color& inC
 	for (const auto& lightPoint : points)
 	{
 		auto dist = length(lightPoint - ray.interPoint);
-
 		if (dist > distance)
 			continue;
 
@@ -49,12 +45,10 @@ void Light::getIlluminationAtPoint(const Ray& ray, Color& inSpecular, Color& inC
 
 		auto distanceImpact = std::max(1 - (dist / distance), 0.f);
 		auto lightFacingAtPoint = std::max(dot(dir, ray.surfaceNormal), 0.f);
-
 		inColor += (distanceImpact * lightFacingAtPoint) * color;
 
 		auto R = normalize(2 * lightFacingAtPoint * ray.surfaceNormal - (dir));
-		inSpecular += distanceImpact * std::pow(std::max(dot(R, -ray.dir), 0.0f), ray.material->specular_degree) *
-			color;
+		inSpecular += distanceImpact * (float)std::pow(std::max(dot(R, -ray.dir), 0.0f), ray.closestObj->material.specularDegree) * color;
 	}
 }
 
@@ -101,5 +95,5 @@ void GlobalLight::getIlluminationAtPoint(const Ray& ray, Color& inSpecular, Colo
 	inColor += lightFacingAtPoint * color;
 
 	auto R = normalize(2 * lightFacingAtPoint * ray.surfaceNormal - (pos));
-	inSpecular += std::pow(std::max(dot(R, -ray.dir), 0.0f), ray.material->specular_degree) * color;
+	inSpecular += (float)std::pow(std::max(dot(R, -ray.dir), 0.0f), ray.closestObj->material.specularDegree) * color;
 }

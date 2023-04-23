@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Color.h"
 #include "Ray.h"
 
 class Triangle;

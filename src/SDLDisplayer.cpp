@@ -75,7 +75,7 @@ void FPSCounter::updateFPSCounter()
 void TriangleCounter::updateTriangleCounter()
 {
 	triangleCount = 0;
-	for (auto obj : Scene::graphicalObjects)
+	for (const auto& obj : Scene::graphicalObjects)
 		triangleCount += (int)obj->cameraFacingTriangles.size();
 }
 
