@@ -17,8 +17,8 @@ int SDLDisplayer::display(int width, int height) {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
   SDL_RenderClear(renderer);
   auto surface = SDL_GetWindowSurface(window);
-//  renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
-    renderTexture= SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
+  renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
+//    renderTexture= SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
 
   loop();
 

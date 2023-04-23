@@ -69,19 +69,19 @@ int main(int argv, char *args[]) {
   constexpr float fov = 1;
   int width = 640 * 2, height = 360 * 2;
       Camera camera{{0, -28, -5}, fov, glm::vec2((float)width / (float)height, 1)};
-    GlobalLight light8{{-0.1, -0.9, 1}, Color::white(), 2};
-    GlobalLight light9{{-0.3, -0.1, 1}, Color::white(), 2};
-    Plane plane1{{-100, 0, 0}, {1, 0, 1}, Color::skyBlue()};
-    Plane plane2{{0, -100, 0}, {0, 1, 1}, Color::skyBlue()};
-    Plane plane3{{100, 0, 0}, {-1, 0, 1}, Color::skyBlue()};
-    Plane plane45{{0, 100, 0}, {0, -1, 1}, Color::skyBlue()};
-    Plane plane4{{0, 0, -10}, {0, 0, 1}, Color::white()};
-  Model model("../models/Man.obj");
+    GlobalLight light8{{-0.1, -0.9, 1}, Color::white(), 1};
+//    GlobalLight light9{{-0.3, -0.1, 1}, Color::white(), 1};
+    Plane plane1{{-100, 0, 0}, {1, 0, 1}, Color::cyan()};
+    Plane plane2{{0, -100, 0}, {0, 1, 1}, Color::cyan()};
+    Plane plane3{{100, 0, 0}, {-1, 0, 1}, Color::cyan()};
+    Plane plane45{{0, 100, 0}, {0, -1, 1}, Color::cyan()};
+    Plane plane4{{0, 0, -10}, {0, 0, 1}, Color::gray()};
+//  Model model("../models/Man.obj");
 //  for (auto i : model.triangles){
 //      std::cout << *i << std::endl;
 //  }
-  GraphicalObject cube({0,0,0},{{0,0,0}}, Color::black(), 0.7f);
-  cube.triangles = model.triangles;
+//  GraphicalObject cube({0,0,0},{{0,0,0}}, Color::black(), 0.7f);
+//  cube.triangles = model.triangles;
 
 
   SDLDisplayer::display(width, height);
