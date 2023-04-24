@@ -4,7 +4,7 @@
 #include "GraphicalObject.h"
 #include "Light.h"
 #include "Ray.h"
-#include "BoundingBox.h"
+#include "BoundingBoxes.h"
 #include "Scene.h"
 
 
@@ -27,12 +27,18 @@ Color Raycast::castRay(Ray ray, int bounce)
 		hit = true;
 
 		ray.interPoint += ray.surfaceNormal * .001f;
-		auto [diff, spec] = getIlluminationAtPoint(ray);
-		auto& mat = ray.closestObj->material;
-		color += colorImpact * (1 - mat.reflection) * mat.color * diff * mat.diffuseCoeff;
-		color += spec * mat.specularCoeff;
 
-		colorImpact *= ray.closestObj->material.reflection;
+		auto& mat = ray.closestObj->material;
+		if (mat.lit)
+		{
+			auto [diff, spec] = getIlluminationAtPoint(ray);
+			color += colorImpact * (1 - mat.reflection) * mat.color * diff * mat.diffuseCoeff;
+			color += spec * mat.specularCoeff;
+		}
+		else
+			color += colorImpact * (1 - mat.reflection) * mat.color;
+
+		colorImpact *= mat.reflection;
 		if (colorImpact <= 1e-6f)
 			break;
 

@@ -1,4 +1,4 @@
-#include "BoundingBox.h"
+#include "BoundingBoxes.h"
 #include "Scene.h"
 #include <algorithm>
 
@@ -35,6 +35,9 @@ AABB AABB::getUnitedBox(const AABB& box1, const AABB& box2)
 
 BVHNode::BVHNode(std::vector<std::shared_ptr<GraphicalObject>>& objects, size_t start, size_t end)
 {
+	material.color = Color::blue();
+	material.lit = false;
+
 	if (start == end)
 	{
 		isLeaf = true;
@@ -64,6 +67,10 @@ bool BVHNode::intersect(Ray& ray, bool intersectAll)
 	if (!box.intersects(ray))
 		return false;
 
+	//Visual
+	if (showBoxes)
+		intersectForVisual(ray);
+
 	if (isLeaf)
 		return leafObj->intersect(ray, intersectAll);
 
@@ -71,7 +78,38 @@ bool BVHNode::intersect(Ray& ray, bool intersectAll)
 	auto hitRight = right->intersect(ray, intersectAll);
 	return hitLeft || hitRight;
 }
+bool BVHNode::intersectForVisual(Ray& ray)
+{
+	auto tMin = FLT_MIN, tMax = FLT_MAX;
+	for (int i = 0; i < 3; i++)
+	{
+		auto invD = 1.0f / ray.dir[i];
+		auto t0 = (box.min[i] - ray.pos[i]) * invD;
+		auto t1 = (box.max[i] - ray.pos[i]) * invD;
+		if (invD < 0.0f)
+			std::swap(t0, t1);
 
+		tMin = t0 > tMin ? t0 : tMin;
+		tMax = t1 < tMax ? t1 : tMax;
+		if (tMax <= tMin)
+			return false;
+	}
+
+	auto point = ray.pos + tMin * ray.dir;
+	if ((std::abs(box.min.x - point.x) > lineWidth && std::abs(box.max.x - point.x) > lineWidth &&
+			std::abs(box.min.y - point.y) > lineWidth && std::abs(box.max.y - point.y) > lineWidth) ||
+		(std::abs(box.min.y - point.y) > lineWidth && std::abs(box.max.y - point.y) > lineWidth &&
+			std::abs(box.min.z - point.z) > lineWidth && std::abs(box.max.z - point.z) > lineWidth) ||
+		(std::abs(box.min.z - point.z) > lineWidth && std::abs(box.max.z - point.z) > lineWidth &&
+			std::abs(box.min.x - point.x) > lineWidth && std::abs(box.max.x - point.x) > lineWidth))
+		return false;
+
+	ray.surfaceNormal = {0, 0, 1};
+	ray.interPoint = point;
+	ray.closestT = tMin;
+	ray.closestObj = this;
+	return true;
+}
 
 
 void BVHNode::buildTree(const std::vector<std::shared_ptr<GraphicalObject>>& objects)

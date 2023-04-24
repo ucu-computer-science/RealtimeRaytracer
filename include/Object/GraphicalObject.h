@@ -34,7 +34,9 @@ public:
 class Square : public GraphicalObject
 {
 public:
-	Square(glm::vec3 pos, glm::quat rot, float side);
+	Square(glm::vec3 pos, glm::quat rot, float side, Material mat = Material());
+
+	bool includeInBVH() override { return false; }
 };
 
 class Cube final : public GraphicalObject

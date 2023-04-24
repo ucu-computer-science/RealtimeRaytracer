@@ -7,7 +7,7 @@
 #include "Triangle.h"
 #include "mathExtensions.h"
 #include "ObjectParser.h"
-#include "BoundingBox.h"
+#include "BoundingBoxes.h"
 
 
 void createBlueBallScene(float fov, int width, int height)
@@ -67,20 +67,25 @@ int main(int argv, char* args[])
 	Camera camera{{0, -28, -5}, fov, glm::vec2((float)width / (float)height, 1)};
 
 	PointLight light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, FLT_MAX, 1};
-	//Square sq{{0, 0, 9.999f}, {{-90 * DEG_TO_RAD, 0, 0}}, 5};
-	//sq.material.color = {3.f, 3.f, 3.f};
-	Plane plane1{{-10, 0, 0}, {1, 0, 0}, Color::red()};
-	Plane plane2{{10, 0, 0}, {-1, 0, 0}, Color::green()};
-	Plane plane3{{0, 0, 10}, {0, 0, -1}, Color::white()};
-	Plane plane4{{0, 0, -10}, {0, 0, 1}, Color::white()};
-	Plane plane5{{0, 10, 0}, {0, -1, 0}, Color::white()};
-	Plane plane6{{0, -10, 0}, {0, 1, 0}, Color::white()};
+	Square sq{{0, 0, 9.999f}, {{-90 * DEG_TO_RAD, 0, 0}}, 5, {{3.f, 3.f, 3.f}}};
+	//Plane plane1{{-10, 0, 0}, {1, 0, 0}, Color::red()};
+	//Plane plane2{{10, 0, 0}, {-1, 0, 0}, Color::green()};
+	//Plane plane3{{0, 0, 10}, {0, 0, -1}, Color::white()};
+	//Plane plane4{{0, 0, -10}, {0, 0, 1}, Color::white()};
+	//Plane plane5{{0, 10, 0}, {0, -1, 0}, Color::white()};
+	//Plane plane6{{0, -10, 0}, {0, 1, 0}, Color::white()};
 	Cube cube1{glm::vec3{4, -4, -6.7}, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}, 6.6f};
-	cube1.material.alpha = 0.1f;
+	Cube cube2{glm::vec3{34, 26, -6.7}, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}, 6.6f};
 	Sphere sphere1{{-4, 2, -5}, 5, Color::skyBlue()};
-	//Model model("../models/Man.obj");
-	//GraphicalObject obj({0, 0, 0}, {{0, 0, 0}});
-	//obj.material.color = Color::black();
+	Sphere sphere2{{26, 32, -5}, 5, Color::skyBlue()};
+
+	cube1.material.lit = false;
+	cube2.material.lit = false;
+	sphere1.material.lit = false;
+	sphere2.material.lit = false;
+
+	//Model model("../../../models/Man.obj");
+	//GraphicalObject obj({0, 0, 0}, {{0, 0, 0}}, {Color::black()});
 	//obj.addTriangles(model.triangles);
 
 	SDLDisplayer::display(width, height);

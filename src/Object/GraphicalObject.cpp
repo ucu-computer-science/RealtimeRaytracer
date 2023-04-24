@@ -4,7 +4,7 @@
 #include "Scene.h"
 #include "Triangle.h"
 #include "mathExtensions.h"
-#include "BoundingBox.h"
+#include "BoundingBoxes.h"
 
 GraphicalObject::GraphicalObject(const glm::vec3 pos, glm::quat rot, Material material) : Object(pos, rot), material(material)
 {
@@ -73,7 +73,7 @@ void GraphicalObject::addTriangles(std::vector<std::shared_ptr<Triangle>>& trian
 	}
 }
 
-Square::Square(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(pos, rot)
+Square::Square(glm::vec3 pos, glm::quat rot, float side, Material mat) : GraphicalObject(pos, rot, mat)
 {
 	glm::vec3 p1 = pos + rot * glm::vec3(-side / 2, 0, -side / 2);
 	glm::vec3 p2 = pos + rot * glm::vec3(-side / 2, 0, side / 2);

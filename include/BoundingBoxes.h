@@ -25,10 +25,15 @@ class BVHNode : GraphicalObject
 	bool isLeaf;
 	std::shared_ptr<GraphicalObject> leafObj;
 
+	// Visual
+	inline static bool showBoxes = true;
+	inline static float lineWidth = 0.1f;
+
 public:
 	BVHNode(std::vector<std::shared_ptr<GraphicalObject>>& objects, size_t start, size_t end);
 
 	bool intersect(Ray& ray, bool intersectAll = false) override;
+	bool intersectForVisual(Ray& ray);
 
 	inline static BVHNode* root;
 	static void buildTree(const std::vector<std::shared_ptr<GraphicalObject>>& objects);

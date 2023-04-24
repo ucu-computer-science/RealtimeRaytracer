@@ -19,9 +19,9 @@ enable_testing()
 
 add_executable (${PROJECT_NAME} "src/main.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp"
         "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/SDLDisplayer.cpp"  "src/Input.cpp" "src/Math/Vec3.cpp" "src/Object/Light.cpp" 
-        src/Material.cpp include/Material.h src/ObjectParser.cpp "src/BoundingBox.cpp" )
+        src/Material.cpp include/Material.h src/ObjectParser.cpp "src/BoundingBoxes.cpp" )
 add_executable (Benchmark "src/Benchmark.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp"
-        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/Math/Vec3.cpp" "src/Object/Light.cpp" "src/BoundingBox.cpp" )
+        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/Math/Vec3.cpp" "src/Object/Light.cpp" "src/BoundingBoxes.cpp" )
 
 # Externally provided libraries
 FetchContent_Declare(googletest

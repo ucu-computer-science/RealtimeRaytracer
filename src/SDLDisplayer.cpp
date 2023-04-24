@@ -4,7 +4,7 @@
 #include "Matrix.h"
 #include <iostream>
 
-#include "BoundingBox.h"
+#include "BoundingBoxes.h"
 #include "GraphicalObject.h"
 #include "Scene.h"
 
