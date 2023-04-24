@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Color.h"
 #include "Object.h"
 #include "glm/vec3.hpp"
 #include "Material.h"
@@ -29,6 +28,14 @@ public:
 	virtual bool includeInBVH() { return true; }
 
 	void updateCameraFacingTriangles();
+};
+
+class ImportedGraphicalObject : GraphicalObject
+{
+public:
+	std::string importPath;
+
+	ImportedGraphicalObject(const std::string& path);
 };
 
 class Square : public GraphicalObject

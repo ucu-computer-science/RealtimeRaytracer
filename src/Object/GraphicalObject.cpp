@@ -5,6 +5,7 @@
 #include "Triangle.h"
 #include "mathExtensions.h"
 #include "BoundingBoxes.h"
+#include "ObjectParser.h"
 
 GraphicalObject::GraphicalObject(const glm::vec3 pos, glm::quat rot, Material material) : Object(pos, rot), material(material)
 {
@@ -30,8 +31,8 @@ void GraphicalObject::updateCameraFacingTriangles()
 	cameraFacingTriangles.clear();
 	for (const auto& triangle : triangles)
 	{
-		auto dir = triangle->p1 - Camera::instance->getPos();
-		if (!triangle->isTwoSided && dot(triangle->planeEq.norm, dir) >= 0)
+		auto dir = triangle->points[0] - Camera::instance->getPos();
+		if (!triangle->isTwoSided && dot(triangle->normal, dir) >= 0)
 			continue;
 		cameraFacingTriangles.emplace_back(triangle);
 	}
@@ -44,7 +45,7 @@ bool GraphicalObject::getBoundingBox(AABB& box) const
 
 	for (const auto& triangle : triangles)
 	{
-		for (auto p : std::vector{triangle->p1, triangle->p2, triangle->p3})
+		for (auto p : triangle->points)
 		{
 			x_min = std::min(x_min, p.x);
 			x_max = std::max(x_max, p.x);
@@ -68,9 +69,17 @@ void GraphicalObject::addTriangles(std::vector<std::shared_ptr<Triangle>>& trian
 {
 	for (auto& t : triangles)
 	{
-		t->obj = this;
+		t->attachToObject(this);
 		this->triangles.emplace_back(t);
 	}
+}
+
+ImportedGraphicalObject::ImportedGraphicalObject(const std::string& path) : importPath(path)
+{
+	importPath = path;
+
+	Model model{path};
+	addTriangles(model.triangles);
 }
 
 Square::Square(glm::vec3 pos, glm::quat rot, float side, Material mat) : GraphicalObject(pos, rot, mat)
@@ -86,15 +95,15 @@ Square::Square(glm::vec3 pos, glm::quat rot, float side, Material mat) : Graphic
 
 Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(pos, rot)
 {
-	glm::vec3 p1 = pos + rot * glm::vec3(-side / 2, -side / 2, -side / 2);
-	glm::vec3 p2 = pos + rot * glm::vec3(-side / 2, -side / 2, side / 2);
-	glm::vec3 p3 = pos + rot * glm::vec3(side / 2, -side / 2, side / 2);
-	glm::vec3 p4 = pos + rot * glm::vec3(side / 2, -side / 2, -side / 2);
+	auto p1 = glm::vec3(-side / 2, -side / 2, -side / 2);
+	auto p2 = glm::vec3(-side / 2, -side / 2, side / 2);
+	auto p3 = glm::vec3(side / 2, -side / 2, side / 2);
+	auto p4 = glm::vec3(side / 2, -side / 2, -side / 2);
 
-	glm::vec3 p5 = pos + rot * glm::vec3(-side / 2, side / 2, -side / 2);
-	glm::vec3 p6 = pos + rot * glm::vec3(-side / 2, side / 2, side / 2);
-	glm::vec3 p7 = pos + rot * glm::vec3(side / 2, side / 2, side / 2);
-	glm::vec3 p8 = pos + rot * glm::vec3(side / 2, side / 2, -side / 2);
+	auto p5 = glm::vec3(-side / 2, side / 2, -side / 2);
+	auto p6 = glm::vec3(-side / 2, side / 2, side / 2);
+	auto p7 = glm::vec3(side / 2, side / 2, side / 2);
+	auto p8 = glm::vec3(side / 2, side / 2, -side / 2);
 
 	triangles.emplace_back(new Triangle(this, p1, p3, p2));
 	triangles.emplace_back(new Triangle(this, p1, p4, p3));

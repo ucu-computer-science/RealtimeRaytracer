@@ -1,15 +1,19 @@
 #include "Input.h"
+
 #include "Camera.h"
 #include "SDLDisplayer.h"
 #include "glm/gtx/string_cast.hpp"
 #include "mathExtensions.h"
 
 bool Input::isFullscreen = false;
+bool Input::isFocused = true;
 float Input::defaultMoveSpeed = 40.0f;
 float Input::rotationSpeed = 10.0f;
 
 void Input::updateInput()
 {
+	if (!isFocused) return;
+
 	auto moveSpeed = defaultMoveSpeed;
 	auto& camera = Camera::instance;
 	keyboardState = SDL_GetKeyboardState(nullptr);
@@ -67,15 +71,8 @@ void Input::updateInput()
 		camera->rotate({0, 0, 9 * -rotationSpeed * Time::deltaTime});
 	}
 
-	// Toggle Fullscreen
-	if (SDLDisplayer::event.key.keysym.sym == SDLK_F11)
-	{
-		isFullscreen = !isFullscreen;
-		SDL_SetWindowFullscreen(SDLDisplayer::window, isFullscreen ? 1 : 0);
-	}
-
 	// Reset camera position and rotation
-	if (keyboardState[SDLK_y])
+	if (keyboardState[SDL_SCANCODE_Y])
 	{
 		camera->getPos() = {0.5, 0, 0.5};
 		camera->getRot() = {1, 0, 0, 0};
@@ -83,7 +80,24 @@ void Input::updateInput()
 }
 void Input::handleSDLEvent(SDL_Event event)
 {
-	if (event.type == SDL_MOUSEMOTION)
+	if (event.type == SDL_KEYDOWN)
+	{
+		if (event.key.keysym.sym == SDLK_F11)
+		{
+			isFullscreen = !isFullscreen;
+			SDL_SetWindowFullscreen(SDLDisplayer::window, isFullscreen ? 1 : 0);
+		}
+		if (event.key.keysym.sym == SDLK_ESCAPE)
+		{
+			isFocused = !isFocused;
+			if (isFocused)
+				SDL_SetRelativeMouseMode(SDL_TRUE);
+			else
+				SDL_SetRelativeMouseMode(SDL_FALSE);
+		}
+	}
+
+	if (event.type == SDL_MOUSEMOTION && isFocused)
 	{
 		auto dx = (float)event.motion.xrel;
 		auto dy = (float)event.motion.yrel;
