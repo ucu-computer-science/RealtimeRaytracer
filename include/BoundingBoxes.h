@@ -22,7 +22,7 @@ class BVHNode : GraphicalObject
 	AABB box;
 	std::shared_ptr<BVHNode> left;
 	std::shared_ptr<BVHNode> right;
-	bool isLeaf;
+	bool isLeaf = false;
 	std::shared_ptr<GraphicalObject> leafObj;
 
 	// Visual

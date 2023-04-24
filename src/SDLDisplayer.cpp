@@ -7,7 +7,7 @@
 #include "BoundingBoxes.h"
 #include "GraphicalObject.h"
 #include "Scene.h"
-
+#include "Canvas.h"
 
 int SDLDisplayer::display(int width, int height)
 {
@@ -18,9 +18,10 @@ int SDLDisplayer::display(int width, int height)
 	SDL_CreateWindowAndRenderer(width, height, 0, &window, &renderer);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 	SDL_RenderClear(renderer);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
 	auto surface = SDL_GetWindowSurface(window);
 	renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
-	//    renderTexture= SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
 
 	BVHNode::buildTree(Scene::graphicalObjects);
 	loop();
@@ -38,14 +39,18 @@ void SDLDisplayer::loop()
 	while (true)
 	{
 		while (SDL_PollEvent(&event))
-			continue;
-		if (event.type == SDL_QUIT)
-			break;
+		{
+			Input::handleSDLEvent(event);
+			if (event.type == SDL_QUIT)
+				break;
+		}
 
 		Time::updateTime();
 		Input::updateInput();
 		onUpdate();
+
 		Camera::instance->updatePixelMatrix(pixels, width, height);
+		Canvas::drawUI(pixels, width, height);
 
 		// Stats
 		FPSCounter::updateFPSCounter();
@@ -57,7 +62,6 @@ void SDLDisplayer::loop()
 		SDL_RenderCopy(renderer, renderTexture, nullptr, nullptr);
 		SDL_RenderPresent(renderer);
 	}
-	delete[] pixels;
 }
 
 void FPSCounter::updateFPSCounter()

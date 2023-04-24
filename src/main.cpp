@@ -67,7 +67,7 @@ int main(int argv, char* args[])
 	Camera camera{{0, -28, -5}, fov, glm::vec2((float)width / (float)height, 1)};
 
 	PointLight light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, FLT_MAX, 1};
-	Square sq{{0, 0, 9.999f}, {{-90 * DEG_TO_RAD, 0, 0}}, 5, {{3.f, 3.f, 3.f}}};
+	//Square sq{{0, 0, 9.999f}, {{-90 * DEG_TO_RAD, 0, 0}}, 5, {{3.f, 3.f, 3.f}}};
 	//Plane plane1{{-10, 0, 0}, {1, 0, 0}, Color::red()};
 	//Plane plane2{{10, 0, 0}, {-1, 0, 0}, Color::green()};
 	//Plane plane3{{0, 0, 10}, {0, 0, -1}, Color::white()};

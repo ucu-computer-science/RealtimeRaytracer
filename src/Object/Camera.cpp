@@ -59,13 +59,12 @@ void Camera::updatePixelMatrix(uint32_t* pixels, int width, int height)
 					auto ray1 = Ray(pos, lbDir + ((float)x) * dx + ((float)y) * dy);
 #endif
 
-          pixels[(height - y - 1) * width + x] =
-              ((Raycast::castRay(ray1, 5)).toColor32());
-        }
-      }
-    });
-  }
-  pool.wait_for_tasks();
+					pixels[(height - y - 1) * width + x] = Raycast::castRay(ray1, 5).toColor32();
+				}
+			}
+		});
+	}
+	pool.wait_for_tasks();
 
 #else
   for (int y = 0; y < height; y += skip) {

@@ -1,6 +1,7 @@
 #include "BoundingBoxes.h"
 #include "Scene.h"
 #include <algorithm>
+#include <iostream>
 
 
 bool AABB::intersects(const Ray& ray, float tMin, float tMax) const
@@ -95,20 +96,37 @@ bool BVHNode::intersectForVisual(Ray& ray)
 			return false;
 	}
 
-	auto point = ray.pos + tMin * ray.dir;
-	if ((std::abs(box.min.x - point.x) > lineWidth && std::abs(box.max.x - point.x) > lineWidth &&
-			std::abs(box.min.y - point.y) > lineWidth && std::abs(box.max.y - point.y) > lineWidth) ||
-		(std::abs(box.min.y - point.y) > lineWidth && std::abs(box.max.y - point.y) > lineWidth &&
-			std::abs(box.min.z - point.z) > lineWidth && std::abs(box.max.z - point.z) > lineWidth) ||
-		(std::abs(box.min.z - point.z) > lineWidth && std::abs(box.max.z - point.z) > lineWidth &&
-			std::abs(box.min.x - point.x) > lineWidth && std::abs(box.max.x - point.x) > lineWidth))
-		return false;
+	auto pointNear = ray.pos + tMin * ray.dir;
+	if (ray.closestT > tMin && ((std::abs(box.min.x - pointNear.x) <= lineWidth || std::abs(box.max.x - pointNear.x) <= lineWidth ||
+			std::abs(box.min.y - pointNear.y) <= lineWidth || std::abs(box.max.y - pointNear.y) <= lineWidth) &&
+		(std::abs(box.min.y - pointNear.y) <= lineWidth || std::abs(box.max.y - pointNear.y) <= lineWidth ||
+			std::abs(box.min.z - pointNear.z) <= lineWidth || std::abs(box.max.z - pointNear.z) <= lineWidth) &&
+		(std::abs(box.min.z - pointNear.z) <= lineWidth || std::abs(box.max.z - pointNear.z) <= lineWidth ||
+			std::abs(box.min.x - pointNear.x) <= lineWidth || std::abs(box.max.x - pointNear.x) <= lineWidth)))
+	{
+		ray.surfaceNormal = {0, 0, 1};
+		ray.interPoint = pointNear;
+		ray.closestT = tMin;
+		ray.closestObj = this;
+		return true;
+	}
 
-	ray.surfaceNormal = {0, 0, 1};
-	ray.interPoint = point;
-	ray.closestT = tMin;
-	ray.closestObj = this;
-	return true;
+	auto pointFar = ray.pos + tMax * ray.dir;
+	if (ray.closestT > tMax && ((std::abs(box.min.x - pointFar.x) <= lineWidth || std::abs(box.max.x - pointFar.x) <= lineWidth ||
+			std::abs(box.min.y - pointFar.y) <= lineWidth || std::abs(box.max.y - pointFar.y) <= lineWidth) &&
+		(std::abs(box.min.y - pointFar.y) <= lineWidth || std::abs(box.max.y - pointFar.y) <= lineWidth ||
+			std::abs(box.min.z - pointFar.z) <= lineWidth || std::abs(box.max.z - pointFar.z) <= lineWidth) &&
+		(std::abs(box.min.z - pointFar.z) <= lineWidth || std::abs(box.max.z - pointFar.z) <= lineWidth ||
+			std::abs(box.min.x - pointFar.x) <= lineWidth || std::abs(box.max.x - pointFar.x) <= lineWidth)))
+	{
+		ray.surfaceNormal = {0, 0, 1};
+		ray.interPoint = pointFar;
+		ray.closestT = tMax;
+		ray.closestObj = this;
+		return true;
+	}
+
+	return false;
 }
 
 
