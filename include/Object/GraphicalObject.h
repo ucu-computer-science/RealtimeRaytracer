@@ -28,7 +28,7 @@ public:
                              glm::vec3 pos = {0, 0, 0},
                              glm::quat rot = {1, 0, 0, 0},
                              Material material = {},
-                             std::string texturePath = {"./default.png"});
+                             std::string texturePath = {"./textures/default.png"});
 
     bool intersect(Ray &ray, bool intersectAll = false) override;
 

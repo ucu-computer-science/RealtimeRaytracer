@@ -82,7 +82,7 @@ int main(int argv, char* args[])
 	GraphicalObject obj(model.triangles,{0, 0, 1}, {{90, 0, 0}}, {Color::white()});
 //	obj.material.lit = false;
     obj.setMaterial({{}, 1, 1, 0, 4000, .1});
-    obj.setTexture("./earth.png");
+    obj.setTexture("./textures/earth.png");
 	//auto t1 = std::shared_ptr<Triangle>(new Triangle(nullptr, {0, 0, 0}, {10, 10, 0}, {10, 10, 10}));
 	////auto t2 = std::shared_ptr<Triangle>(new Triangle(nullptr, {0, 5, 0}, {10, 15, 10}, {15, 10, 0}));
 	//GraphicalObject obj{{t1}};
