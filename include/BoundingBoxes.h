@@ -2,7 +2,6 @@
 
 #include "GraphicalObject.h"
 #include "glm/vec3.hpp"
-#include "Ray.h"
 
 class IIntersectable;
 
@@ -20,25 +19,30 @@ public:
 
 class BVHNode : GraphicalObject
 {
+	inline static constexpr int maxTrianglesPerBox = 5;
+
 	AABB box;
 	std::shared_ptr<BVHNode> left;
 	std::shared_ptr<BVHNode> right;
 	bool isLeaf = false;
-	std::shared_ptr<IIntersectable> leafIntersectable;
-
-	// Visual
-	inline static bool showBoxes = false;
-	inline static float lineWidth = 0.1f;
+	std::vector<std::shared_ptr<IIntersectable>> leafIntersectables{};
 
 public:
 	BVHNode(std::vector<std::shared_ptr<IIntersectable>>& intersectables, size_t start, size_t end);
 	size_t getSplitIndex(std::vector<std::shared_ptr<IIntersectable>>& intersectables, size_t start, size_t end) const;
+	~BVHNode() override { boxCount--; }
 
 	bool intersect(Ray& ray, bool intersectAll = false) override;
-	bool intersectForVisual(Ray& ray);
 
 	inline static std::shared_ptr<BVHNode> root;
 	static std::shared_ptr<BVHNode> buildTree(const std::vector<std::shared_ptr<IIntersectable>>& intersectables);
+
+
+	// Debugging
+	inline static bool showBoxes = false;
+	inline static float lineWidth = 0.03f;
+	inline static int boxCount = 0;
+	bool intersectForVisual(Ray& ray);
 
 	void dfs(const std::string& path = "") const;
 };

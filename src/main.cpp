@@ -64,26 +64,25 @@ int main(int argv, char* args[])
 {
 	constexpr float fov = 1;
 	int width = 640 * 2, height = 360 * 2;
-	Camera camera{{0, -30, 0}, fov, glm::vec2((float)width / (float)height, 1)};
+	Camera camera{{0, -35, 0}, fov, glm::vec2((float)width / (float)height, 1)};
 
 	//PointLight light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, FLT_MAX, 1};
-	Cube cube1{glm::vec3{0, 0, 0}, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, 0 * DEG_TO_RAD}}, 10.0f};
+	//Cube cube1{glm::vec3{0, 0, 0}, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}, 10.0f};
 	//Cube cube2{glm::vec3{34, 26, -6.7}, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}, 6.6f};
 	//Sphere sphere1{{-4, 2, -5}, 5, Color::skyBlue()};
 	//Sphere sphere2{{26, 32, -5}, 5, Color::skyBlue()};
 
-	cube1.material.lit = false;
+	//cube1.material.lit = false;
 	//cube2.material.lit = false;
 	//sphere1.material.lit = false;
 	//sphere2.material.lit = false;
 
-	//Model model("../../../models/Man.obj");
-	//GraphicalObject obj({0, 0, 0}, {{0, 0, 0}}, {Color::black()});
-	//obj.addTriangles(model.triangles);
-
-	//auto t1 = std::shared_ptr<Triangle>(new Triangle(nullptr, {0, 0, 0}, {10, 10, 10}, {10, 10, 0}));
-	//auto t2 = std::shared_ptr<Triangle>(new Triangle(nullptr, {0, 5, 0}, {10, 15, 10}, {15, 10, 0}));
-	//GraphicalObject obj{{t1, t2}};
+	Model model("../../../models/Man.obj");
+	GraphicalObject obj(model.triangles,{0, 0, 1}, {{90, 0, 0}}, {Color::white()});
+	obj.material.lit = false;
+	//auto t1 = std::shared_ptr<Triangle>(new Triangle(nullptr, {0, 0, 0}, {10, 10, 0}, {10, 10, 10}));
+	////auto t2 = std::shared_ptr<Triangle>(new Triangle(nullptr, {0, 5, 0}, {10, 15, 10}, {15, 10, 0}));
+	//GraphicalObject obj{{t1}};
 	//obj.material.color = Color::white();
 	//obj.material.lit = false;
 	//t1->attachToObject(&obj);

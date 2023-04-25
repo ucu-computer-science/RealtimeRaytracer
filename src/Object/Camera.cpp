@@ -48,7 +48,6 @@ void Camera::updatePixelMatrix(uint32_t* pixels, int width, int height)
 	glm::vec3 lbDir = getLeftBotCorner() - pos;
 
 #define MT
-	// #define ANTIALIASING
 #ifdef MT
 
 	for (int yStart = 0; yStart < TASK_COUNT; yStart += 1)
@@ -57,18 +56,13 @@ void Camera::updatePixelMatrix(uint32_t* pixels, int width, int height)
 		{
 			for (int y = yStart; y < height; y += TASK_COUNT)
 			{
-				//        srand(0);
-
 				for (int x = 0; x < width; x += 1)
 				{
 #ifdef ANTIALIASING
-          auto ray1 =
-              Ray(pos, lbDir + ((float)x + ((float)(rand() % 100) / 100)) * dx +
-                           ((float)y + ((float)(rand() % 100) / 100)) * dy);
+					auto ray1 =Ray(pos, lbDir + ((float)x + ((float)(rand() % 100) / 100)) * dx +((float)y + ((float)(rand() % 100) / 100)) * dy);
 #else
-					auto ray1 = Ray(pos, lbDir + ((float)x) * dx + ((float)y) * dy);
+					auto ray1 = Ray(pos, lbDir + (float)x * dx + (float)y * dy);
 #endif
-
 					pixels[(height - y - 1) * width + x] = Raycast::castRay(ray1, 5).toColor32();
 				}
 			}

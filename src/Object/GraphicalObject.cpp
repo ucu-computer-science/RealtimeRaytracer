@@ -7,30 +7,37 @@
 #include "mathExtensions.h"
 #include "BoundingBoxes.h"
 #include "ObjectParser.h"
+#include "Ray.h"
 
 GraphicalObject::GraphicalObject(const std::vector<std::shared_ptr<Triangle>>& triangles, const glm::vec3 pos, glm::quat rot,
                                  Material material) : Object(pos, rot), triangles(triangles), material(material)
 {
+	if (triangles.empty())return;
+
 	for (auto& t : triangles)
 		t->attachToObject(this);
 
-	if (!triangles.empty())
+	updateCameraFacingTriangles();
+	updateBVH();
+	Scene::graphicalObjects.emplace_back(std::shared_ptr<GraphicalObject>(this));
+
+	Camera::onCameraMove += [this]
 	{
 		updateCameraFacingTriangles();
 		updateBVH();
-		Scene::graphicalObjects.emplace_back(std::shared_ptr<GraphicalObject>(this));
-
-		Camera::onCameraMove += [this]
-		{
-			updateCameraFacingTriangles();
-			updateBVH();
-		};
-	}
+	};
 }
 
 bool GraphicalObject::intersect(Ray& ray, bool intersectAll)
 {
-	return rootBVH->intersect(ray);
+	//bool hit = false;
+	//for (const auto& triangle : cameraFacingTriangles)
+	//{
+	//	if (!triangle->intersect(ray))continue;
+	//	hit = true;
+	//}
+	//return hit;
+	return rootBVH->intersect(ray, intersectAll);
 }
 void GraphicalObject::updateCameraFacingTriangles()
 {
@@ -62,7 +69,8 @@ void GraphicalObject::updateBVH()
 	{
 		return std::static_pointer_cast<IIntersectable>(obj);
 	});
-	rootBVH = BVHNode::buildTree(intersectables);
+
+	rootBVH = intersectables.empty() ? nullptr : BVHNode::buildTree(intersectables);
 }
 
 ImportedGraphicalObject::ImportedGraphicalObject(const std::string& path) : GraphicalObject(Model(path).triangles), importPath(path) {}

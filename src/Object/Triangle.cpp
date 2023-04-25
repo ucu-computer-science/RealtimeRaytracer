@@ -112,7 +112,7 @@ AABB Triangle::getBoundingBox() const
 		z_min = std::min(z_min, p.z);
 		z_max = std::max(z_max, p.z);
 	}
-	return {{x_min - 0.25f, y_min - 0.25f, z_min - 0.25f}, {x_max + 0.25f, y_max + 0.25f, z_max + 0.25f}};
+	return {{x_min - 0.05f, y_min - 0.05f, z_min - 0.05f}, {x_max + 0.05f, y_max + 0.05f, z_max + 0.05f}};
 }
 
 glm::vec3 Triangle::getCenter() const
