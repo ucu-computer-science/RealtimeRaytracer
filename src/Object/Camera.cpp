@@ -5,9 +5,10 @@
 #include "Triangle.h"
 
 Camera::Camera(glm::vec3 pos, float fov, glm::vec2 size)
-    : Object(pos), fov(fov), size{size}, bgColor(Color::black()) {
+    : Object(pos), fov(fov), size{size}, bgColor(Color::skyBlue()) {
   if (instance != nullptr)
     throw std::runtime_error("Camera object already exists.");
+
   instance = this;
   skip = 1;
 }

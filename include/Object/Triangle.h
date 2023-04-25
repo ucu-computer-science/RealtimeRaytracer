@@ -4,6 +4,8 @@
 
 #include "Color.h"
 #include "Ray.h"
+#include "ColorTexture.h"
+
 #include "glm/geometric.hpp"
 #include "glm/gtx/string_cast.hpp"
 #include "glm/vec3.hpp"
@@ -29,7 +31,7 @@ public:
     PlaneEq planeEq;
     Color color;
     bool isTwoSided;
-
+    ColorTexture texture;
     // precalculated
     glm::vec3 row1{};
     glm::vec3 row2{};
@@ -83,7 +85,7 @@ public:
 
     Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3,
              Color color = Color::white(), bool isTwoSided = false)
-            : p1{p1}, p2{p2}, p3{p3}, planeEq{calcPlaneEq(true)}, color{color}, isTwoSided(isTwoSided) {
+            : p1{p1}, p2{p2}, p3{p3}, planeEq{calcPlaneEq(true)}, color{color}, isTwoSided(isTwoSided), texture{"./default.png"} {
         recalculateValues();
     }
 
@@ -112,7 +114,7 @@ public:
             return false;
 
         ray.closestT = t;
-        ray.color = color;
+        ray.color = texture.getColor(b1, b2);
         ray.surfaceNormal = planeEq.norm;
         ray.interPoint = hit;
         return true;
