@@ -8,7 +8,8 @@
 bool Input::isFullscreen = false;
 bool Input::isFocused = true;
 float Input::defaultMoveSpeed = 40.0f;
-float Input::rotationSpeed = 10.0f;
+float Input::keyRotationSpeed = 90.0f;
+float Input::mouseRotationSpeed = 0.5f;
 
 void Input::updateInput()
 {
@@ -42,33 +43,33 @@ void Input::updateInput()
 	}
 	if (keyboardState[SDL_SCANCODE_Q])
 	{
-		camera->translate(camera->up() * moveSpeed * Time::deltaTime);
+		camera->translate(glm::vec3{0, 0, 1} * moveSpeed * Time::deltaTime);
 	}
 	if (keyboardState[SDL_SCANCODE_E])
 	{
-		camera->translate(camera->down() * moveSpeed * Time::deltaTime);
+		camera->translate(glm::vec3{0, 0, -1} * moveSpeed * Time::deltaTime);
 	}
 
 	// Rotation
 	if (keyboardState[SDL_SCANCODE_UP])
 	{
 		auto rot = eulerAngles(camera->getRot()) * RAD_TO_DEG;
-		auto newRot = glm::vec3(glm::clamp(rot.x + 9 * rotationSpeed * Time::deltaTime, -90.0f, 90.0f), rot.y, rot.z);
+		auto newRot = glm::vec3(glm::clamp(rot.x + keyRotationSpeed * Time::deltaTime, -90.0f, 90.0f), rot.y, rot.z);
 		camera->setRot({newRot * DEG_TO_RAD});
 	}
 	if (keyboardState[SDL_SCANCODE_DOWN])
 	{
 		auto rot = eulerAngles(camera->getRot()) * RAD_TO_DEG;
-		auto newRot = glm::vec3(glm::clamp(rot.x - 9 * rotationSpeed * Time::deltaTime, -90.0f, 90.0f), rot.y, rot.z);
+		auto newRot = glm::vec3(glm::clamp(rot.x - keyRotationSpeed * Time::deltaTime, -90.0f, 90.0f), rot.y, rot.z);
 		camera->setRot({newRot * DEG_TO_RAD});
 	}
 	if (keyboardState[SDL_SCANCODE_LEFT])
 	{
-		camera->rotate({0, 0, 9 * rotationSpeed * Time::deltaTime});
+		camera->rotate({0, 0, keyRotationSpeed * Time::deltaTime});
 	}
 	if (keyboardState[SDL_SCANCODE_RIGHT])
 	{
-		camera->rotate({0, 0, 9 * -rotationSpeed * Time::deltaTime});
+		camera->rotate({0, 0, -keyRotationSpeed * Time::deltaTime});
 	}
 
 	// Reset camera position and rotation
@@ -105,9 +106,9 @@ void Input::handleSDLEvent(SDL_Event event)
 		auto& camera = Camera::instance;
 		auto rot = glm::eulerAngles(camera->getRot()) * RAD_TO_DEG;
 
-		auto newX = glm::clamp(rot.x - dy * rotationSpeed * Time::deltaTime, -90.0f, 90.0f);
+		auto newX = glm::clamp(rot.x - dy * mouseRotationSpeed, -90.0f, 90.0f);
 		auto newY = rot.y;
-		auto newZ = rot.z - dx * rotationSpeed * Time::deltaTime;
+		auto newZ = rot.z - dx * mouseRotationSpeed;
 
 		auto newRot = glm::vec3(newX, newY, newZ);
 		camera->setRot({newRot * DEG_TO_RAD});

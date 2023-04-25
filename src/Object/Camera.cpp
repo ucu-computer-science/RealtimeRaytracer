@@ -11,6 +11,16 @@ Camera::Camera(glm::vec3 pos, float fov, glm::vec2 size) : Object(pos), fov(fov)
 	instance = this;
 	skip = 1;
 }
+void Camera::translate(const glm::vec3& v)
+{
+	Object::translate(v);
+	onCameraMove();
+}
+void Camera::rotate(const glm::vec3& degrees)
+{
+	Object::rotate(degrees);
+	onCameraRotate();
+}
 
 glm::vec3 Camera::getScreenCenter() const { return pos + forward() * fov; }
 glm::vec3 Camera::getLeftBotCorner() const

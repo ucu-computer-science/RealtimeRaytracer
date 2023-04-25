@@ -8,7 +8,8 @@ public:
 	static bool isFullscreen;
 	static bool isFocused;
 	static float defaultMoveSpeed;
-	static float rotationSpeed;
+	static float keyRotationSpeed;
+	static float mouseRotationSpeed;
 	inline static const Uint8* keyboardState;
 
 	static void updateInput();

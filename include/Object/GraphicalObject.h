@@ -4,29 +4,29 @@
 #include "glm/vec3.hpp"
 #include "Material.h"
 #include <vector>
+#include "IIntersectable.h"
 
+class BVHNode;
 class AABB;
 struct Ray;
 class Triangle;
 
-class GraphicalObject : public Object
+class GraphicalObject : public Object, public IIntersectable
 {
-protected:
-	std::vector<std::shared_ptr<Triangle>> triangles{};
-
 public:
+	const std::vector<std::shared_ptr<Triangle>> triangles{};
 	std::vector<std::shared_ptr<Triangle>> cameraFacingTriangles{};
 	Material material;
+	std::shared_ptr<BVHNode> rootBVH = nullptr;
 
-	explicit GraphicalObject(glm::vec3 pos = {0, 0, 0}, glm::quat rot = {1, 0, 0, 0}, Material material = {});
+	explicit GraphicalObject(const std::vector<std::shared_ptr<Triangle>>& triangles = {}, glm::vec3 pos = {0, 0, 0}, glm::quat rot = {1, 0, 0, 0},
+	                         Material material = {});
 
-	void setMaterial(Material material);
-	void addTriangles(std::vector<std::shared_ptr<Triangle>>& triangles);
+	bool intersect(Ray& ray, bool intersectAll = false) override;
+	AABB getBoundingBox() const override;
+	glm::vec3 getCenter() const override { return pos; }
 
-	virtual bool intersect(Ray& ray, bool intersectAll = false);
-	virtual bool getBoundingBox(AABB& box) const;
-	virtual bool includeInBVH() { return true; }
-
+	void updateBVH();
 	void updateCameraFacingTriangles();
 };
 
@@ -42,6 +42,7 @@ class Square : public GraphicalObject
 {
 public:
 	Square(glm::vec3 pos, glm::quat rot, float side, Material mat = Material());
+	std::vector<std::shared_ptr<Triangle>> generateTriangles(float side);
 
 	bool includeInBVH() override { return false; }
 };
@@ -49,6 +50,7 @@ public:
 class Cube final : public GraphicalObject
 {
 public:
+	std::vector<std::shared_ptr<Triangle>> generateTriangles(float side);
 	Cube(glm::vec3 pos, glm::quat rot, float side);
 };
 
@@ -58,13 +60,13 @@ class Sphere final : public GraphicalObject
 	float radiusSquared;
 
 public:
-	Sphere(glm::vec3 pos, float radius, Color color) : GraphicalObject(pos), radius(radius), radiusSquared{radius * radius}
+	Sphere(glm::vec3 pos, float radius, Color color) : GraphicalObject({}, pos), radius(radius), radiusSquared{radius * radius}
 	{
 		material.color = color;
 	}
 
 	bool intersect(Ray& ray, bool intersectAll) override;
-	bool getBoundingBox(AABB& box) const override;
+	AABB getBoundingBox() const override;
 };
 
 class Plane final : public GraphicalObject
@@ -72,12 +74,11 @@ class Plane final : public GraphicalObject
 	glm::vec3 normal;
 
 public:
-	Plane(glm::vec3 pos, glm::vec3 normal, Color color) : GraphicalObject(pos), normal{normalize(normal)}
+	Plane(glm::vec3 pos, glm::vec3 normal, Color color) : GraphicalObject({}, pos), normal{normalize(normal)}
 	{
 		material.color = color;
 	}
 
 	bool intersect(Ray& ray, bool intersectAll) override;
-	bool getBoundingBox(AABB& box) const override { return false; }
 	bool includeInBVH() override { return false; }
 };

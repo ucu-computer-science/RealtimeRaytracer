@@ -1,6 +1,8 @@
 #include "BoundingBoxes.h"
-#include "Scene.h"
+
 #include <algorithm>
+
+#include "Scene.h"
 #include <iostream>
 
 
@@ -21,6 +23,7 @@ bool AABB::intersects(const Ray& ray, float tMin, float tMax) const
 	}
 	return true;
 }
+
 AABB AABB::getUnitedBox(const AABB& box1, const AABB& box2)
 {
 	auto x_min = std::min(box1.min.x, box2.min.x);
@@ -34,7 +37,7 @@ AABB AABB::getUnitedBox(const AABB& box1, const AABB& box2)
 	return {{x_min, y_min, z_min}, {x_max, y_max, z_max}};
 }
 
-BVHNode::BVHNode(std::vector<std::shared_ptr<GraphicalObject>>& objects, size_t start, size_t end)
+BVHNode::BVHNode(std::vector<std::shared_ptr<IIntersectable>>& intersectables, size_t start, size_t end)
 {
 	material.color = Color::blue();
 	material.lit = false;
@@ -42,25 +45,43 @@ BVHNode::BVHNode(std::vector<std::shared_ptr<GraphicalObject>>& objects, size_t 
 	if (start == end)
 	{
 		isLeaf = true;
-		leafObj = objects[start];
-		objects[start]->getBoundingBox(box);
+		leafIntersectable = intersectables[start];
+		box = intersectables[start]->getBoundingBox();
 		return;
 	}
 
-	glm::vec3 size = box.max - box.min;
+	size_t splitIdx = getSplitIndex(intersectables, start, end);
+
+	this->left = std::make_shared<BVHNode>(intersectables, start, splitIdx);
+	this->right = std::make_shared<BVHNode>(intersectables, splitIdx + 1, end);
+
+	box = AABB::getUnitedBox(left->box, right->box);
+}
+size_t BVHNode::getSplitIndex(std::vector<std::shared_ptr<IIntersectable>>& intersectables, size_t start, size_t end) const
+{
+	glm::vec3 min{ FLT_MAX }, max{ -FLT_MAX };
+	for (size_t i = start; i <= end; i++)
+	{
+		auto pos = intersectables[i]->getCenter();
+		min.x = std::min(min.x, pos.x);
+		min.y = std::min(min.y, pos.y);
+		min.z = std::min(min.z, pos.z);
+
+		max.x = std::max(max.x, pos.x);
+		max.y = std::max(max.y, pos.y);
+		max.z = std::max(max.z, pos.z);
+	}
+	auto size = max - min;
 	int axis = 0;
 	if (size.y > size.x) axis = 1;
 	if (size.z > size[axis]) axis = 2;
-	float splitPos = box.min[axis] + size[axis] * 0.5f;
+	float splitPos = min[axis] + size[axis] * 0.5f;
 
-	std::ranges::sort(objects, [axis](auto a, auto b) { return a->getPos()[axis] < b->getPos()[axis]; });
-	size_t splitIdx = start;
-	while (objects[splitIdx]->getPos()[axis] < splitPos && splitIdx < end - 1) splitIdx++;
-
-	this->left = std::make_shared<BVHNode>(objects, start, splitIdx);
-	this->right = std::make_shared<BVHNode>(objects, splitIdx + 1, end);
-
-	box = AABB::getUnitedBox(left->box, right->box);
+	std::sort(intersectables.begin() + start, intersectables.begin() + end,
+		[axis](auto a, auto b) { return a->getCenter()[axis] < b->getCenter()[axis]; });
+	auto splitIdx = start;
+	while (intersectables[splitIdx]->getCenter()[axis] < splitPos && splitIdx < end - 1) splitIdx++;
+	return splitIdx;
 }
 
 bool BVHNode::intersect(Ray& ray, bool intersectAll)
@@ -73,15 +94,16 @@ bool BVHNode::intersect(Ray& ray, bool intersectAll)
 		intersectForVisual(ray);
 
 	if (isLeaf)
-		return leafObj->intersect(ray, intersectAll);
+		return leafIntersectable->intersect(ray, intersectAll);
 
 	auto hitLeft = left->intersect(ray, intersectAll);
 	auto hitRight = right->intersect(ray, intersectAll);
 	return hitLeft || hitRight;
 }
+
 bool BVHNode::intersectForVisual(Ray& ray)
 {
-	auto tMin = FLT_MIN, tMax = FLT_MAX;
+	auto tMin = -FLT_MAX, tMax = FLT_MAX;
 	for (int i = 0; i < 3; i++)
 	{
 		auto invD = 1.0f / ray.dir[i];
@@ -118,13 +140,26 @@ bool BVHNode::intersectForVisual(Ray& ray)
 }
 
 
-void BVHNode::buildTree(const std::vector<std::shared_ptr<GraphicalObject>>& objects)
+std::shared_ptr<BVHNode> BVHNode::buildTree(const std::vector<std::shared_ptr<IIntersectable>>& intersectables)
 {
-	std::vector<std::shared_ptr<GraphicalObject>> filteredObjects{};
-	for (const auto& obj : objects)
+	std::vector<std::shared_ptr<IIntersectable>> filtered{};
+	for (const auto& obj : intersectables)
 	{
 		if (!obj->includeInBVH()) continue;
-		filteredObjects.emplace_back(obj);
+		filtered.emplace_back(obj);
 	}
-	root = new BVHNode(filteredObjects, 0, filteredObjects.size() - 1);
+	return std::make_shared<BVHNode>(filtered, 0, filtered.size() - 1);
+}
+
+void BVHNode::dfs(const std::string& path) const
+{
+	if (isLeaf)
+		std::cout << path << "-" << to_string(leafIntersectable->getCenter()) << '\n';
+	else
+		std::cout << path << '\n';
+
+	if (left)
+		left->dfs(path + "-left");
+	if (right)
+		right->dfs(path + "-right");
 }

@@ -1,7 +1,7 @@
 #include "Triangle.h"
 
 #include "Ray.h"
-
+#include "BoundingBoxes.h"
 
 void Triangle::recalculateValues()
 {
@@ -57,16 +57,18 @@ Triangle::Triangle(GraphicalObject* obj, glm::vec3 p1, glm::vec3 p2, glm::vec3 p
 	localNormal(normalize(cross(localPoints[1] - localPoints[0], localPoints[2] - localPoints[1]))),
 	isTwoSided(isTwoSided)
 {
-	attachToObject(obj);
+	if (obj != nullptr)
+		attachToObject(obj);
 }
 void Triangle::attachToObject(GraphicalObject* obj)
 {
 	this->obj = obj;
-	updateLocal();
+
+	updateGeometry();
 	recalculateValues();
 }
 
-bool Triangle::findIntersectionWith(Ray& ray) const
+bool Triangle::intersect(Ray& ray, bool intersectAll)
 {
 	const float dz = dot(row3, ray.dir);
 	if (dz == 0.0f)
@@ -87,12 +89,38 @@ bool Triangle::findIntersectionWith(Ray& ray) const
 		return false;
 
 	ray.closestT = t;
+	ray.closestObj = obj;
 	ray.surfaceNormal = normal;
 	ray.interPoint = hit;
 	return true;
 }
 
-void Triangle::updateLocal()
+AABB Triangle::getBoundingBox() const
+{
+	float x_min = FLT_MAX, x_max = -FLT_MAX;
+	float y_min = FLT_MAX, y_max = -FLT_MAX;
+	float z_min = FLT_MAX, z_max = -FLT_MAX;
+
+	for (const auto& p : points)
+	{
+		x_min = std::min(x_min, p.x);
+		x_max = std::max(x_max, p.x);
+
+		y_min = std::min(y_min, p.y);
+		y_max = std::max(y_max, p.y);
+
+		z_min = std::min(z_min, p.z);
+		z_max = std::max(z_max, p.z);
+	}
+	return {{x_min - 0.25f, y_min - 0.25f, z_min - 0.25f}, {x_max + 0.25f, y_max + 0.25f, z_max + 0.25f}};
+}
+
+glm::vec3 Triangle::getCenter() const
+{
+	return (points[0] + points[1] + points[2]) * 0.333f;
+}
+
+void Triangle::updateGeometry()
 {
 	points = {
 		obj->getRot() * localPoints[0] + obj->getPos(),

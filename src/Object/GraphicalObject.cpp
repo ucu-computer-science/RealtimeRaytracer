@@ -1,4 +1,5 @@
 #include "GraphicalObject.h"
+
 #include "Camera.h"
 #include "SDLDisplayer.h"
 #include "Scene.h"
@@ -7,24 +8,29 @@
 #include "BoundingBoxes.h"
 #include "ObjectParser.h"
 
-GraphicalObject::GraphicalObject(const glm::vec3 pos, glm::quat rot, Material material) : Object(pos, rot), material(material)
+GraphicalObject::GraphicalObject(const std::vector<std::shared_ptr<Triangle>>& triangles, const glm::vec3 pos, glm::quat rot,
+                                 Material material) : Object(pos, rot), triangles(triangles), material(material)
 {
-	Scene::graphicalObjects.emplace_back(std::shared_ptr<GraphicalObject>(this));
-	SDLDisplayer::onUpdate += [this] { updateCameraFacingTriangles(); };
+	for (auto& t : triangles)
+		t->attachToObject(this);
+
+	if (!triangles.empty())
+	{
+		updateCameraFacingTriangles();
+		updateBVH();
+		Scene::graphicalObjects.emplace_back(std::shared_ptr<GraphicalObject>(this));
+
+		Camera::onCameraMove += [this]
+		{
+			updateCameraFacingTriangles();
+			updateBVH();
+		};
+	}
 }
 
 bool GraphicalObject::intersect(Ray& ray, bool intersectAll)
 {
-	bool intersects = false;
-	for (const auto& triangle : intersectAll ? triangles : cameraFacingTriangles)
-	{
-		if (triangle->findIntersectionWith(ray))
-		{
-			ray.closestObj = this;
-			intersects = true;
-		}
-	}
-	return intersects;
+	return rootBVH->intersect(ray);
 }
 void GraphicalObject::updateCameraFacingTriangles()
 {
@@ -37,63 +43,49 @@ void GraphicalObject::updateCameraFacingTriangles()
 		cameraFacingTriangles.emplace_back(triangle);
 	}
 }
-bool GraphicalObject::getBoundingBox(AABB& box) const
+AABB GraphicalObject::getBoundingBox() const
 {
-	float x_min = FLT_MAX, x_max = FLT_MIN;
-	float y_min = FLT_MAX, y_max = FLT_MIN;
-	float z_min = FLT_MAX, z_max = FLT_MIN;
+	if (triangles.empty()) return {{0, 0, 0}, {0, 0, 0}};
+	if (triangles.size() == 1) return triangles[0]->getBoundingBox();
 
-	for (const auto& triangle : triangles)
+	auto united = triangles[0]->getBoundingBox();
+	for (size_t i = 1; i < triangles.size(); ++i)
 	{
-		for (auto p : triangle->points)
-		{
-			x_min = std::min(x_min, p.x);
-			x_max = std::max(x_max, p.x);
-
-			y_min = std::min(y_min, p.y);
-			y_max = std::max(y_max, p.y);
-
-			z_min = std::min(z_min, p.z);
-			z_max = std::max(z_max, p.z);
-		}
+		united = AABB::getUnitedBox(united, triangles[i]->getBoundingBox());
 	}
-	box = {{x_min, y_min, z_min}, {x_max, y_max, z_max}};
-	return true;
+	return united;
 }
-
-void GraphicalObject::setMaterial(Material material)
+void GraphicalObject::updateBVH()
 {
-	this->material = material;
-}
-void GraphicalObject::addTriangles(std::vector<std::shared_ptr<Triangle>>& triangles)
-{
-	for (auto& t : triangles)
+	auto intersectables = std::vector<std::shared_ptr<IIntersectable>>(cameraFacingTriangles.size());
+	std::ranges::transform(cameraFacingTriangles, intersectables.begin(), [](const std::shared_ptr<Triangle>& obj)
 	{
-		t->attachToObject(this);
-		this->triangles.emplace_back(t);
-	}
+		return std::static_pointer_cast<IIntersectable>(obj);
+	});
+	rootBVH = BVHNode::buildTree(intersectables);
 }
 
-ImportedGraphicalObject::ImportedGraphicalObject(const std::string& path) : importPath(path)
+ImportedGraphicalObject::ImportedGraphicalObject(const std::string& path) : GraphicalObject(Model(path).triangles), importPath(path) {}
+
+Square::Square(glm::vec3 pos, glm::quat rot, float side, Material mat) : GraphicalObject(generateTriangles(side), pos, rot, mat) {}
+std::vector<std::shared_ptr<Triangle>> Square::generateTriangles(float side)
 {
-	importPath = path;
+	auto p1 = glm::vec3(-side / 2, 0, -side / 2);
+	auto p2 = glm::vec3(-side / 2, 0, side / 2);
+	auto p3 = glm::vec3(side / 2, 0, side / 2);
+	auto p4 = glm::vec3(side / 2, 0, -side / 2);
 
-	Model model{path};
-	addTriangles(model.triangles);
+	std::vector<std::shared_ptr<Triangle>> triangles;
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p2, p3));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p3, p4));
+	return triangles;
 }
 
-Square::Square(glm::vec3 pos, glm::quat rot, float side, Material mat) : GraphicalObject(pos, rot, mat)
+Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(generateTriangles(side), pos, rot)
 {
-	glm::vec3 p1 = pos + rot * glm::vec3(-side / 2, 0, -side / 2);
-	glm::vec3 p2 = pos + rot * glm::vec3(-side / 2, 0, side / 2);
-	glm::vec3 p3 = pos + rot * glm::vec3(side / 2, 0, side / 2);
-	glm::vec3 p4 = pos + rot * glm::vec3(side / 2, 0, -side / 2);
-
-	triangles.emplace_back(new Triangle(this, p1, p2, p3));
-	triangles.emplace_back(new Triangle(this, p1, p3, p4));
+	generateTriangles(side);
 }
-
-Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(pos, rot)
+std::vector<std::shared_ptr<Triangle>> Cube::generateTriangles(float side)
 {
 	auto p1 = glm::vec3(-side / 2, -side / 2, -side / 2);
 	auto p2 = glm::vec3(-side / 2, -side / 2, side / 2);
@@ -105,20 +97,22 @@ Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(pos, rot)
 	auto p7 = glm::vec3(side / 2, side / 2, side / 2);
 	auto p8 = glm::vec3(side / 2, side / 2, -side / 2);
 
-	triangles.emplace_back(new Triangle(this, p1, p3, p2));
-	triangles.emplace_back(new Triangle(this, p1, p4, p3));
-	triangles.emplace_back(new Triangle(this, p5, p6, p7));
-	triangles.emplace_back(new Triangle(this, p5, p7, p8));
+	std::vector<std::shared_ptr<Triangle>> triangles;
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p3, p2));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p4, p3));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p5, p6, p7));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p5, p7, p8));
 
-	triangles.emplace_back(new Triangle(this, p1, p2, p6));
-	triangles.emplace_back(new Triangle(this, p1, p6, p5));
-	triangles.emplace_back(new Triangle(this, p4, p7, p3));
-	triangles.emplace_back(new Triangle(this, p4, p8, p7));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p2, p6));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p6, p5));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p4, p7, p3));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p4, p8, p7));
 
-	triangles.emplace_back(new Triangle(this, p2, p3, p7));
-	triangles.emplace_back(new Triangle(this, p2, p7, p6));
-	triangles.emplace_back(new Triangle(this, p1, p8, p4));
-	triangles.emplace_back(new Triangle(this, p1, p5, p8));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p2, p3, p7));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p2, p7, p6));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p8, p4));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p5, p8));
+	return triangles;
 }
 
 bool Sphere::intersect(Ray& ray, bool intersectAll)
@@ -142,20 +136,19 @@ bool Sphere::intersect(Ray& ray, bool intersectAll)
 	}
 	return false;
 }
-bool Sphere::getBoundingBox(AABB& box) const
+AABB Sphere::getBoundingBox() const
 {
 	glm::vec3 min = pos - glm::vec3(radius, radius, radius);
 	glm::vec3 max = pos + glm::vec3(radius, radius, radius);
-	box = {min, max};
-	return true;
+	return {min, max};
 }
 bool Plane::intersect(Ray& ray, bool intersectAll)
 {
 	float denom = -dot(normal, ray.dir);
 	if (denom > 1e-6f)
 	{
-		glm::vec3 p0l0 = pos - ray.pos;
-		float t = -dot(p0l0, normal) / denom;
+		glm::vec3 dir = pos - ray.pos;
+		float t = -dot(dir, normal) / denom;
 		if (t < ray.closestT && t > 0 && t < ray.maxDist)
 		{
 			ray.closestT = t;

@@ -6,6 +6,7 @@ set(USING_VISUAL_STUDIO TRUE)
 set(ENABLE_FAST_MATH ON)
 project ("RayTracer")
 
+
 include(FetchContent)
 include_directories(include)
 include_directories(include/Math)
@@ -19,9 +20,9 @@ enable_testing()
 
 add_executable (${PROJECT_NAME} "src/main.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp"
         "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/SDLDisplayer.cpp"  "src/Input.cpp" "src/Math/Vec3.cpp" "src/Object/Light.cpp" 
-        src/Material.cpp include/Material.h src/ObjectParser.cpp "src/BoundingBoxes.cpp"  "src/Canvas.cpp" "src/Object/Triangle.cpp")
+        src/Material.cpp include/Material.h src/ObjectParser.cpp "src/BoundingBoxes.cpp"  "src/Canvas.cpp" "src/Object/Triangle.cpp" "include/IIntersectable.h")
 add_executable (Benchmark "src/Benchmark.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp"
-        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/Math/Vec3.cpp" "src/Object/Light.cpp" "src/BoundingBoxes.cpp"  "src/Canvas.cpp" "src/Object/Triangle.cpp")
+        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/Math/Vec3.cpp" "src/Object/Light.cpp" "src/BoundingBoxes.cpp"  "src/Canvas.cpp" "src/Object/Triangle.cpp" "include/IIntersectable.h")
 
 # Externally provided libraries
 FetchContent_Declare(googletest

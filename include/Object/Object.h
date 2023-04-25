@@ -18,8 +18,8 @@ public:
 	void setPos(glm::vec3 pos);
 	void setRot(glm::quat rot);
 
-	void translate(const glm::vec3& v);
-	void rotate(const glm::vec3& degrees);
+	virtual void translate(const glm::vec3& v);
+	virtual void rotate(const glm::vec3& degrees);
 
 	glm::vec3 forward() const;
 	glm::vec3 backward() const;

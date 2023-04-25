@@ -23,7 +23,11 @@ int SDLDisplayer::display(int width, int height)
 	auto surface = SDL_GetWindowSurface(window);
 	renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
 
-	BVHNode::buildTree(Scene::graphicalObjects);
+	auto intersectables = std::vector<std::shared_ptr<IIntersectable>>(Scene::graphicalObjects.size());
+	auto f = [](const std::shared_ptr<GraphicalObject>& obj) { return std::static_pointer_cast<IIntersectable>(obj); };
+	std::ranges::transform(Scene::graphicalObjects, intersectables.begin(), f);
+	BVHNode::root = BVHNode::buildTree(intersectables);
+
 	loop();
 
 	SDL_DestroyRenderer(renderer);
@@ -55,8 +59,9 @@ void SDLDisplayer::loop()
 		// Stats
 		FPSCounter::updateFPSCounter();
 		TriangleCounter::updateTriangleCounter();
-		std::cout << "FPS: " << FPSCounter::fps
-			<< "  Triangles:" << TriangleCounter::triangleCount << '\n';
+		if (Input::isFocused)
+			std::cout << "FPS: " << FPSCounter::fps
+				<< "  Triangles: " << TriangleCounter::triangleCount << " Graphical Objects: " << Scene::graphicalObjects.size() << '\n';
 
 		SDL_UpdateTexture(renderTexture, nullptr, pixels, pitch);
 		SDL_RenderCopy(renderer, renderTexture, nullptr, nullptr);
@@ -80,7 +85,7 @@ void TriangleCounter::updateTriangleCounter()
 {
 	triangleCount = 0;
 	for (const auto& obj : Scene::graphicalObjects)
-		triangleCount += (int)obj->cameraFacingTriangles.size();
+		triangleCount += (int)obj->triangles.size();
 }
 
 void Time::updateTime()
