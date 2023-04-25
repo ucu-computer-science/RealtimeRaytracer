@@ -76,20 +76,23 @@ int main(int argv, char* args[])
 	//cube2.material.lit = false;
 	//sphere1.material.lit = false;
 	//sphere2.material.lit = false;
+    GlobalLight light8{{0, -1, 0}, Color::white(), 1};
 
-	Model model("../../../models/Man.obj");
+	Model model("./models/Man.obj");
 	GraphicalObject obj(model.triangles,{0, 0, 1}, {{90, 0, 0}}, {Color::white()});
-	obj.material.lit = false;
+//	obj.material.lit = false;
+    obj.setMaterial({{}, 1, 1, 0, 4000, .1});
+    obj.setTexture("./earth.png");
 	//auto t1 = std::shared_ptr<Triangle>(new Triangle(nullptr, {0, 0, 0}, {10, 10, 0}, {10, 10, 10}));
 	////auto t2 = std::shared_ptr<Triangle>(new Triangle(nullptr, {0, 5, 0}, {10, 15, 10}, {15, 10, 0}));
 	//GraphicalObject obj{{t1}};
 	//obj.material.color = Color::white();
 	//obj.material.lit = false;
 	//t1->attachToObject(&obj);
-    GlobalLight lighczxct8{{0, 1, 0}, Color::white(), 1};
-    Sphere sphere3{{-6, -30, -4}, 6, Color::hotpink()};
-    sphere3.setTexture("./beer.png");
-    sphere3.setMaterial({{}, 1, 0.4, 4000, .1});
+
+//    Sphere sphere3{{-6, -30, -4}, 6, Color::white()};
+//    sphere3.setTexture("./beer.png");
+//    sphere3.setMaterial({{}, 1, 1, 0.4, 4000, .1});
 	SDLDisplayer::display(width, height);
 	return 0;
 }

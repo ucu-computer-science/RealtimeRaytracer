@@ -32,11 +32,11 @@ Color Raycast::castRay(Ray ray, int bounce)
 		if (mat.lit)
 		{
 			auto [diffuse, specular] = getIlluminationAtPoint(ray);
-			color += colorImpact * (1 - mat.reflection) * mat.color * diffuse * mat.diffuseCoeff;
+			color += colorImpact * (1 - mat.reflection) * ray.color * diffuse * mat.diffuseCoeff;
 			color += specular * mat.specularCoeff;
 		}
 		else
-			color += colorImpact * (1 - mat.reflection) * mat.color;
+			color += colorImpact * (1 - mat.reflection) * ray.color;
 
 		colorImpact *= mat.reflection;
 		if (colorImpact <= 1e-6f)
@@ -45,6 +45,7 @@ Color Raycast::castRay(Ray ray, int bounce)
 		auto dir = ray.dir - 2 * dot(ray.dir, ray.surfaceNormal) * ray.surfaceNormal;
 		ray = Ray(ray.interPoint, dir);
 	}
+
 	color += colorImpact * Camera::instance->bgColor;
 	return hit ? color : Camera::instance->bgColor;
 }

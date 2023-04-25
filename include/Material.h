@@ -13,5 +13,18 @@ struct Material
 	float reflection = 0;
 
 	Material(): color(Color::white()) {}
-	Material(Color color) : color(color) { }
+	Material(Color color) : color(color) {}
+    Material(Color color,
+             float alpha,
+             float diffuseCoeff,
+             float specularCoeff,
+             int specularDegree,
+             float reflection) :
+
+            color{color},
+            alpha{alpha},
+            diffuseCoeff{diffuseCoeff},
+            specularCoeff{specularCoeff},
+            specularDegree{specularDegree},
+            reflection{reflection} {}
 };

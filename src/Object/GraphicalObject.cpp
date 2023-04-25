@@ -27,9 +27,7 @@ GraphicalObject::GraphicalObject(const std::vector<std::shared_ptr<Triangle>> &t
     };
 }
 void GraphicalObject::setColor(Color color) {
-    this->material.color = color;
-    for (const auto triangle: triangles)
-        triangle->color = color;
+    material.color = color;
 }
 
 void GraphicalObject::setReflection(float reflection) {
@@ -158,7 +156,6 @@ bool Sphere::intersect(Ray& ray, bool intersectAll)
             float u = atan2(-n.x, n.y) / (2 * PI) + 0.5;
             float v = -n.z * 0.5 + 0.5;
             ray.color = texture.getColor(u, v);
-            ray.material = &material;
 			ray.closestObj = this;
 
 			return true;
@@ -185,7 +182,6 @@ bool Plane::intersect(Ray& ray, bool intersectAll)
             ray.color = material.color;
             ray.interPoint = ray.pos + t * ray.dir;
             ray.surfaceNormal = normal;
-            ray.material = &material;
 			ray.closestObj = this;
 
 			return true;

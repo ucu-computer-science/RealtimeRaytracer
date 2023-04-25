@@ -16,8 +16,6 @@ public:
     std::vector<glm::vec3> points;
     glm::vec3 normal{};
 
-    const ColorTexture *texture;
-
     void updateGeometry();
     // precalculated
     glm::vec3 row1{};
