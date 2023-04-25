@@ -1,23 +1,17 @@
-//
-// Created by Віталій Петричко on 14.04.2023.
-//
-#include "iostream"
-#include <fstream>
-#include "GraphicalObject.h"
+#pragma once
+
 #include <string>
-#include <sstream>
+#include <vector>
+
 #include "Triangle.h"
-#ifndef RAYTRACER_OBJECT_PARSER_H
-#define RAYTRACER_OBJECT_PARSER_H
 
-class Model{
+class Model
+{
 public:
-    explicit Model(std::string path);
-    std::vector<Triangle*> triangles;
-    std::vector<glm::vec3> vertices;
-    std::string path;
+	explicit Model(std::string path);
+	std::vector<std::shared_ptr<Triangle>> triangles;
+	std::vector<glm::vec3> vertices;
+	std::string path;
 
-    void ParseObject();
+	void parseObject();
 };
-
-#endif //RAYTRACER_OBJECT_PARSER_H

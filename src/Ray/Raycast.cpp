@@ -4,47 +4,60 @@
 #include "GraphicalObject.h"
 #include "Light.h"
 #include "Ray.h"
+#include "BoundingBoxes.h"
 #include "Scene.h"
 
-Color Raycast::castRay(Ray ray, int bounce) {
-  Color color{0, 0, 0};
 
-  bool hit = false;
-  float colorImpact = 1;
-  for (int i = 0; i < bounce; ++i) {
-    for (const auto obj : Scene::graphicalObjects) {
-      obj->findIntersectionWith(ray, hit);
-    }
-    if (!ray.hit())
-      break;
+Color Raycast::castRay(Ray ray, int bounce)
+{
+	Color color{};
 
-    hit = true;
-    // this is important. if we dont add this vector ,the ray from the point
-    // will sometimes hit the object it just hit by adding this we get our point
-    // slightly above the surface, thus there are slightly more directions to
-    // hit
-    ray.interPoint += ray.surfaceNormal * ray.closestT/100.f;
-    auto hitinfo = getIlluminationAtPoint(ray);
+	bool hit = false;
+	float colorImpact = 1;
+	for (int i = 0; i < bounce; ++i)
+	{
+		for (const auto& obj : Scene::graphicalObjects)
+		{
+			if (obj->includeInBVH()) continue;
+			obj->intersect(ray);
+		}
+		BVHNode::root->intersect(ray);
+		if (!ray.hit())
+			break;
+		hit = true;
 
-      color += colorImpact * (1 - ray.material->reflection) * ray.color * (hitinfo.first) * ray.material->diffuse_coeff;
-    color += hitinfo.second * ray.material->specular_coeff;
-    colorImpact *= ray.material->reflection;
-    if (colorImpact <= 1e-6)
-      break;
-    // TODO  random rays
-    auto dir = ray.dir - (2 * dot(ray.dir, ray.surfaceNormal) *
-                          ray.surfaceNormal);
-    ray = Ray(ray.interPoint, dir);
-  }
-  color += colorImpact * Camera::instance->bgColor;
-  return hit ? color : Camera::instance->bgColor;
+		ray.interPoint += ray.surfaceNormal * ray.closestT/100.f;
+
+		auto& mat = ray.closestObj->material;
+		if (mat.lit)
+		{
+			auto [diffuse, specular] = getIlluminationAtPoint(ray);
+			color += colorImpact * (1 - mat.reflection) * mat.color * diffuse * mat.diffuseCoeff;
+			color += specular * mat.specularCoeff;
+		}
+		else
+			color += colorImpact * (1 - mat.reflection) * mat.color;
+
+		colorImpact *= mat.reflection;
+		if (colorImpact <= 1e-6f)
+			break;
+
+		auto dir = ray.dir - 2 * dot(ray.dir, ray.surfaceNormal) * ray.surfaceNormal;
+		ray = Ray(ray.interPoint, dir);
+	}
+	color += colorImpact * Camera::instance->bgColor;
+	return hit ? color : Camera::instance->bgColor;
 }
 
-bool Raycast::castShadowRays(Ray ray) {
-  for (const auto obj : Scene::graphicalObjects) {
-    obj->findIntersectionWith(ray, true);
-    if (ray.hit())
-      return true;
-  }
-  return false;
+bool Raycast::castShadowRays(Ray ray)
+{
+	for (const auto& obj : Scene::graphicalObjects)
+	{
+		if (obj->includeInBVH())continue;
+		if (obj->intersect(ray))
+			return true;
+	}
+
+	BVHNode::root->intersect(ray);
+	return ray.hit();
 }

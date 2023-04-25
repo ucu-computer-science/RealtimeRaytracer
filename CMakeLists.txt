@@ -6,6 +6,7 @@ set(USING_VISUAL_STUDIO TRUE)
 set(ENABLE_FAST_MATH ON)
 project ("RayTracer")
 
+
 include(FetchContent)
 include_directories(include)
 include_directories(include/Math)
@@ -18,27 +19,31 @@ link_directories(SDL2/lib/x64)
 enable_testing()
 
 add_executable (${PROJECT_NAME} "src/main.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp"
-        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/SDLDisplayer.cpp"  "src/Input.cpp" "src/Math/Vec3.cpp" "src/Object/Light.cpp" src/Material.cpp include/Material.h src/ObjectParser.cpp include/stb_image.h src/ColorTexture.cpp include/ColorTexture.h)
-add_executable (Benchmark "src/Benchmark.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp"
-        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/Math/Vec3.cpp" "src/Object/Light.cpp")
+        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/SDLDisplayer.cpp"  "src/Input.cpp" "src/Math/Vec3.cpp"
+        "src/Object/Light.cpp" src/Material.cpp include/Material.h src/ObjectParser.cpp
+        include/stb_image.h src/ColorTexture.cpp include/ColorTexture.h
+        "src/BoundingBoxes.cpp"  "src/Canvas.cpp" "src/Object/Triangle.cpp" "include/IIntersectable.h")
+
+#add_executable (Benchmark "src/Benchmark.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp"
+#        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/Math/Vec3.cpp" "src/Object/Light.cpp")
 
 # Externally provided libraries
-FetchContent_Declare(googletest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG v1.10.x)
+#FetchContent_Declare(googletest
+#        GIT_REPOSITORY https://github.com/google/googletest.git
+#        GIT_TAG v1.10.x)
 
-FetchContent_Declare(googlebenchmark
-        GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG main) # need master for benchmark::benchmark
+#FetchContent_Declare(googlebenchmark
+#        GIT_REPOSITORY https://github.com/google/benchmark.git
+#        GIT_TAG main) # need master for benchmark::benchmark
 
-FetchContent_MakeAvailable(
-        googletest
-        googlebenchmark)
+#FetchContent_MakeAvailable(
+#        googletest
+#        googlebenchmark)
 
 if(${USING_VISUAL_STUDIO})
   target_link_libraries(${PROJECT_NAME} SDL2)
   target_link_libraries(${PROJECT_NAME} SDL2main)
-  target_link_libraries(Benchmark benchmark::benchmark)
+#  target_link_libraries(Benchmark benchmark::benchmark)
 else()
   find_package(PkgConfig REQUIRED)
   pkg_check_modules(SDL_PKG REQUIRED IMPORTED_TARGET sdl2)
@@ -56,6 +61,6 @@ endif()
 #target_link_libraries(${PROJECT_NAME} "${SDL2_LIBRARIES}")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET Benchmark  PROPERTY CXX_STANDARD 20)
+  #set_property(TARGET Benchmark  PROPERTY CXX_STANDARD 20)
   set_property(TARGET ${PROJECT_NAME}  PROPERTY CXX_STANDARD 20)
 endif()
