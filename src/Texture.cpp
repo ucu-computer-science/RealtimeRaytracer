@@ -18,7 +18,7 @@ Texture::Texture() : width(2), height(2)
 Texture::Texture(const std::filesystem::path& path) : path(path)
 {
 	std::vector<uint8_t> image;
-	bool success = load_image(image, path);
+	bool success = loadImage(image, path);
 	if (!success)
 		std::cerr << "Error loading texture " << path << "\n";
 
@@ -34,7 +34,7 @@ Texture::Texture(const std::filesystem::path& path) : path(path)
 	}
 }
 
-bool Texture::load_image(std::vector<uint8_t>& image, const std::filesystem::path& filename)
+bool Texture::loadImage(std::vector<uint8_t>& image, const std::filesystem::path& filename)
 {
 	int n;
 	unsigned char* data = stbi_load(filename.string().c_str(), &width, &height, &n, 4);

@@ -61,7 +61,7 @@ Material SceneParser::assignMaterial(json material)
 	mat.color[0] = (float)material["color"][0];
 	mat.color[1] = (float)material["color"][1];
 	mat.color[2] = (float)material["color"][2];
-	if (!material["texturePath"].empty())
+	if ((std::string)material["texturePath"] != "")
 		mat.texture = std::make_shared<Texture>(material["texturePath"]);
 	mat.lit = (bool)material["lit"];
 	mat.diffuseCoeff = (float)material["diffuseCoeff"];

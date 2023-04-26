@@ -65,7 +65,6 @@ public:
 			((int)(glm::clamp(g(), 0.0f, 1.0f) * 255) << 8) +
 			((int)(glm::clamp(b(), 0.0f, 1.0f) * 255) << 0);
 	}
-
 	static Color fromColor32(uint32_t color32)
 	{
 		float a = (float)(color32 >> 24) / 255;
@@ -74,6 +73,7 @@ public:
 		float b = (float)(color32 >> 0) / 255;
 		return {r, g, b, a};
 	}
+
 };
 
 inline Color operator*(float v, Color c) { return {c.x * v, c.y * v, c.z * v}; }
