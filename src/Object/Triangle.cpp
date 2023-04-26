@@ -8,7 +8,7 @@ void Triangle::recalculateValues()
 	auto p1 = points[0], p2 = points[1], p3 = points[2];
 	auto e1 = p2 - p1;
 	auto e2 = p3 - p1;
-	auto normal = obj->getRot() * cross(localPoints[1] - localPoints[0], localPoints[2] - localPoints[1]);
+	auto normal = obj->getRot() * cross(localPoints[1].vertice - localPoints[0].vertice, localPoints[2].vertice - localPoints[1].vertice);
 
 	// Depending on which component of the normal is largest, calculate
 	// coefficients:
@@ -53,9 +53,9 @@ void Triangle::recalculateValues()
 	}
 }
 
-Triangle::Triangle(GraphicalObject* obj, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, bool isTwoSided) : localPoints({p1, p2, p3}),
-	localNormal(normalize(cross(localPoints[1] - localPoints[0], localPoints[2] - localPoints[1]))),
-	isTwoSided(isTwoSided)
+Triangle::Triangle(GraphicalObject* obj, ExtendedVertice p1, ExtendedVertice p2, ExtendedVertice p3, bool isTwoSided) : localPoints({p1, p2, p3}),
+                                                                                                                        localNormal(normalize(cross(localPoints[1].vertice - localPoints[0].vertice, localPoints[2].vertice - localPoints[1].vertice))),
+                                                                                                                        isTwoSided(isTwoSided)
 {
 	if (obj != nullptr)
 		attachTo(obj);
@@ -124,10 +124,14 @@ glm::vec3 Triangle::getCenter() const
 
 void Triangle::updateGeometry()
 {
-	points = {
-		obj->getRot() * localPoints[0] + obj->getPos(),
-		obj->getRot() * localPoints[1] + obj->getPos(),
-		obj->getRot() * localPoints[2] + obj->getPos()
-	};
+    points = {obj->getRot() * localPoints[0].vertice + obj->getPos(),
+              obj->getRot() * localPoints[1].vertice + obj->getPos(),
+              obj->getRot() * localPoints[2].vertice + obj->getPos()};
+
+//    points = {
+//		obj->getRot() * localPoints[0]. + obj->getPos(),
+//		obj->getRot() * localPoints[1] + obj->getPos(),
+//		obj->getRot() * localPoints[2] + obj->getPos()
+//	};
 	normal = obj->getRot() * localNormal;
 }

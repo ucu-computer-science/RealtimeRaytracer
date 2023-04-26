@@ -15,7 +15,7 @@ class Triangle;
 class GraphicalObject : public Object, public IBoundable
 {
 public:
-	const std::vector<std::shared_ptr<Triangle>> triangles{};
+	std::vector<std::shared_ptr<Triangle>> triangles{};
 	std::vector<std::shared_ptr<Triangle>> cameraFacingTriangles{};
 	Material material;
 	std::shared_ptr<BVHNode> root;

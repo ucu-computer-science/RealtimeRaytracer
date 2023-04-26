@@ -20,9 +20,11 @@ link_directories(libs/SDL2/lib/x64)
 enable_testing()
 
 add_executable (${PROJECT_NAME} "src/main.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp"
-        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/SDLDisplayer.cpp"  "src/Input.cpp""src/Object/Light.cpp" 
-        "src/Material.cpp" "include/Material.h" "src/ObjectParser.cpp" "src/BoundingBoxes.cpp"  "src/Canvas.cpp" "src/Object/Triangle.cpp" 
-        "include/IBoundable.h" "libs/stb_image/stb_image.h" "src/Texture.cpp" "src/SceneParser.cpp")
+        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/SDLDisplayer.cpp"  "src/Input.cpp" "src/Object/Light.cpp"
+        "src/Material.cpp" "include/Material.h"
+        "src/ObjectParser.cpp"
+        "src/BoundingBoxes.cpp"  "src/Canvas.cpp" "src/Object/Triangle.cpp"
+        "include/IBoundable.h" "libs/stb_image/stb_image.h" "src/Texture.cpp" "src/SceneParser.cpp" src/Object/PolyMesh.cpp include/Object/PolyMesh.h src/Object/ExtendedVertice.cpp include/Object/ExtendedVertice.h)
 #add_executable (Benchmark "src/Benchmark.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp"
 #        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/Math/Vec3.cpp" "src/Object/Light.cpp")
 

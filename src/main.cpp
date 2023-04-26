@@ -96,15 +96,45 @@ int main(int argv, char* args[])
 	cube1.material.reflection = 0;
 	sphere1.material.texture = std::make_shared<Texture>("../../textures/earth.png");
 	*/
+//    Camera camera{{0, -35, 0}, fov, glm::vec2((float)width / (float)height, 1)};
+////	Canvas::mainCanvas = std::make_unique<Canvas>();
+////
+//    Model model("./models/Man.obj");
+//    ImportedGraphicalObject obj("./models/Man.obj");
+//    obj.setRot({{90.0f * DEG_TO_RAD, 0 * DEG_TO_RAD, 0 * DEG_TO_RAD}});
+//    auto tex = std::make_shared<Texture>("./textures/earth.png");
+//    obj.setMaterial(Material({}, tex, false, false, 0, 4000, .1));
+//    Square sq{{0, 0, 0}, {1,0,0,0} , 100};
+//    Square sq1{{0, 0, 0}, {0,1,0,0} , 100};
+//    Square swq{{0, 0, 0}, {0,0,,0} , 100};
+    PointLight light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, FLT_MAX, 1};
+    //	Square sq{{0, 0, 9.999f}, {{-90 * DEG_TO_RAD, 0, 0}}, 5};
+    //	sq.material.color = {3.f, 3.f, 3.f};
+//    Plane plane1{{-10, 0, 0}, {1, 0, 0}, Color::red()};
+//    Plane plane2{{10, 0, 0}, {-1, 0, 0}, Color::green()};
+//    Plane plane3{{0, 0, 10}, {0, 0, -1}, Color::white()};
+//    Plane plane4{{0, 0, -10}, {0, 0, 1}, Color::white()};
+//    Plane plane5{{0, 10, 0}, {0, -1, 0}, Color::white()};
+//    Plane plane6{{0, -10, 0}, {0, 1, 0}, Color::white()};
+//    Cube cube1{glm::vec3{4, -4, -6.7}, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}, 6.6f};
+//    Sphere sphere1{{-4, 2, -5}, 5, Color{100.f / 100.f, 49.8f / 100.f, 31.4f / 100.f}};
+//    sphere1.material.reflection = 0.7f;
+//    cube1.material.color = Color::gold();
+//    cube1.material.reflection = 0.3f;
+    Canvas::mainCanvas = std::make_unique<Canvas>();
+//
+    Texture crosshair{"./sprites/crosshair.png"};
+    Canvas::mainCanvas->addElement(std::make_shared<Image>(glm::vec2(100, 100), &crosshair));
 
-	Canvas::mainCanvas = std::make_unique<Canvas>();
+//    Square sq{{0, 0, 0}, {1,0,0,0} , 100};
+    //Square sq1{{0, 0, 0}, {1,0,0,0} , 100};
+    //Square sq2s{{0, 0, 0}, {1,0,0,0} , 100};
 
-	Texture crosshair{"../../sprites/crosshair.png"};
-	Canvas::mainCanvas->addElement(std::make_shared<Image>(glm::vec2(100, 100), &crosshair));
 
 
-	//SceneParser::recordScene(Scene::objects,"../../scenes/scene1.json");
-	SceneParser::parseScene("../../scenes/scene1.json");
+    //SceneParser::recordScene(Scene::objects,"../../scenes/scene1.json");
+//	SceneParser::parseScene("../../scenes/scene1.json");
 	SDLDisplayer::display(width, height);
-	return 0;
+
+    return 0;
 }
