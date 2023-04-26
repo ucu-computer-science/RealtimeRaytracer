@@ -41,7 +41,7 @@ glm::vec3 Camera::getRightBotCorner() const
 }
 
 constexpr int TASK_COUNT = 72;
-void Camera::updatePixelMatrix(const PixelMatrix& pixelMatrix)
+void Camera::updatePixelMatrix(PixelMatrix& pixelMatrix)
 {
 	auto width = pixelMatrix.width, height = pixelMatrix.height;
 	auto pixels = pixelMatrix.pixels;
@@ -54,7 +54,7 @@ void Camera::updatePixelMatrix(const PixelMatrix& pixelMatrix)
 
 	for (int yStart = 0; yStart < TASK_COUNT; yStart += 1)
 	{
-		pool.push_task([this, pixels, width, lbDir, dx, dy, height, yStart]
+		pool.push_task([this, pixels, width, lbDir, dx, dy, height, yStart, &pixelMatrix]
 		{
 			for (int y = yStart; y < height; y += TASK_COUNT)
 			{
@@ -65,12 +65,28 @@ void Camera::updatePixelMatrix(const PixelMatrix& pixelMatrix)
 #else
 					auto ray1 = Ray(pos, lbDir + (float)x * dx + (float)y * dy);
 #endif
-					pixels[(height - y - 1) * width + x] = Raycast::castRay(ray1, 5).toColor32();
+                    if (pixelMatrix.recorded){
+                        pixels[(height - y - 1) * width + x] = Raycast::castRay(ray1, 5).toColor32() ;
+                        continue;
+                    }
+
+                    int pixelIndex = (height - y - 1) * width + x;
+                    auto raycastColor = Raycast::castRay(ray1, 5).toColor32();
+                    auto averageColor = (
+                                                   (x > 0 ? pixels[pixelIndex - 1] : raycastColor) +
+                                                   (x < width - 1 ? pixels[pixelIndex + 1] : raycastColor) +
+                                                   (y > 0 ? pixels[pixelIndex - width] : raycastColor) +
+                                                   (y < height - 1 ? pixels[pixelIndex + width] : raycastColor) +
+                                                   raycastColor
+                                           ) / ((x > 0) + (x < width - 1) + (y > 0) + (y < height - 1) + 1);
+                    pixels[pixelIndex] = raycastColor;
 				}
+
 			}
 		});
 	}
 	pool.wait_for_tasks();
+    pixelMatrix.recorded = true;
 
 #else
   for (int y = 0; y < height; y += skip) {

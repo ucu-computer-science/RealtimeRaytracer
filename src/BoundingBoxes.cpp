@@ -22,7 +22,7 @@ bool AABB::intersects(const Ray& ray, float tMin, float tMax) const
 		if (tMax <= tMin)
 			return false;
 	}
-	return tMin > 0;
+	return tMax > 0;
 }
 
 AABB AABB::getUnitedBox(const AABB& box1, const AABB& box2)

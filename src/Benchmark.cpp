@@ -11,7 +11,7 @@
 #include "glm/gtx/string_cast.hpp"
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
-#include "mathExtensions.h"
+#include "MathExtensions.h"
 // void Benchmark::benchmark(int ntimes)
 //{
 //	auto timeMeasurments = measure_time(ntimes, 1920, 1080);

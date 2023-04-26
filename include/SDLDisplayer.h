@@ -7,7 +7,11 @@
 struct PixelMatrix
 {
 	uint32_t* pixels;
+    bool recorded;
 	int width, height;
+    PixelMatrix(uint32_t* pixels, int w, int h) : pixels(pixels), recorded(false), width(w), height(h)
+    {
+    }
 
 	void setPixelSafe(int x, int y, uint32_t color32) const
 	{

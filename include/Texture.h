@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <vector>
 
 #include "Color.h"
 
@@ -12,7 +13,7 @@ private:
 	std::vector<Color> pixelColors;
 	int width = 0, height = 0;
 
-	bool load_image(std::vector<uint8_t>& image, const std::filesystem::path& filename);
+	bool loadImage(std::vector<uint8_t>& image, const std::filesystem::path& filename);
 
 public:
 	Texture();
