@@ -81,3 +81,12 @@ void Camera::updatePixelMatrix(uint32_t* pixels, int width, int height)
   }
 #endif
 }
+
+nlohmann::basic_json<> Camera::toJson(){
+    auto j=Object::toJson();
+    j["fov"] = fov;
+    j["size"][0] = size[0];
+    j["size"][1] = size[1];
+    j["type"] = "Camera";
+    return j;
+}

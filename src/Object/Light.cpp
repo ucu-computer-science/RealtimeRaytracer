@@ -105,3 +105,26 @@ void GlobalLight::getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& 
     inSpecular +=
             std::pow(std::max(dot(H, ray.surfaceNormal), 0.0f), ray.closestObj->material.specularDegree) * color;
 }
+
+nlohmann::basic_json<> PointLight::toJson(){
+    auto j = Object::toJson();
+    j["color"][0] = color[0];
+    j["color"][1] = color[1];
+    j["color"][2] = color[2];
+    j["distance"] = distance;
+    j["intensity"] = intensity;
+    j["type"] = "PointLight";
+    return j;
+};
+
+nlohmann::basic_json<> Light::toJson(){
+    auto j = PointLight::toJson();
+    j["size"][0] = size[0];
+    j["size"][1] = size[1];
+    j["size"][2] = size[2];
+    j["pointSize"][0] = pointSize[0];
+    j["pointSize"][1] = pointSize[1];
+    j["pointSize"][2] = pointSize[2];
+    j["type"] = "Light";
+    return j;
+};

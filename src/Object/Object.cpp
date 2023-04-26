@@ -33,3 +33,16 @@ glm::vec3 Object::globalToLocalPos(const glm::vec3& globalPos) const
 {
 	return -rot * globalPos - pos;
 }
+
+nlohmann::basic_json<> Object::toJson() {
+    nlohmann::basic_json<> j;
+    j["pos"][0] = getPos()[0];
+    j["pos"][1] = getPos()[1];
+    j["pos"][2] = getPos()[2];
+    j["rot"][0] = getRot()[0];
+    j["rot"][1] = getRot()[1];
+    j["rot"][2] = getRot()[2];
+    j["rot"][3] = getRot()[3];
+    j["type"] = "Object";
+    return j;
+}

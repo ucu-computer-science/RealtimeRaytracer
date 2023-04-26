@@ -35,4 +35,6 @@ public:
 
 	void updatePixelMatrix(uint32_t* pixels, int width, int height);
 	void setBackgroundColor(Color color) { bgColor = color; }
+
+    nlohmann::basic_json<> toJson();
 };

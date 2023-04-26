@@ -21,11 +21,12 @@ int SDLDisplayer::display(int width, int height)
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	auto surface = SDL_GetWindowSurface(window);
-	renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
+    renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGRA32, SDL_TEXTUREACCESS_TARGET, width, height);
+//	renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
 
 	auto intersectables = std::vector<std::shared_ptr<IIntersectable>>(Scene::graphicalObjects.size());
 	auto f = [](const std::shared_ptr<GraphicalObject>& obj) { return std::static_pointer_cast<IIntersectable>(obj); };
-	std::ranges::transform(Scene::graphicalObjects, intersectables.begin(), f);
+	std::transform(Scene::graphicalObjects.begin(), Scene::graphicalObjects.end(), intersectables.begin(), f);
 	BVHNode::root = BVHNode::buildTree(intersectables);
 
 	loop();
