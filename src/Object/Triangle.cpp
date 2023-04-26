@@ -89,11 +89,11 @@ bool Triangle::intersect(Ray& ray, bool intersectAll)
 		return false;
 
 	ray.closestT = t;
-	ray.closestObj = obj;
+	ray.closestMat = &obj->material;
 	ray.surfaceNormal = normal;
 	ray.interPoint = hit;
     ray.closestT = t;
-    ray.color = obj->material.texture->getColor(b1, b2);
+    ray.color = obj->material.getColor(b1, b2);
 	return true;
 }
 

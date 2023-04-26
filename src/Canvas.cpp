@@ -1,7 +1,5 @@
 #include "Canvas.h"
 
-#include <iostream>
-
 #include "Color.h"
 #include "SDLDisplayer.h"
 #include "Texture.h"
@@ -34,9 +32,11 @@ void Image::draw(const PixelMatrix* pixelMatrix)
 	{
 		for (int x = 0; x < width; ++x)
 		{
-			auto currColor = pixelMatrix->getPixelSafe(x, y);
+			auto x_ = startX + x, y_ = startY + y;
+			auto currColor = Color::fromColor32(pixelMatrix->getPixelSafe(x_, y_));
 			auto spriteColor = sprite->getColor(x, y);
-			pixelMatrix->setPixelSafe(startX + x, startY + y, (currColor * spriteColor).toColor32());
+			auto finalColor = Color::lerp(currColor, spriteColor, spriteColor.a());
+			pixelMatrix->setPixelSafe(x_, y_, finalColor.toColor32());
 		}
 	}
 }

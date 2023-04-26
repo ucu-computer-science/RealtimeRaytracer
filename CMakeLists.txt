@@ -20,7 +20,7 @@ enable_testing()
 
 add_executable (${PROJECT_NAME} "src/main.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp"
         "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/SDLDisplayer.cpp"  "src/Input.cpp""src/Object/Light.cpp" 
-        "src/Material.cpp" "include/Material.h" "src/ObjectParser.cpp" "src/BoundingBoxes.cpp"  "src/Canvas.cpp" "src/Object/Triangle.cpp" 
+         "include/Material.h" "src/ObjectParser.cpp" "src/BoundingBoxes.cpp"  "src/Canvas.cpp" "src/Object/Triangle.cpp" 
         "include/IBoundable.h" "libs/stb_image/stb_image.h" "src/Texture.cpp" "src/SceneParser.cpp")
 
 target_link_libraries(${PROJECT_NAME} SDL2)

@@ -6,8 +6,8 @@
 
 Model::Model(const std::filesystem::path& path)
 {
-	this->path = path;
-	parseObject();
+    this->path = path;
+    parseObject();
 }
 
 void Model::parseObject()

@@ -13,14 +13,14 @@ struct Ray
 {
 	glm::vec3 pos, dir;
 	float closestT;
-	GraphicalObject* closestObj;
+	Material* closestMat;
 	glm::vec3 surfaceNormal;
 	glm::vec3 interPoint;
 	float maxDist;
     Color color;
 
 	Ray(glm::vec3 pos, glm::vec3 dir, float maxDist = FLT_MAX) : pos{pos}, dir{normalize(dir)}, closestT(FLT_MAX),
-	                                                             closestObj(nullptr),
+	                                                             closestMat(nullptr),
 	                                                             surfaceNormal(), interPoint(), maxDist(maxDist){}
 
 

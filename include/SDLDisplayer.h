@@ -15,13 +15,13 @@ struct PixelMatrix
 
 	void setPixelSafe(int x, int y, uint32_t color32) const
 	{
-		if (y < 0 || y >= width || x < 0 || x >= width) return;
-		pixels[(height - y - 1) * width + x] = color32;
+		if (y < 0 || y >= height || x < 0 || x >= width) return;
+		pixels[y * width + x] = color32;
 	}
 	uint32_t getPixelSafe(int x, int y) const
 	{
-		if (y < 0 || y >= width || x < 0 || x >= width) return 0;
-		return pixels[(height - y - 1) * width + x];
+		if (y < 0 || y >= height || x < 0 || x >= width) return 0;
+		return pixels[y * width + x];
 	}
 
 	~PixelMatrix()

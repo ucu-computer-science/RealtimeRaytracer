@@ -9,10 +9,10 @@
 Texture::Texture() : width(2), height(2)
 {
 	pixelColors = std::vector<Color>(4);
-	pixelColors[0] = Color::black();
-	pixelColors[1] = Color::pink();
-	pixelColors[2] = Color::pink();
-	pixelColors[3] = Color::black();
+	pixelColors[0] = Color::white();
+	pixelColors[1] = Color::white();
+	pixelColors[2] = Color::white();
+	pixelColors[3] = Color::white();
 }
 
 Texture::Texture(const std::filesystem::path& path) : path(path)

@@ -47,19 +47,16 @@ class Square : public GraphicalObject
 {
 public:
 	Square(glm::vec3 pos, glm::quat rot, float side, Material mat = Material());
-
 	std::vector<std::shared_ptr<Triangle>> generateTriangles(float side);
-
-	bool includeInBVH() override { return false; }
 };
 
 class Cube final : public GraphicalObject
 {
 public:
     float side;
-    std::vector<std::shared_ptr<Triangle>> generateTriangles(float side);
 
     Cube(glm::vec3 pos, glm::quat rot, float side);
+    std::vector<std::shared_ptr<Triangle>> generateTriangles(float side);
 
     nlohmann::basic_json<> toJson() override;
 };

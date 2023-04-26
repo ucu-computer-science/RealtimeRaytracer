@@ -29,4 +29,9 @@ struct Material
 	                             specularCoeff{specularCoeff},
 	                             specularDegree{specularDegree},
 	                             reflection{reflection} { }
+
+	Color getColor(float x = 0, float y = 0) const
+	{
+		return texture->getColor(x, y) * color;
+	}
 };

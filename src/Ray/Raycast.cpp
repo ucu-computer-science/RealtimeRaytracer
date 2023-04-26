@@ -28,17 +28,17 @@ Color Raycast::castRay(Ray ray, int bounce)
 
 		ray.interPoint += ray.surfaceNormal * ray.closestT/100.f;
 
-		auto& mat = ray.closestObj->material;
-		if (mat.lit)
+		auto mat = ray.closestMat;
+		if (mat->lit)
 		{
 			auto [diffuse, specular] = getIlluminationAtPoint(ray);
-			color += colorImpact * (1 - mat.reflection) * ray.color * diffuse * mat.diffuseCoeff;
-			color += specular * mat.specularCoeff;
+			color += colorImpact * (1 - mat->reflection) * ray.color * diffuse * mat->diffuseCoeff;
+			color += specular * mat->specularCoeff;
 		}
 		else
-			color += colorImpact * (1 - mat.reflection) * ray.color;
+			color += colorImpact * (1 - mat->reflection) * ray.color;
 
-		colorImpact *= mat.reflection;
+		colorImpact *= mat->reflection;
 		if (colorImpact <= 1e-6f)
 			break;
 

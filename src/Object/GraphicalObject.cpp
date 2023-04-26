@@ -1,6 +1,7 @@
 #include "GraphicalObject.h"
 
 #include <memory>
+#include <utility>
 
 #include "Camera.h"
 #include "SDLDisplayer.h"
@@ -38,7 +39,7 @@ bool GraphicalObject::intersect(Ray& ray, bool intersectAll)
 	//	hit = true;
 	//}
 	//return hit;
-	return root->intersect(ray, intersectAll);
+	return root != nullptr ? root->intersect(ray, intersectAll) : false;
 }
 void GraphicalObject::updateCameraFacingTriangles()
 {
@@ -65,7 +66,7 @@ AABB GraphicalObject::getBoundingBox() const
 }
 void GraphicalObject::setMaterial(Material material)
 {
-	this->material = material;
+	this->material = std::move(material);
 }
 void GraphicalObject::updateBVH()
 {
@@ -73,12 +74,12 @@ void GraphicalObject::updateBVH()
 	std::ranges::transform(cameraFacingTriangles, intersectables.begin(),
 	                       [](const std::shared_ptr<Triangle>& obj) { return (IBoundable*)&*obj; });
 
-	root = intersectables.empty() ? nullptr : BVHNode::buildTree(intersectables);
+	root = intersectables.empty() ? nullptr : BVHNode::buildTree(intersectables, BVHNode::maxTrianglesPerBox);
 }
 
 ImportedGraphicalObject::ImportedGraphicalObject(const std::filesystem::path& path) : GraphicalObject(Model(path).triangles), path(path) {}
 
-Square::Square(glm::vec3 pos, glm::quat rot, float side, Material mat) : GraphicalObject(generateTriangles(side), pos, rot, mat) {}
+Square::Square(glm::vec3 pos, glm::quat rot, float side, Material mat) : GraphicalObject(generateTriangles(side), pos, rot, std::move(mat)) {}
 std::vector<std::shared_ptr<Triangle>> Square::generateTriangles(float side)
 {
 	auto p1 = glm::vec3(-side / 2, 0, -side / 2);
@@ -92,13 +93,10 @@ std::vector<std::shared_ptr<Triangle>> Square::generateTriangles(float side)
 	return triangles;
 }
 
-Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(generateTriangles(side), pos, rot)
-{
-
-}
+Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(generateTriangles(side), pos, rot) {}
 std::vector<std::shared_ptr<Triangle>> Cube::generateTriangles(float side)
 {
-    this->side = side;
+	this->side = side;
 	auto p1 = glm::vec3(-side / 2, -side / 2, -side / 2);
 	auto p2 = glm::vec3(-side / 2, -side / 2, side / 2);
 	auto p3 = glm::vec3(side / 2, -side / 2, side / 2);
@@ -147,8 +145,8 @@ bool Sphere::intersect(Ray& ray, bool intersectAll)
 			auto n = ray.surfaceNormal;
 			float u = atan2(-n.x, n.y) / (2.0f * PI) + 0.5f;
 			float v = -n.z * 0.5f + 0.5f;
-			ray.color = material.texture->getColor(u, v);
-			ray.closestObj = this;
+			ray.color = material.getColor(u, v);
+			ray.closestMat = &material;
 
 			return true;
 		}
@@ -171,10 +169,10 @@ bool Plane::intersect(Ray& ray, bool intersectAll)
 		if (t < ray.closestT && t > 0 && t < ray.maxDist)
 		{
 			ray.closestT = t;
-			ray.color = material.color;
+			ray.color = material.getColor();
 			ray.interPoint = ray.pos + t * ray.dir;
 			ray.surfaceNormal = normal;
-			ray.closestObj = this;
+			ray.closestMat = &material;
 
 			return true;
 		}
@@ -182,51 +180,52 @@ bool Plane::intersect(Ray& ray, bool intersectAll)
 	return false;
 }
 
-nlohmann::basic_json<> GraphicalObject::toJson() {
-    auto j = Object::toJson();
-    j["material"]["color"][0] = material.color[0];
-    j["material"]["color"][1] = material.color[1];
-    j["material"]["color"][2] = material.color[2];
+nlohmann::basic_json<> GraphicalObject::toJson()
+{
+	auto j = Object::toJson();
+	j["material"]["color"][0] = material.color[0];
+	j["material"]["color"][1] = material.color[1];
+	j["material"]["color"][2] = material.color[2];
 	j["material"]["texturePath"] = material.texture->getPath();
-    j["material"]["lit"] = material.lit;
-    j["material"]["diffuseCoeff"] = material.diffuseCoeff;
-    j["material"]["specularCoeff"] = material.specularCoeff;
-    j["material"]["specularDegree"] = material.specularDegree;
-    j["material"]["reflection"] = material.reflection;
-    j["type"] = "GraphicalObject";
-    return j;
+	j["material"]["lit"] = material.lit;
+	j["material"]["diffuseCoeff"] = material.diffuseCoeff;
+	j["material"]["specularCoeff"] = material.specularCoeff;
+	j["material"]["specularDegree"] = material.specularDegree;
+	j["material"]["reflection"] = material.reflection;
+	j["type"] = "GraphicalObject";
+	return j;
 }
 
-nlohmann::basic_json<> Cube::toJson() {
-    auto j = GraphicalObject::toJson();
-    j["side"] = side;
-    j["type"] = "Cube";
-    return j;
+nlohmann::basic_json<> Cube::toJson()
+{
+	auto j = GraphicalObject::toJson();
+	j["side"] = side;
+	j["type"] = "Cube";
+	return j;
 }
 
-nlohmann::basic_json<> Sphere::toJson() {
-    auto j = GraphicalObject::toJson();
-    j["radius"] = radius;
-    j["type"] = "Sphere";
-    return j;
+nlohmann::basic_json<> Sphere::toJson()
+{
+	auto j = GraphicalObject::toJson();
+	j["radius"] = radius;
+	j["type"] = "Sphere";
+	return j;
 }
 
-nlohmann::basic_json<> Plane::toJson() {
-    auto j = GraphicalObject::toJson();
-    j["normal"][0] = normal[0];
-    j["normal"][1] = normal[1];
-    j["normal"][2] = normal[2];
-    j["type"] = "Plane";
-    return j;
+nlohmann::basic_json<> Plane::toJson()
+{
+	auto j = GraphicalObject::toJson();
+	j["normal"][0] = normal[0];
+	j["normal"][1] = normal[1];
+	j["normal"][2] = normal[2];
+	j["type"] = "Plane";
+	return j;
 }
 
-nlohmann::basic_json<> ImportedGraphicalObject::toJson() {
-    auto j = GraphicalObject::toJson();
-    j["importPath"] = path;
-    j["type"] = "ImportedGraphicalObject";
-    return j;
+nlohmann::basic_json<> ImportedGraphicalObject::toJson()
+{
+	auto j = GraphicalObject::toJson();
+	j["importPath"] = path;
+	j["type"] = "ImportedGraphicalObject";
+	return j;
 }
-
-
-
-

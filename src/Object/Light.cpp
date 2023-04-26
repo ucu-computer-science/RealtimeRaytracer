@@ -23,16 +23,15 @@ void PointLight::getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& i
 	if (Raycast::castShadowRays({pos, -dir, dist}))
 		return;
 
-	auto distanceImpact = std::min(1 - (dist / distance), 1.f);
+	auto distanceImpact = (float)std::min(1 - (dist / distance), 1.f);
 	auto lightFacingAtPoint = std::max(dot(dir, ray.surfaceNormal), 0.f);
 	inColor += (distanceImpact * lightFacingAtPoint) * color;
 
-    // Phong model
-    // auto R = normalize(2 * lightFacingAtPoint * ray.surfaceNormal - (dir));
-    // Blinn-Phong model
-    auto H = normalize(dir - ray.dir);
-    inSpecular +=
-            distanceImpact * std::pow(std::max(dot(H, ray.surfaceNormal), 0.0f), ray.closestObj->material.specularDegree) * color;
+	// Phong model
+	// auto R = normalize(2 * lightFacingAtPoint * ray.surfaceNormal - (dir));
+	// Blinn-Phong model
+	auto H = normalize(dir - ray.dir);
+	inSpecular += distanceImpact * (float)std::pow(std::max(dot(H, ray.surfaceNormal), 0.0f), ray.closestMat->specularDegree) * color;
 }
 
 void Light::getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& inSpecular)
@@ -47,15 +46,13 @@ void Light::getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& inSpec
 		if (Raycast::castShadowRays({lightPoint, -dir, dist}))
 			continue;
 
-		auto distanceImpact = std::max(1 - (dist / distance), 0.f);
+		auto distanceImpact = (float)std::max(1 - (dist / distance), 0.f);
 		auto lightFacingAtPoint = std::max(dot(dir, ray.surfaceNormal), 0.f);
-		inColor += (distanceImpact * lightFacingAtPoint) * color;
+		inColor += distanceImpact * lightFacingAtPoint * color;
 
-        auto H = normalize(dir - ray.dir);
-
-        inSpecular +=
-                distanceImpact * std::pow(std::max(dot(H, ray.surfaceNormal), 0.0f), ray.closestObj->material.specularDegree) * color;
-    }
+		auto H = normalize(dir - ray.dir);
+		inSpecular += distanceImpact * (float)std::pow(std::max(dot(H, ray.surfaceNormal), 0.0f), ray.closestMat->specularDegree) * color;
+	}
 }
 
 Light::Light(glm::vec3 pos, Color color, float distance, float intensity,
@@ -100,31 +97,32 @@ void GlobalLight::getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& 
 	auto lightFacingAtPoint = std::max(dot(pos, ray.surfaceNormal), 0.f);
 	inColor += lightFacingAtPoint * color;
 
-    auto H = normalize(pos - ray.dir);
+	auto H = normalize(pos - ray.dir);
 
-    inSpecular +=
-            std::pow(std::max(dot(H, ray.surfaceNormal), 0.0f), ray.closestObj->material.specularDegree) * color;
+	inSpecular += std::pow(std::max(dot(H, ray.surfaceNormal), 0.0f), ray.closestMat->specularDegree) * color;
 }
 
-nlohmann::basic_json<> PointLight::toJson(){
-    auto j = Object::toJson();
-    j["color"][0] = color[0];
-    j["color"][1] = color[1];
-    j["color"][2] = color[2];
-    j["distance"] = distance;
-    j["intensity"] = intensity;
-    j["type"] = "PointLight";
-    return j;
+nlohmann::basic_json<> PointLight::toJson()
+{
+	auto j = Object::toJson();
+	j["color"][0] = color[0];
+	j["color"][1] = color[1];
+	j["color"][2] = color[2];
+	j["distance"] = distance;
+	j["intensity"] = intensity;
+	j["type"] = "PointLight";
+	return j;
 };
 
-nlohmann::basic_json<> Light::toJson(){
-    auto j = PointLight::toJson();
-    j["size"][0] = size[0];
-    j["size"][1] = size[1];
-    j["size"][2] = size[2];
-    j["pointSize"][0] = pointSize[0];
-    j["pointSize"][1] = pointSize[1];
-    j["pointSize"][2] = pointSize[2];
-    j["type"] = "Light";
-    return j;
+nlohmann::basic_json<> Light::toJson()
+{
+	auto j = PointLight::toJson();
+	j["size"][0] = size[0];
+	j["size"][1] = size[1];
+	j["size"][2] = size[2];
+	j["pointSize"][0] = pointSize[0];
+	j["pointSize"][1] = pointSize[1];
+	j["pointSize"][2] = pointSize[2];
+	j["type"] = "Light";
+	return j;
 };

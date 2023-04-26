@@ -29,7 +29,7 @@ public:
 	Light(glm::vec3 pos, Color color, float distance, float intensity,
 	      glm::vec3 size,
 	      glm::vec3 pointSize); //: PointLight(pos, color, distance, intensity);
-	void getIlluminationAtPoint(const Ray& ray, Color& inSpecular, Color& inColor) override;
+	void getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& inSpecular) override;
 
     nlohmann::basic_json<> toJson() override;
 };
@@ -40,7 +40,7 @@ public:
 	// pos is the inverse direction of the light
 	GlobalLight(glm::vec3 dirInv, Color color, float intensity) : PointLight(
 		normalize(dirInv), color, FLT_MAX, intensity) {}
-	void getIlluminationAtPoint(const Ray& ray, Color& inSpecular, Color& inColor) override;
+	void getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& inSpecular) override;
 };
 
 std::pair<Color, Color> getIlluminationAtPoint(const Ray& ray);

@@ -21,13 +21,13 @@ int SDLDisplayer::display(int width, int height)
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	auto surface = SDL_GetWindowSurface(window);
-    renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGRA32, SDL_TEXTUREACCESS_TARGET, width, height);
-//	renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
+	renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGRA32, SDL_TEXTUREACCESS_TARGET, width, height);
+	//	renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
 
 	// Init BVH
 	auto intersectables = std::vector<IBoundable*>(Scene::graphicalObjects.size());
 	std::ranges::transform(Scene::graphicalObjects, intersectables.begin(), [](const GraphicalObject* obj) { return (IBoundable*)obj; });
-	BVHNode::root = BVHNode::buildTree(intersectables);
+	BVHNode::root = BVHNode::buildTree(intersectables, BVHNode::maxObjectsPerBox);
 
 	loop();
 
@@ -40,7 +40,7 @@ int SDLDisplayer::display(int width, int height)
 void SDLDisplayer::loop()
 {
 	auto pixels = new uint32_t[height * width];
-    memset(pixels, 0, height * width * sizeof(uint32_t));
+	memset(pixels, 0, height * width * sizeof(uint32_t));
 	PixelMatrix pixelMatrix(pixels, width, height);
 
 	bool quit = false;

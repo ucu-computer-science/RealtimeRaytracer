@@ -6,8 +6,9 @@
 class Triangle;
 struct Ray;
 
-class Raycast {
+class Raycast
+{
 public:
-  static Color castRay(Ray ray, int bounce = 1);
-  static bool castShadowRays(Ray ray);
+	static Color castRay(Ray ray, int bounce = 1);
+	static bool castShadowRays(Ray ray);
 };

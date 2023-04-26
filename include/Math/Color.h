@@ -67,17 +67,24 @@ public:
 	}
 	static Color fromColor32(uint32_t color32)
 	{
-		float a = (float)(color32 >> 24) / 255;
-		float r = (float)(color32 >> 16) / 255;
-		float g = (float)(color32 >> 8) / 255;
-		float b = (float)(color32 >> 0) / 255;
+		auto a = (float)(color32 >> 24 & 0xFF) / 255;
+		auto r = (float)(color32 >> 16 & 0xFF) / 255;
+		auto g = (float)(color32 >> 8 & 0xFF) / 255;
+		auto b = (float)(color32 >> 0 & 0xFF) / 255;
 		return {r, g, b, a};
 	}
 
+	static Color lerp(const Color& c1, const Color& c2, float value)
+	{
+		auto r = c1.r() + (c2.r() - c1.r()) * value;
+		auto g = c1.g() + (c2.g() - c1.g()) * value;
+		auto b = c1.b() + (c2.b() - c1.b()) * value;
+		return {r, g, b};
+	}
 };
 
-inline Color operator*(float v, Color c) { return {c.x * v, c.y * v, c.z * v}; }
 
+inline Color operator*(float v, Color c) { return {c.x * v, c.y * v, c.z * v}; }
 inline Color operator*(Color c, float v) { return {c.x * v, c.y * v, c.z * v}; }
 
 inline std::ostream& operator<<(std::ostream& os, const Color& c)

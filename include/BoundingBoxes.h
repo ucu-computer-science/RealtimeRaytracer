@@ -20,8 +20,6 @@ public:
 
 class BVHNode
 {
-	inline static constexpr int maxTrianglesPerBox = 5;
-
 	AABB box;
 	std::shared_ptr<BVHNode> left;
 	std::shared_ptr<BVHNode> right;
@@ -29,21 +27,26 @@ class BVHNode
 	std::vector<IBoundable*> leafIntersectables{};
 
 public:
-	BVHNode(std::vector<IBoundable*>& intersectables, size_t start, size_t end);
+	inline static constexpr int maxObjectsPerBox = 1;
+	inline static constexpr int maxTrianglesPerBox = 5;
+
+	BVHNode(std::vector<IBoundable*>& intersectables, size_t start, size_t end, int maxBoundablesPerBox);
 	size_t getSplitIndex(std::vector<IBoundable*>& intersectables, size_t start, size_t end) const;
 	~BVHNode() { boxCount--; }
 
-	bool intersect(Ray& ray, bool intersectAll = false) const;
+	bool intersect(Ray& ray, bool intersectAll = false);
 
 	inline static std::shared_ptr<BVHNode> root;
-	static std::shared_ptr<BVHNode> buildTree(const std::vector<IBoundable*>& intersectables);
+	static std::shared_ptr<BVHNode> buildTree(const std::vector<IBoundable*>& intersectables, int maxBoundablesPerBox);
 
 
 	// Debugging
 	inline static bool showBoxes = false;
-	inline static float lineWidth = 0.03f;
+	inline static float lineWidth = 0.1f;
 	inline static int boxCount = 0;
-	//bool intersectForVisual(Ray& ray);
+	Material material{};
+
+	bool intersectForVisual(Ray& ray);
 
 	void dfs(const std::string& path = "") const;
 };

@@ -60,33 +60,14 @@ void Camera::updatePixelMatrix(PixelMatrix& pixelMatrix)
 			{
 				for (int x = 0; x < width; x += 1)
 				{
-#ifdef ANTIALIASING
-					auto ray1 =Ray(pos, lbDir + ((float)x + ((float)(rand() % 100) / 100)) * dx +((float)y + ((float)(rand() % 100) / 100)) * dy);
-#else
 					auto ray1 = Ray(pos, lbDir + (float)x * dx + (float)y * dy);
-#endif
-                    if (pixelMatrix.recorded){
-                        pixels[(height - y - 1) * width + x] = Raycast::castRay(ray1, 5).toColor32() ;
-                        continue;
-                    }
-
-                    int pixelIndex = (height - y - 1) * width + x;
-                    auto raycastColor = Raycast::castRay(ray1, 5).toColor32();
-                    auto averageColor = (
-                                                   (x > 0 ? pixels[pixelIndex - 1] : raycastColor) +
-                                                   (x < width - 1 ? pixels[pixelIndex + 1] : raycastColor) +
-                                                   (y > 0 ? pixels[pixelIndex - width] : raycastColor) +
-                                                   (y < height - 1 ? pixels[pixelIndex + width] : raycastColor) +
-                                                   raycastColor
-                                           ) / ((x > 0) + (x < width - 1) + (y > 0) + (y < height - 1) + 1);
-                    pixels[pixelIndex] = raycastColor;
+					pixels[(height - y - 1) * width + x] = Raycast::castRay(ray1, 5).toColor32();
 				}
-
 			}
 		});
 	}
 	pool.wait_for_tasks();
-    pixelMatrix.recorded = true;
+	pixelMatrix.recorded = true;
 
 #else
   for (int y = 0; y < height; y += skip) {
@@ -100,11 +81,12 @@ void Camera::updatePixelMatrix(PixelMatrix& pixelMatrix)
 #endif
 }
 
-nlohmann::basic_json<> Camera::toJson(){
-    auto j=Object::toJson();
-    j["fov"] = fov;
-    j["size"][0] = size[0];
-    j["size"][1] = size[1];
-    j["type"] = "Camera";
-    return j;
+nlohmann::basic_json<> Camera::toJson()
+{
+	auto j = Object::toJson();
+	j["fov"] = fov;
+	j["size"][0] = size[0];
+	j["size"][1] = size[1];
+	j["type"] = "Camera";
+	return j;
 }
