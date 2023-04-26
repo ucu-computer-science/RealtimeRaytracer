@@ -51,8 +51,8 @@ inline void createFirstScene(float fov, int width, int height)
 	PointLight light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 20, 1};
 	Cube obj3{glm::vec3{0.5, 1.5, 1.5}, {{45 * DEG_TO_RAD, 45 * DEG_TO_RAD, 45 * DEG_TO_RAD}}, 1};
 	obj3.material.color = Color::magenta();
-	Sphere obj5{{-2, 1, 0}, sqrt(3.f), Color::blue()};
-	Sphere obj6{{-5, 3, 3}, sqrt(2.f), Color::yellow()};
+	Sphere obj5{{-2, 1, 0}, (float) sqrt(3.0), Color::blue()};
+	Sphere obj6{{-5, 3, 3}, (float)sqrt(2.0), Color::yellow()};
 	obj5.material.reflection = 0;
 	obj6.material.reflection = 0.5;
 	Plane obj8{{0, 0, 0}, {0, 0, 1}, Color::darkGreen()};
@@ -71,7 +71,7 @@ int main(int argv, char* args[])
 	//    SceneParser::ParseScene("../scenes/FirstScene.json");
 	//    SceneParser::ParseScene("../scenes/RedGreenRoom.json");
 	//    SceneParser::ParseScene("../scenes/Man.json");
-	//    SceneParser::RecordScene(Scene::objects, "../scenes/Man.json");	
+	//    SceneParser::RecordScene(Scene::objects, "../scenes/Man.json");
 
 	//Model model("../../models/Man.obj");
 	//ImportedGraphicalObject obj("../../models/Man.obj");

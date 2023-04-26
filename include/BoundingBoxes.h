@@ -2,6 +2,7 @@
 
 #include "GraphicalObject.h"
 #include "glm/vec3.hpp"
+#include <cfloat>
 
 class IBoundable;
 

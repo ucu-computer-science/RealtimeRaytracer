@@ -34,7 +34,7 @@ public:
 	glm::vec3 getRightTopCorner() const;
 	glm::vec3 getRightBotCorner() const;
 
-	void updatePixelMatrix(const PixelMatrix& pixelMatrix);
+	void updatePixelMatrix(PixelMatrix& pixelMatrix);
 	void setBackgroundColor(Color color) { bgColor = color; }
 
     nlohmann::basic_json<> toJson() override;

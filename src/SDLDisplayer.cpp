@@ -40,6 +40,7 @@ int SDLDisplayer::display(int width, int height)
 void SDLDisplayer::loop()
 {
 	auto pixels = new uint32_t[height * width];
+    memset(pixels, 0, height * width * sizeof(uint32_t));
 	PixelMatrix pixelMatrix(pixels, width, height);
 
 	bool quit = false;
