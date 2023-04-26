@@ -41,8 +41,10 @@ glm::vec3 Camera::getRightBotCorner() const
 }
 
 constexpr int TASK_COUNT = 72;
-void Camera::updatePixelMatrix(uint32_t* pixels, int width, int height)
+void Camera::updatePixelMatrix(const PixelMatrix& pixelMatrix)
 {
+	auto width = pixelMatrix.width, height = pixelMatrix.height;
+	auto pixels = pixelMatrix.pixels;
 	glm::vec3 dx = size.x / (float)width * right();
 	glm::vec3 dy = size.y / (float)height * up();
 	glm::vec3 lbDir = getLeftBotCorner() - pos;

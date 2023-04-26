@@ -1,7 +1,31 @@
 #pragma once
 
-#include "Action.h"
 #include <SDL.h>
+
+#include "Action.h"
+
+struct PixelMatrix
+{
+	uint32_t* pixels;
+	int width, height;
+
+	void setPixelSafe(int x, int y, uint32_t color32) const
+	{
+		if (y < 0 || y >= width || x < 0 || x >= width) return;
+		pixels[(height - y - 1) * width + x] = color32;
+	}
+	uint32_t getPixelSafe(int x, int y) const
+	{
+		if (y < 0 || y >= width || x < 0 || x >= width) return 0;
+		return pixels[(height - y - 1) * width + x];
+	}
+
+	~PixelMatrix()
+	{
+		delete[] pixels;
+	}
+};
+
 
 class SDLDisplayer
 {
@@ -22,10 +46,10 @@ public:
 class FPSCounter
 {
 	inline static int frameCount = 0;
-	inline static uint32_t lastFrameTime = 0;
+	inline static int lastFrameTime = 0;
 
 public:
-	inline static uint32_t fps = 0;
+	inline static int fps = 0;
 	static void updateFPSCounter();
 };
 

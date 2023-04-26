@@ -38,11 +38,11 @@ AABB AABB::getUnitedBox(const AABB& box1, const AABB& box2)
 	return {{x_min, y_min, z_min}, {x_max, y_max, z_max}};
 }
 
-BVHNode::BVHNode(std::vector<std::shared_ptr<IIntersectable>>& intersectables, size_t start, size_t end)
+BVHNode::BVHNode(std::vector<IBoundable*>& intersectables, size_t start, size_t end)
 {
 	boxCount++;
-	material.color = Color::blue();
-	material.lit = false;
+	//material.color = Color::blue();
+	//material.lit = false;
 
 	if (end - start < maxTrianglesPerBox)
 	{
@@ -64,7 +64,7 @@ BVHNode::BVHNode(std::vector<std::shared_ptr<IIntersectable>>& intersectables, s
 
 	box = AABB::getUnitedBox(left->box, right->box);
 }
-size_t BVHNode::getSplitIndex(std::vector<std::shared_ptr<IIntersectable>>& intersectables, size_t start, size_t end) const
+size_t BVHNode::getSplitIndex(std::vector<IBoundable*>& intersectables, size_t start, size_t end) const
 {
 	glm::vec3 min{FLT_MAX}, max{-FLT_MAX};
 	for (size_t i = start; i <= end; i++)
@@ -91,14 +91,14 @@ size_t BVHNode::getSplitIndex(std::vector<std::shared_ptr<IIntersectable>>& inte
 	return splitIdx;
 }
 
-bool BVHNode::intersect(Ray& ray, bool intersectAll)
+bool BVHNode::intersect(Ray& ray, bool intersectAll) const
 {
 	if (!box.intersects(ray))
 		return false;
 
 	//Visual
-	if (showBoxes)
-		intersectForVisual(ray);
+	//if (showBoxes)
+	//	intersectForVisual(ray);
 
 	if (isLeaf)
 	{
@@ -116,9 +116,9 @@ bool BVHNode::intersect(Ray& ray, bool intersectAll)
 	return hitLeft || hitRight;
 }
 
-std::shared_ptr<BVHNode> BVHNode::buildTree(const std::vector<std::shared_ptr<IIntersectable>>& intersectables)
+std::shared_ptr<BVHNode> BVHNode::buildTree(const std::vector<IBoundable*>& intersectables)
 {
-	std::vector<std::shared_ptr<IIntersectable>> filtered{};
+	std::vector<IBoundable*> filtered{};
 	for (const auto& obj : intersectables)
 	{
 		if (!obj->includeInBVH()) continue;
@@ -127,43 +127,43 @@ std::shared_ptr<BVHNode> BVHNode::buildTree(const std::vector<std::shared_ptr<II
 	return std::make_shared<BVHNode>(filtered, 0, filtered.size() - 1);
 }
 
-bool BVHNode::intersectForVisual(Ray& ray)
-{
-	auto tMin = -FLT_MAX, tMax = FLT_MAX;
-	for (int i = 0; i < 3; i++)
-	{
-		auto invD = 1.0f / ray.dir[i];
-		auto t0 = (box.min[i] - ray.pos[i]) * invD;
-		auto t1 = (box.max[i] - ray.pos[i]) * invD;
-		if (invD < 0.0f)
-			std::swap(t0, t1);
-
-		tMin = t0 > tMin ? t0 : tMin;
-		tMax = t1 < tMax ? t1 : tMax;
-		if (tMax <= tMin)
-			return false;
-	}
-
-	for (const auto& t : {tMin, tMax})
-	{
-		auto point = ray.pos + t * ray.dir;
-		if (ray.closestT > t && ((std::abs(box.min.x - point.x) <= lineWidth || std::abs(box.max.x - point.x) <= lineWidth ||
-				std::abs(box.min.y - point.y) <= lineWidth || std::abs(box.max.y - point.y) <= lineWidth) &&
-			(std::abs(box.min.y - point.y) <= lineWidth || std::abs(box.max.y - point.y) <= lineWidth ||
-				std::abs(box.min.z - point.z) <= lineWidth || std::abs(box.max.z - point.z) <= lineWidth) &&
-			(std::abs(box.min.z - point.z) <= lineWidth || std::abs(box.max.z - point.z) <= lineWidth ||
-				std::abs(box.min.x - point.x) <= lineWidth || std::abs(box.max.x - point.x) <= lineWidth)))
-		{
-			ray.surfaceNormal = {0, 0, 1};
-			ray.interPoint = point;
-			ray.closestT = t;
-			ray.closestObj = this;
-			return true;
-		}
-	}
-
-	return false;
-}
+//bool BVHNode::intersectForVisual(Ray& ray)
+//{
+//	auto tMin = -FLT_MAX, tMax = FLT_MAX;
+//	for (int i = 0; i < 3; i++)
+//	{
+//		auto invD = 1.0f / ray.dir[i];
+//		auto t0 = (box.min[i] - ray.pos[i]) * invD;
+//		auto t1 = (box.max[i] - ray.pos[i]) * invD;
+//		if (invD < 0.0f)
+//			std::swap(t0, t1);
+//
+//		tMin = t0 > tMin ? t0 : tMin;
+//		tMax = t1 < tMax ? t1 : tMax;
+//		if (tMax <= tMin)
+//			return false;
+//	}
+//
+//	for (const auto& t : {tMin, tMax})
+//	{
+//		auto point = ray.pos + t * ray.dir;
+//		if (ray.closestT > t && ((std::abs(box.min.x - point.x) <= lineWidth || std::abs(box.max.x - point.x) <= lineWidth ||
+//				std::abs(box.min.y - point.y) <= lineWidth || std::abs(box.max.y - point.y) <= lineWidth) &&
+//			(std::abs(box.min.y - point.y) <= lineWidth || std::abs(box.max.y - point.y) <= lineWidth ||
+//				std::abs(box.min.z - point.z) <= lineWidth || std::abs(box.max.z - point.z) <= lineWidth) &&
+//			(std::abs(box.min.z - point.z) <= lineWidth || std::abs(box.max.z - point.z) <= lineWidth ||
+//				std::abs(box.min.x - point.x) <= lineWidth || std::abs(box.max.x - point.x) <= lineWidth)))
+//		{
+//			ray.surfaceNormal = {0, 0, 1};
+//			ray.interPoint = point;
+//			ray.closestT = t;
+//			ray.closestObj = this;
+//			return true;
+//		}
+//	}
+//
+//	return false;
+//}
 
 void BVHNode::dfs(const std::string& path) const
 {

@@ -15,7 +15,7 @@ public:
 	PointLight(glm::vec3 pos, Color color, float distance, float intensity);
 	virtual void getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& inSpecular);
 
-    nlohmann::basic_json<> toJson();
+    nlohmann::basic_json<> toJson() override;
 };
 
 class Light : public PointLight
@@ -31,7 +31,7 @@ public:
 	      glm::vec3 pointSize); //: PointLight(pos, color, distance, intensity);
 	void getIlluminationAtPoint(const Ray& ray, Color& inSpecular, Color& inColor) override;
 
-    nlohmann::basic_json<> toJson();
+    nlohmann::basic_json<> toJson() override;
 };
 
 class GlobalLight : public PointLight

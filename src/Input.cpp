@@ -3,13 +3,13 @@
 #include "Camera.h"
 #include "SDLDisplayer.h"
 #include "glm/gtx/string_cast.hpp"
-#include "mathExtensions.h"
+#include "MathExtensions.h"
 
 bool Input::isFullscreen = false;
 bool Input::isFocused = true;
 float Input::defaultMoveSpeed = 40.0f;
 float Input::keyRotationSpeed = 90.0f;
-float Input::mouseRotationSpeed = 0.5f;
+float Input::mouseRotationSpeed = 0.4f;
 
 void Input::updateInput()
 {

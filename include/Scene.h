@@ -9,7 +9,7 @@ class PointLight;
 class Scene
 {
 public:
-	inline static std::vector<std::shared_ptr<Object>> objects{};
-	inline static std::vector<std::shared_ptr<GraphicalObject>> graphicalObjects{};
-	inline static std::vector<std::shared_ptr<PointLight>> lights{};
+	inline static std::vector<Object*> objects{};
+	inline static std::vector<GraphicalObject*> graphicalObjects{};
+	inline static std::vector<PointLight*> lights{};
 };

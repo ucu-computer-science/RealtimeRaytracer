@@ -2,12 +2,11 @@
 
 #include <fstream>
 #include <sstream>
-#include <utility>
 
 
-Model::Model(std::string path)
+Model::Model(const std::filesystem::path& path)
 {
-	this->path = std::move(path);
+	this->path = path;
 	parseObject();
 }
 

@@ -13,17 +13,16 @@ include_directories(include/Math)
 include_directories(include/Object)
 include_directories(include/Object/GraphicalObject)
 include_directories(include/Raycast)
-include_directories(glm)
-include_directories(SDL2/include)
-link_directories(SDL2/lib/x64)
+include_directories(libs)
+include_directories(libs/SDL2/include)
+include_directories(libs/stb_image)
+link_directories(libs/SDL2/lib/x64)
 enable_testing()
 
 add_executable (${PROJECT_NAME} "src/main.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp"
-        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/SDLDisplayer.cpp"  "src/Input.cpp" "src/Math/Vec3.cpp"
-        "src/Object/Light.cpp" src/Material.cpp include/Material.h src/ObjectParser.cpp
-        include/stb_image.h src/ColorTexture.cpp include/ColorTexture.h
-        "src/BoundingBoxes.cpp"  "src/Canvas.cpp" "src/Object/Triangle.cpp" "include/IIntersectable.h")
-
+        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/SDLDisplayer.cpp"  "src/Input.cpp""src/Object/Light.cpp" 
+        "src/Material.cpp" "include/Material.h" "src/ObjectParser.cpp" "src/BoundingBoxes.cpp"  "src/Canvas.cpp" "src/Object/Triangle.cpp" 
+        "include/IBoundable.h" "libs/stb_image/stb_image.h" "src/Texture.cpp" "src/SceneParser.cpp")
 #add_executable (Benchmark "src/Benchmark.cpp" "src/Object/GraphicalObject.cpp" "src/Object/Object.cpp"
 #        "src/Ray/Raycast.cpp" "src/Object/Camera.cpp" "src/Math/Vec3.cpp" "src/Object/Light.cpp")
 
@@ -43,6 +42,7 @@ add_executable (${PROJECT_NAME} "src/main.cpp" "src/Object/GraphicalObject.cpp" 
 if(${USING_VISUAL_STUDIO})
   target_link_libraries(${PROJECT_NAME} SDL2)
   target_link_libraries(${PROJECT_NAME} SDL2main)
+
 #  target_link_libraries(Benchmark benchmark::benchmark)
 else()
   find_package(PkgConfig REQUIRED)

@@ -2,7 +2,7 @@
 #include <vector>
 #include <cmath>
 
-#include "mathExtensions.h"
+#include "MathExtensions.h"
 
 template <typename T>
 class Matrix : std::vector<std::vector<T>>

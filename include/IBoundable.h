@@ -3,7 +3,7 @@
 class AABB;
 struct Ray;
 
-class IIntersectable
+class IBoundable
 {
 public:
 	virtual bool includeInBVH() { return true; }

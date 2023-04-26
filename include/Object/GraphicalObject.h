@@ -3,97 +3,82 @@
 #include "Object.h"
 #include "glm/vec3.hpp"
 #include "Material.h"
-#include "ColorTexture.h"
+#include "Texture.h"
 #include <vector>
-#include "IIntersectable.h"
+#include "IBoundable.h"
 
 class BVHNode;
-
 class AABB;
-
 struct Ray;
-
 class Triangle;
 
-class GraphicalObject : public Object, public IIntersectable {
+class GraphicalObject : public Object, public IBoundable
+{
 public:
-    Material material;
-    ColorTexture texture;
+	const std::vector<std::shared_ptr<Triangle>> triangles{};
+	std::vector<std::shared_ptr<Triangle>> cameraFacingTriangles{};
+	Material material;
+	std::shared_ptr<BVHNode> root;
 
-    const std::vector<std::shared_ptr<Triangle>> triangles{};
-    std::vector<std::shared_ptr<Triangle>> cameraFacingTriangles{};
-    std::shared_ptr<BVHNode> rootBVH = nullptr;
+	GraphicalObject(const std::vector<std::shared_ptr<Triangle>>& triangles = {}, glm::vec3 pos = {0, 0, 0}, glm::quat rot = {1, 0, 0, 0}, Material material = {});
 
-    explicit GraphicalObject(const std::vector<std::shared_ptr<Triangle>> &triangles = {},
-                             glm::vec3 pos = {0, 0, 0},
-                             glm::quat rot = {1, 0, 0, 0},
-                             Material material = {},
-                             std::string texturePath = {"../textures/default.png"});
+	bool intersect(Ray& ray, bool intersectAll = false) override;
+	AABB getBoundingBox() const override;
+	glm::vec3 getCenter() const override { return pos; }
 
-    bool intersect(Ray &ray, bool intersectAll = false) override;
+	void updateBVH();
+	void updateCameraFacingTriangles();
 
-    AABB getBoundingBox() const override;
+	void setMaterial(Material material);
 
-    glm::vec3 getCenter() const override { return pos; }
-
-    void updateBVH();
-
-    void updateCameraFacingTriangles();
-
-    void setColor(Color color);
-
-    void setReflection(float reflection);
-
-    void setTexture(const std::string &texturePath);
-
-    nlohmann::basic_json<> toJson();
-
-    void setMaterial(Material material);
+	nlohmann::basic_json<> toJson() override;
 };
 
 class ImportedGraphicalObject : public GraphicalObject {
 public:
-    std::string importPath;
+	std::filesystem::path path;
 
-    ImportedGraphicalObject(const std::string &);
+    ImportedGraphicalObject(const std::filesystem::path& path);
 
-    nlohmann::basic_json<> toJson();
+    nlohmann::basic_json<> toJson() override;
 };
 
-class Square : public GraphicalObject {
+class Square : public GraphicalObject
+{
 public:
-    Square(glm::vec3 pos, glm::quat rot, float side, Material mat = Material());
+	Square(glm::vec3 pos, glm::quat rot, float side, Material mat = Material());
 
-    std::vector<std::shared_ptr<Triangle>> generateTriangles(float side);
+	std::vector<std::shared_ptr<Triangle>> generateTriangles(float side);
 
-    bool includeInBVH() override { return false; }
+	bool includeInBVH() override { return false; }
 };
 
-class Cube final : public GraphicalObject {
+class Cube final : public GraphicalObject
+{
 public:
     float side;
     std::vector<std::shared_ptr<Triangle>> generateTriangles(float side);
 
     Cube(glm::vec3 pos, glm::quat rot, float side);
 
-    nlohmann::basic_json<> toJson();
+    nlohmann::basic_json<> toJson() override;
 };
 
-class Sphere final : public GraphicalObject {
-    float radiusSquared;
+class Sphere final : public GraphicalObject
+{
+	float radius;
+	float radiusSquared;
 
 public:
-    Sphere(glm::vec3 pos, float radius, Color color) : GraphicalObject({}, pos), radius(radius), radiusSquared{radius * radius} {
-        material.color = color;
-    }
+	Sphere(glm::vec3 pos, float radius, Color color) : GraphicalObject({}, pos), radius(radius), radiusSquared{radius * radius}
+	{
+		material.color = color;
+	}
 
-    bool intersect(Ray &ray, bool intersectAll) override;
-
+	bool intersect(Ray& ray, bool intersectAll) override;
     AABB getBoundingBox() const override;
 
-    float radius;
-
-    nlohmann::basic_json<> toJson();
+    nlohmann::basic_json<> toJson() override;
 };
 
 class Plane final : public GraphicalObject
@@ -110,5 +95,5 @@ public:
 
     glm::vec3 normal;
 
-    nlohmann::basic_json<> toJson();
+    nlohmann::basic_json<> toJson() override;
 };

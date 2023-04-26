@@ -58,9 +58,9 @@ Triangle::Triangle(GraphicalObject* obj, glm::vec3 p1, glm::vec3 p2, glm::vec3 p
 	isTwoSided(isTwoSided)
 {
 	if (obj != nullptr)
-		attachToObject(obj);
+		attachTo(obj);
 }
-void Triangle::attachToObject(GraphicalObject* obj)
+void Triangle::attachTo(GraphicalObject* obj)
 {
 	this->obj = obj;
 
@@ -93,7 +93,7 @@ bool Triangle::intersect(Ray& ray, bool intersectAll)
 	ray.surfaceNormal = normal;
 	ray.interPoint = hit;
     ray.closestT = t;
-    ray.color = obj->texture.getColor(b1, b2);
+    ray.color = obj->material.texture->getColor(b1, b2);
 	return true;
 }
 

@@ -7,3 +7,5 @@ build/
 /cmake-build-debug-wsl
 /cmake-build-release
 /.PVS-Studio
+
+out/

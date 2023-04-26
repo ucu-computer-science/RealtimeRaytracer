@@ -4,6 +4,7 @@
 #include "glm/vec3.hpp"
 #include <nlohmann/json.hpp>
 
+
 class Object
 {
 protected:
@@ -11,7 +12,6 @@ protected:
 	glm::quat rot;
 
 public:
-	virtual ~Object() = default;
 	explicit Object(glm::vec3 pos, glm::quat rot = {1, 0, 0, 0});
 
 	glm::vec3 getPos() const { return pos; }

@@ -9,16 +9,14 @@
 #include "Light.h"
 #include "Scene.h"
 
-class SceneParser{
+class SceneParser
+{
 public:
-    explicit SceneParser();
+	static void parseScene(const std::filesystem::path& path);
 
-    static void ParseScene(std::string);
+	static void recordScene(const std::vector<Object*>& objects, const std::filesystem::path& path);
 
-    static void RecordScene(std::vector<std::shared_ptr<Object>> objects, std::string path);
+	static void writeJson(const nlohmann::basic_json<>& j, const std::filesystem::path&);
 
-    static void recordJson(nlohmann::basic_json<> j, std::string path);
-
-    static Material AssignMaterial(nlohmann::basic_json<> material);
+	static Material assignMaterial(nlohmann::basic_json<> material);
 };
-

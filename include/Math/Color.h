@@ -2,14 +2,14 @@
 #include <ostream>
 
 #include "glm/common.hpp"
-#include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
 
-class Color : public glm::vec3
+class Color : public glm::vec4
 {
 public:
-	Color(const float r, const float g, const float b) : glm::vec3(r, g, b) {}
-	Color(int r, int g, int b) : glm::vec3((float)r / 255.f, (float)g / 255.f, (float)b / 255.f) {}
-	Color() : Color{0, 0, 0} {}
+	Color(float r, float g, float b, float a = 1) : glm::vec4(r, g, b, a) {}
+	Color(int r, int g, int b, int a = 255) : glm::vec4((float)r / 255.f, (float)g / 255.f, (float)b / 255.f, (float)a / 255.f) {}
+	Color() : Color{0, 0, 0, 0} {}
 
 	static Color white() { return {1.f, 1.f, 1.f}; }
 	static Color black() { return {0.f, 0.f, 0.f}; }
@@ -30,6 +30,7 @@ public:
 	float r() const { return x; }
 	float g() const { return y; }
 	float b() const { return z; }
+	float a() const { return w; }
 
 	Color& operator*=(float v)
 	{
@@ -59,9 +60,19 @@ public:
 
 	uint32_t toColor32() const
 	{
-		return ((int)(glm::clamp(r(), 0.0f, 1.0f) * 255) << 16) +
+		return ((int)(glm::clamp(a(), 0.0f, 1.0f) * 255) << 24) +
+			((int)(glm::clamp(r(), 0.0f, 1.0f) * 255) << 16) +
 			((int)(glm::clamp(g(), 0.0f, 1.0f) * 255) << 8) +
 			((int)(glm::clamp(b(), 0.0f, 1.0f) * 255) << 0);
+	}
+
+	static Color fromColor32(uint32_t color32)
+	{
+		float a = (float)(color32 >> 24) / 255;
+		float r = (float)(color32 >> 16) / 255;
+		float g = (float)(color32 >> 8) / 255;
+		float b = (float)(color32 >> 0) / 255;
+		return {r, g, b, a};
 	}
 };
 

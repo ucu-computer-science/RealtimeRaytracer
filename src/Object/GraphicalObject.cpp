@@ -1,48 +1,44 @@
 #include "GraphicalObject.h"
 
+#include <memory>
+
 #include "Camera.h"
 #include "SDLDisplayer.h"
 #include "Scene.h"
 #include "Triangle.h"
-#include "mathExtensions.h"
+#include "MathExtensions.h"
 #include "BoundingBoxes.h"
 #include "ObjectParser.h"
 #include "Ray.h"
 
-GraphicalObject::GraphicalObject(const std::vector<std::shared_ptr<Triangle>> &triangles, const glm::vec3 pos, glm::quat rot,
-                                 Material material, std::string texturePath) : Object(pos, rot), triangles(triangles),
-                                                                               material(material), texture{texturePath} {
-    if (triangles.empty())return;
+GraphicalObject::GraphicalObject(const std::vector<std::shared_ptr<Triangle>>& triangles, const glm::vec3 pos, glm::quat rot,
+                                 Material material) : Object(pos, rot), triangles(triangles), material(std::move(material))
+{
+	for (auto& t : triangles)
+		t->attachTo(this);
 
-    for (auto &t: triangles)
-        t->attachToObject(this);
+	updateCameraFacingTriangles();
+	updateBVH();
+	Scene::graphicalObjects.emplace_back(this);
 
-    updateCameraFacingTriangles();
-    updateBVH();
-    Scene::graphicalObjects.emplace_back(std::shared_ptr<GraphicalObject>(this));
-
-    Camera::onCameraMove += [this] {
-        updateCameraFacingTriangles();
-        updateBVH();
-    };
-}
-void GraphicalObject::setColor(Color color) {
-    material.color = color;
+	Camera::onCameraMove += [this]
+	{
+		updateCameraFacingTriangles();
+		updateBVH();
+	};
 }
 
-void GraphicalObject::setReflection(float reflection) {
-    this->material.reflection = reflection;
-}
+
 bool GraphicalObject::intersect(Ray& ray, bool intersectAll)
 {
-	bool hit = false;
-	for (const auto& triangle : cameraFacingTriangles)
-	{
-		if (!triangle->intersect(ray))continue;
-		hit = true;
-	}
-	return hit;
-	return rootBVH->intersect(ray, intersectAll);
+	//bool hit = false;
+	//for (const auto& triangle : cameraFacingTriangles)
+	//{
+	//	if (!triangle->intersect(ray))continue;
+	//	hit = true;
+	//}
+	//return hit;
+	return root->intersect(ray, intersectAll);
 }
 void GraphicalObject::updateCameraFacingTriangles()
 {
@@ -67,24 +63,20 @@ AABB GraphicalObject::getBoundingBox() const
 	}
 	return united;
 }
-void GraphicalObject::setMaterial(Material material) {
-    this->material = material;
+void GraphicalObject::setMaterial(Material material)
+{
+	this->material = material;
 }
 void GraphicalObject::updateBVH()
 {
-	auto intersectables = std::vector<std::shared_ptr<IIntersectable>>(cameraFacingTriangles.size());
-	std::transform(cameraFacingTriangles.begin(), cameraFacingTriangles.end(), intersectables.begin(), [](const std::shared_ptr<Triangle>& obj)
-	{
-		return std::static_pointer_cast<IIntersectable>(obj);
-	});
+	auto intersectables = std::vector<IBoundable*>(cameraFacingTriangles.size());
+	std::ranges::transform(cameraFacingTriangles, intersectables.begin(),
+	                       [](const std::shared_ptr<Triangle>& obj) { return (IBoundable*)&*obj; });
 
-	rootBVH = intersectables.empty() ? nullptr : BVHNode::buildTree(intersectables);
+	root = intersectables.empty() ? nullptr : BVHNode::buildTree(intersectables);
 }
 
-void GraphicalObject::setTexture(const std::string &texturePath) {
-    texture = ColorTexture(texturePath);
-}
-ImportedGraphicalObject::ImportedGraphicalObject(const std::string& path) : GraphicalObject(Model(path).triangles), importPath(path) {}
+ImportedGraphicalObject::ImportedGraphicalObject(const std::filesystem::path& path) : GraphicalObject(Model(path).triangles), path(path) {}
 
 Square::Square(glm::vec3 pos, glm::quat rot, float side, Material mat) : GraphicalObject(generateTriangles(side), pos, rot, mat) {}
 std::vector<std::shared_ptr<Triangle>> Square::generateTriangles(float side)
@@ -146,17 +138,16 @@ bool Sphere::intersect(Ray& ray, bool intersectAll)
 	{
 		if (x0 > 0 && x0 < ray.closestT && x0 < ray.maxDist)
 		{
+			ray.closestT = x0;
+			ray.interPoint = ray.pos + x0 * ray.dir;
 
-            ray.closestT = x0;
-            ray.interPoint = ray.pos + x0 * ray.dir;
 
-
-            ray.surfaceNormal = normalize(ray.interPoint - pos);
-            // transformation to uv coordinates. cyllindric projection.
-            auto n = ray.surfaceNormal;
-            float u = atan2(-n.x, n.y) / (2 * PI) + 0.5;
-            float v = -n.z * 0.5 + 0.5;
-            ray.color = texture.getColor(u, v);
+			ray.surfaceNormal = normalize(ray.interPoint - pos);
+			// transformation to uv coordinates. cyllindric projection.
+			auto n = ray.surfaceNormal;
+			float u = atan2(-n.x, n.y) / (2.0f * PI) + 0.5f;
+			float v = -n.z * 0.5f + 0.5f;
+			ray.color = material.texture->getColor(u, v);
 			ray.closestObj = this;
 
 			return true;
@@ -179,10 +170,10 @@ bool Plane::intersect(Ray& ray, bool intersectAll)
 		float t = -dot(dir, normal) / denom;
 		if (t < ray.closestT && t > 0 && t < ray.maxDist)
 		{
-            ray.closestT = t;
-            ray.color = material.color;
-            ray.interPoint = ray.pos + t * ray.dir;
-            ray.surfaceNormal = normal;
+			ray.closestT = t;
+			ray.color = material.color;
+			ray.interPoint = ray.pos + t * ray.dir;
+			ray.surfaceNormal = normal;
 			ray.closestObj = this;
 
 			return true;
@@ -196,7 +187,7 @@ nlohmann::basic_json<> GraphicalObject::toJson() {
     j["material"]["color"][0] = material.color[0];
     j["material"]["color"][1] = material.color[1];
     j["material"]["color"][2] = material.color[2];
-    j["material"]["alpha"] = material.alpha;
+	j["material"]["texturePath"] = material.texture->getPath();
     j["material"]["lit"] = material.lit;
     j["material"]["diffuseCoeff"] = material.diffuseCoeff;
     j["material"]["specularCoeff"] = material.specularCoeff;
@@ -231,7 +222,7 @@ nlohmann::basic_json<> Plane::toJson() {
 
 nlohmann::basic_json<> ImportedGraphicalObject::toJson() {
     auto j = GraphicalObject::toJson();
-    j["importPath"] = importPath;
+    j["importPath"] = path;
     j["type"] = "ImportedGraphicalObject";
     return j;
 }

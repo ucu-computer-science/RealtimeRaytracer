@@ -1,17 +1,18 @@
 #pragma once
 
-#include <string>
 #include <vector>
 
 #include "Triangle.h"
 
 class Model
 {
+	void parseObject();
+
 public:
-	explicit Model(std::string path);
 	std::vector<std::shared_ptr<Triangle>> triangles;
 	std::vector<glm::vec3> vertices;
-	std::string path;
+	std::filesystem::path path;
 
-	void parseObject();
+	explicit Model(const std::filesystem::path& path);
+
 };

@@ -3,9 +3,9 @@
 #include "GraphicalObject.h"
 #include "glm/gtx/string_cast.hpp"
 #include "glm/vec3.hpp"
-#include "IIntersectable.h"
+#include "IBoundable.h"
 
-class Triangle : public IIntersectable
+class Triangle : public IBoundable
 {
 	GraphicalObject* obj = nullptr;
 	std::vector<glm::vec3> localPoints;
@@ -27,7 +27,7 @@ public:
 
 
 	Triangle(GraphicalObject* obj, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, bool isTwoSided = false);
-	void attachToObject(GraphicalObject* obj);
+	void attachTo(GraphicalObject* obj);
 	void recalculateValues();
 
 	bool intersect(Ray& ray, bool intersectAll = false) override;

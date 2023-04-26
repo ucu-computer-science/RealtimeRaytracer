@@ -7,6 +7,7 @@
 #include "thread_pool_light.hpp"
 #include "Action.h"
 
+struct PixelMatrix;
 struct Ray;
 
 class Camera : public Object
@@ -33,8 +34,8 @@ public:
 	glm::vec3 getRightTopCorner() const;
 	glm::vec3 getRightBotCorner() const;
 
-	void updatePixelMatrix(uint32_t* pixels, int width, int height);
+	void updatePixelMatrix(const PixelMatrix& pixelMatrix);
 	void setBackgroundColor(Color color) { bgColor = color; }
 
-    nlohmann::basic_json<> toJson();
+    nlohmann::basic_json<> toJson() override;
 };

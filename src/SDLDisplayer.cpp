@@ -24,9 +24,9 @@ int SDLDisplayer::display(int width, int height)
     renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGRA32, SDL_TEXTUREACCESS_TARGET, width, height);
 //	renderTexture = SDL_CreateTextureFromSurface(renderer, surface);
 
-	auto intersectables = std::vector<std::shared_ptr<IIntersectable>>(Scene::graphicalObjects.size());
-	auto f = [](const std::shared_ptr<GraphicalObject>& obj) { return std::static_pointer_cast<IIntersectable>(obj); };
-	std::transform(Scene::graphicalObjects.begin(), Scene::graphicalObjects.end(), intersectables.begin(), f);
+	// Init BVH
+	auto intersectables = std::vector<IBoundable*>(Scene::graphicalObjects.size());
+	std::ranges::transform(Scene::graphicalObjects, intersectables.begin(), [](const GraphicalObject* obj) { return (IBoundable*)obj; });
 	BVHNode::root = BVHNode::buildTree(intersectables);
 
 	loop();
@@ -40,23 +40,29 @@ int SDLDisplayer::display(int width, int height)
 void SDLDisplayer::loop()
 {
 	auto pixels = new uint32_t[height * width];
-	const int pitch = width * sizeof(uint32_t);
+	PixelMatrix pixelMatrix(pixels, width, height);
+
+	bool quit = false;
 	while (true)
 	{
 		while (SDL_PollEvent(&event))
 		{
 			Input::handleSDLEvent(event);
+
 			if (event.type == SDL_QUIT)
+			{
+				quit = true;
 				break;
+			}
 		}
+		if (quit) break;
 
 		Time::updateTime();
 		Input::updateInput();
 		onUpdate();
 
-		Camera::instance->updatePixelMatrix(pixels, width, height);
-		Canvas::drawUI(pixels, width, height);
-
+		Camera::instance->updatePixelMatrix(pixelMatrix);
+		Canvas::mainCanvas->drawUI(&pixelMatrix);
 		// Stats
 		FPSCounter::updateFPSCounter();
 		TriangleCounter::updateTriangleCounter();
@@ -67,7 +73,7 @@ void SDLDisplayer::loop()
 				<< " Graphical Objects: " << Scene::graphicalObjects.size()
 				<< " Bounding Boxes: " << BVHNode::boxCount << '\n';
 
-		SDL_UpdateTexture(renderTexture, nullptr, pixels, pitch);
+		SDL_UpdateTexture(renderTexture, nullptr, pixels, width * sizeof(uint32_t));
 		SDL_RenderCopy(renderer, renderTexture, nullptr, nullptr);
 		SDL_RenderPresent(renderer);
 	}
@@ -78,7 +84,7 @@ void FPSCounter::updateFPSCounter()
 	uint32_t currTime = SDL_GetTicks();
 	if (currTime >= lastFrameTime + 200)
 	{
-		fps = (float)frameCount / (float)(currTime - lastFrameTime) * 1000;
+		fps = (int)((float)frameCount / (float)(currTime - lastFrameTime) * 1000.0f);
 		frameCount = 0;
 		lastFrameTime = currTime;
 	}

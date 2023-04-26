@@ -1,35 +1,38 @@
 #include "Canvas.h"
 
 #include "Color.h"
-#include "glm/vec2.hpp"
+#include "SDLDisplayer.h"
+#include "Texture.h"
 
 
-void Canvas::drawUI(uint32_t* pixels, int width, int height)
+void Canvas::drawUI(const PixelMatrix* pixelMatrix) const
 {
-	drawScope(pixels, width, height);
+	for (const auto& element : elements)
+	{
+		element->draw(pixelMatrix);
+	}
 }
 
-void Canvas::drawScope(uint32_t* pixels, int width, int height)
+void Canvas::addElement(const std::shared_ptr<UIElement>& element)
 {
-	auto centerX = width / 2;
-	auto centerY = height / 2;
+	elements.push_back(element);
+}
 
-	glm::vec2 scopeSize{25, 25};
-	int scopeWidth = 2;
-	auto scopeColor = Color::white();
-	for (int y = centerY - (int)scopeSize.y / 2; y < centerY + (int)scopeSize.y / 2; ++y)
-	{
-		for (int x = centerX - scopeWidth / 2; x < centerX + scopeWidth / 2; ++x)
-		{
-			pixels[(height - y - 1) * width + x] = scopeColor.toColor32();
-		}
-	}
+UIElement::UIElement(glm::vec2 pos) : pos(pos) { }
 
-	for (int x = centerX - (int)scopeSize.x / 2; x < centerX + (int)scopeSize.x / 2; ++x)
+Image::Image(const glm::vec2& pos, Texture* sprite) : UIElement(pos), sprite(sprite) { }
+
+void Image::draw(const PixelMatrix* pixelMatrix)
+{
+	auto width = sprite->getWidth(), height = sprite->getHeight();
+
+	auto startY = (int)pos.y - height / 2;
+	auto startX = (int)pos.x - width / 2;
+	for (int y = 0; y < height; ++y)
 	{
-		for (int y = centerY - scopeWidth / 2; y < centerY + scopeWidth / 2; ++y)
+		for (int x = 0; x < width; ++x)
 		{
-			pixels[(height - y - 1) * width + x] = scopeColor.toColor32();
+			pixelMatrix->setPixelSafe(startX + x, startY + y, sprite->getColor(x, y).toColor32());
 		}
 	}
 }

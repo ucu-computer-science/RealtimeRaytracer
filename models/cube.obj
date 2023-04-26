@@ -22,7 +22,7 @@ vn 0 -1 0
 vn 0 0 -1
 vn 0 0 1
 
-# Mesh '0obj' with 12 faces
+# Model '0obj' with 12 faces
 g 0obj
 usemtl Color_65535
 f  1//1 2//1 3//1
