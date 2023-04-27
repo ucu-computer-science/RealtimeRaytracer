@@ -103,14 +103,14 @@ int main(int argv, char* args[])
     GlobalLight dlight8{{-0, -0, -1}, Color::white(), 1};
 
 //	Model model("./models/Man.obj");
-//	ImportedGraphicalObject obj("./models/Man.obj");
+	ImportedGraphicalObject obj("./models/Man.obj");
 //	obj.setRot({{90.0f * DEG_TO_RAD, 0 * DEG_TO_RAD, 0 * DEG_TO_RAD}});
-//	auto tex = std::make_shared<Texture>("./textures/earth.png");
-//	obj.setMaterial(Material({}, tex, false, false, 0, 4000, .1));
+	auto tex = std::make_shared<Texture>("./textures/earth.png");
+	obj.setMaterial(Material({}, tex, false, false, 0, 4000, .1));
 
 	Canvas::mainCanvas = std::make_unique<Canvas>();
-    Square sq{{0, 0, 9.999f}, {{-90 * DEG_TO_RAD, 0, 0}}, 100};
-    sq.material.texture = std::make_shared<Texture>("./textures/cat.png");
+//    Square sq{{0, 0, 9.999f}, {{-90 * DEG_TO_RAD, 0, 0}}, 100};
+//    sq.material.texture = std::make_shared<Texture>("./textures/cat.png");
 
     Texture crosshair{"./sprites/crosshair.png"};
 	Canvas::mainCanvas->addElement(std::make_shared<Image>(glm::vec2(100, 100), &crosshair));
