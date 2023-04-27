@@ -92,9 +92,9 @@ std::vector<std::shared_ptr<Triangle>> Square::generateTriangles(float side)
 //    triangles.emplace_back(std::make_shared<Triangle>(this, {p1,{0,0}}))
 //    Triangle(this, {p1,{0,0}}, {p2,{0,1}}, {p3,{1,0}});
     ExtendedVertice vertice1{p1,{0,0}};
-    ExtendedVertice vertice2{p2,{0,1}};
-    ExtendedVertice vertice3{p3,{1,0}};
-    ExtendedVertice vertice4{p4,{1,1}};
+    ExtendedVertice vertice2{p2,{1,0}};
+    ExtendedVertice vertice3{p3,{1,1}};
+    ExtendedVertice vertice4{p4,{0,1}};
 
     triangles.emplace_back(std::make_shared<Triangle>(this, vertice1, vertice2, vertice3));
 	triangles.emplace_back(std::make_shared<Triangle>(this, vertice1, vertice3, vertice4));

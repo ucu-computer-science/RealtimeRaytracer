@@ -94,18 +94,20 @@ bool Triangle::intersect(Ray& ray, bool intersectAll)
 	ray.interPoint = hit;
     ray.closestT = t;
     float b3 = 1 - b1 - b2;
-//    auto P =
-//    localPoints.at(0).verticeUV
-//    auto a  = dot(localPoints.at(0).verticeUV, {b1,b2});
-//    auto b  = dot(localPoints.at(1).verticeUV, {b1,b2});
-//    auto c  = dot(localPoints.at(2).verticeUV, {b1,b2});
 
-//    ray.color = obj->material.texture->getColor(b1, b2);
-//p1.verti
-    auto a = b1*localPoints.at(0).verticeUV;
-    auto b = b2*localPoints.at(1).verticeUV;
-    auto c = b3*localPoints.at(2).verticeUV;
-    auto P = a + b + c;
+//    auto a = b1*localPoints.at(0).verticeUV;
+//    auto b = b2*localPoints.at(1).verticeUV;
+//    auto c = b3*localPoints.at(2).verticeUV;
+//    auto P = a + b + c;
+//    ray.color = obj->material.texture->getColor(P.x, P.y);
+//
+    auto p1 = b1*(localPoints.at(1).verticeUV - localPoints.at(0).verticeUV);
+    auto p2 = b2*(localPoints.at(2).verticeUV - localPoints.at(0).verticeUV);
+    auto d = localPoints.at(0).verticeUV + p1  + p2;
+    ray.color = obj->material.texture->getColor(d.x, d.y);
+    //    ray.color = P.x*Color::green() + P.y*Color::red() + (1-P.x - P.y)*Color::blue();
+
+
 //    auto duv1 =  localPoints.at(0).verticeUV - localPoints.at(2).verticeUV;
 //    auto duv2 =  localPoints.at(1).verticeUV - localPoints.at(2).verticeUV;
 
@@ -126,11 +128,9 @@ bool Triangle::intersect(Ray& ray, bool intersectAll)
 //    float b0 = 1 - b1 - b2;
 //    float tu = b0*uvs[0][0] + b1*uvs[1][0] + b2*uvs[2][0];
 //    float tv = b0*uvs[0][1] + b1*uvs[1][1] + b2*uvs[2][1];x
-//    ray.color = P.x*Color::green() + P.y*Color::red() + (1-P.x - P.y)*Color::blue();
 //    ray.color = a*Color::green() + b*Color::red() + c*Color::blue();
 //
 //    P(u,v) = a*(1-u)*(1-v) + b*(1-u)*v + P2*u*v + P3*u*(1-v)
-    ray.color = obj->material.texture->getColor(P.x, P.y);
 
 //    ray.color = b1*Color::green() + b2*Color::red() + b3*Color::blue();
 
