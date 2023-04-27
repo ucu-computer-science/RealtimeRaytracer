@@ -50,7 +50,7 @@ public:
 
 	std::vector<std::shared_ptr<Triangle>> generateTriangles(float side);
 
-	bool includeInBVH() override { return false; }
+//	bool includeInBVH() override { return false; }
 };
 
 class Cube final : public GraphicalObject

@@ -93,7 +93,47 @@ bool Triangle::intersect(Ray& ray, bool intersectAll)
 	ray.surfaceNormal = normal;
 	ray.interPoint = hit;
     ray.closestT = t;
-    ray.color = obj->material.texture->getColor(b1, b2);
+    float b3 = 1 - b1 - b2;
+//    auto P =
+//    localPoints.at(0).verticeUV
+//    auto a  = dot(localPoints.at(0).verticeUV, {b1,b2});
+//    auto b  = dot(localPoints.at(1).verticeUV, {b1,b2});
+//    auto c  = dot(localPoints.at(2).verticeUV, {b1,b2});
+
+//    ray.color = obj->material.texture->getColor(b1, b2);
+//p1.verti
+    auto a = b1*localPoints.at(0).verticeUV;
+    auto b = b2*localPoints.at(1).verticeUV;
+    auto c = b3*localPoints.at(2).verticeUV;
+    auto P = a + b + c;
+//    auto duv1 =  localPoints.at(0).verticeUV - localPoints.at(2).verticeUV;
+//    auto duv2 =  localPoints.at(1).verticeUV - localPoints.at(2).verticeUV;
+
+
+//    auto dp1 = localPoints.at(0).vertice - localPoints.at(2).vertice, dp2 = localPoints.at(1).vertice - localPoints.at(2).vertice;
+//    float determinant = duv1.x * duv1.y - duv1.y * duv2.x;
+////    if (determinant == 0.f) {
+////        // Handle zero determinant for triangle partial derivative matrix
+//////        CoordinateSystem(Normalize(Cross(e2, e1)), &dpdu, &dpdv);
+////    }
+////    else {
+//        float invdet = 1.f / determinant;
+//        auto dpdu = ( duv2.y * dp1 - duv1.y * dp2) * invdet;
+//        auto dpdv = (-duv2.x * dp1 + duv1.x * dp2) * invdet;
+////    }
+//
+//    // Interpolate $(u,v)$ triangle parametric coordinates
+//    float b0 = 1 - b1 - b2;
+//    float tu = b0*uvs[0][0] + b1*uvs[1][0] + b2*uvs[2][0];
+//    float tv = b0*uvs[0][1] + b1*uvs[1][1] + b2*uvs[2][1];x
+//    ray.color = P.x*Color::green() + P.y*Color::red() + (1-P.x - P.y)*Color::blue();
+//    ray.color = a*Color::green() + b*Color::red() + c*Color::blue();
+//
+//    P(u,v) = a*(1-u)*(1-v) + b*(1-u)*v + P2*u*v + P3*u*(1-v)
+    ray.color = obj->material.texture->getColor(P.x, P.y);
+
+//    ray.color = b1*Color::green() + b2*Color::red() + b3*Color::blue();
+
 	return true;
 }
 

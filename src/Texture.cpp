@@ -55,5 +55,5 @@ Color Texture::getColor(float x, float y) const
 
 Color Texture::getColor(int x, int y) const
 {
-	return pixelColors[y * width + x];
+	return pixelColors[(y % height) * width + (x % width)];
 }
