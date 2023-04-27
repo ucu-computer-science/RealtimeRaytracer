@@ -4,11 +4,12 @@
 #include "glm/gtx/string_cast.hpp"
 #include "glm/vec3.hpp"
 #include "IBoundable.h"
+#include "ExtendedVertice.h"
 
 class Triangle : public IBoundable
 {
 	GraphicalObject* obj = nullptr;
-	std::vector<glm::vec3> localPoints;
+	std::vector<ExtendedVertice> localPoints;
 	glm::vec3 localNormal;
 
 public:
@@ -26,7 +27,7 @@ public:
     float valRow3{};
 
 
-	Triangle(GraphicalObject* obj, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, bool isTwoSided = false);
+	Triangle(GraphicalObject* obj, ExtendedVertice p1, ExtendedVertice p2, ExtendedVertice p3, bool isTwoSided = false);
 	void attachTo(GraphicalObject* obj);
 	void recalculateValues();
 
@@ -34,3 +35,9 @@ public:
 	AABB getBoundingBox() const override;
 	glm::vec3 getCenter() const override;
 };
+//class MeshTriangle: public Triangle{
+//public:
+//    uv1, uv2, uv3;
+//    MeshTriangle(GraphicalObject* obj, ExtendedVertice &p1, ExtendedVertice &p2, ExtendedVertice &p3):
+//    Triangle{obj, p1.vertice, p2.vertice, p3.vertice}{};
+//};

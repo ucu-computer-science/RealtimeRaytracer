@@ -8,7 +8,7 @@ void Triangle::recalculateValues()
 	auto p1 = points[0], p2 = points[1], p3 = points[2];
 	auto e1 = p2 - p1;
 	auto e2 = p3 - p1;
-	auto normal = obj->getRot() * cross(localPoints[1] - localPoints[0], localPoints[2] - localPoints[1]);
+	auto normal = obj->getRot() * cross(localPoints[1].vertice - localPoints[0].vertice, localPoints[2].vertice - localPoints[1].vertice);
 
 	// Depending on which component of the normal is largest, calculate
 	// coefficients:
@@ -53,9 +53,9 @@ void Triangle::recalculateValues()
 	}
 }
 
-Triangle::Triangle(GraphicalObject* obj, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, bool isTwoSided) : localPoints({p1, p2, p3}),
-	localNormal(normalize(cross(localPoints[1] - localPoints[0], localPoints[2] - localPoints[1]))),
-	isTwoSided(isTwoSided)
+Triangle::Triangle(GraphicalObject* obj, ExtendedVertice p1, ExtendedVertice p2, ExtendedVertice p3, bool isTwoSided) : localPoints({p1, p2, p3}),
+                                                                                                                        localNormal(normalize(cross(localPoints[1].vertice - localPoints[0].vertice, localPoints[2].vertice - localPoints[1].vertice))),
+                                                                                                                        isTwoSided(isTwoSided)
 {
 	if (obj != nullptr)
 		attachTo(obj);
@@ -93,7 +93,47 @@ bool Triangle::intersect(Ray& ray, bool intersectAll)
 	ray.surfaceNormal = normal;
 	ray.interPoint = hit;
     ray.closestT = t;
-    ray.color = obj->material.texture->getColor(b1, b2);
+    float b3 = 1 - b1 - b2;
+
+//    auto a = b1*localPoints.at(0).verticeUV;
+//    auto b = b2*localPoints.at(1).verticeUV;
+//    auto c = b3*localPoints.at(2).verticeUV;
+//    auto P = a + b + c;
+//    ray.color = obj->material.texture->getColor(P.x, P.y);
+//
+    auto p1 = b1*(localPoints.at(1).verticeUV - localPoints.at(0).verticeUV);
+    auto p2 = b2*(localPoints.at(2).verticeUV - localPoints.at(0).verticeUV);
+    auto d = localPoints.at(0).verticeUV + p1  + p2;
+    ray.color = obj->material.texture->getColor(d.x, d.y);
+    //    ray.color = P.x*Color::green() + P.y*Color::red() + (1-P.x - P.y)*Color::blue();
+
+
+//    auto duv1 =  localPoints.at(0).verticeUV - localPoints.at(2).verticeUV;
+//    auto duv2 =  localPoints.at(1).verticeUV - localPoints.at(2).verticeUV;
+
+
+//    auto dp1 = localPoints.at(0).vertice - localPoints.at(2).vertice, dp2 = localPoints.at(1).vertice - localPoints.at(2).vertice;
+//    float determinant = duv1.x * duv1.y - duv1.y * duv2.x;
+////    if (determinant == 0.f) {
+////        // Handle zero determinant for triangle partial derivative matrix
+//////        CoordinateSystem(Normalize(Cross(e2, e1)), &dpdu, &dpdv);
+////    }
+////    else {
+//        float invdet = 1.f / determinant;
+//        auto dpdu = ( duv2.y * dp1 - duv1.y * dp2) * invdet;
+//        auto dpdv = (-duv2.x * dp1 + duv1.x * dp2) * invdet;
+////    }
+//
+//    // Interpolate $(u,v)$ triangle parametric coordinates
+//    float b0 = 1 - b1 - b2;
+//    float tu = b0*uvs[0][0] + b1*uvs[1][0] + b2*uvs[2][0];
+//    float tv = b0*uvs[0][1] + b1*uvs[1][1] + b2*uvs[2][1];x
+//    ray.color = a*Color::green() + b*Color::red() + c*Color::blue();
+//
+//    P(u,v) = a*(1-u)*(1-v) + b*(1-u)*v + P2*u*v + P3*u*(1-v)
+
+//    ray.color = b1*Color::green() + b2*Color::red() + b3*Color::blue();
+
 	return true;
 }
 
@@ -124,10 +164,14 @@ glm::vec3 Triangle::getCenter() const
 
 void Triangle::updateGeometry()
 {
-	points = {
-		obj->getRot() * localPoints[0] + obj->getPos(),
-		obj->getRot() * localPoints[1] + obj->getPos(),
-		obj->getRot() * localPoints[2] + obj->getPos()
-	};
+    points = {obj->getRot() * localPoints[0].vertice + obj->getPos(),
+              obj->getRot() * localPoints[1].vertice + obj->getPos(),
+              obj->getRot() * localPoints[2].vertice + obj->getPos()};
+
+//    points = {
+//		obj->getRot() * localPoints[0]. + obj->getPos(),
+//		obj->getRot() * localPoints[1] + obj->getPos(),
+//		obj->getRot() * localPoints[2] + obj->getPos()
+//	};
 	normal = obj->getRot() * localNormal;
 }

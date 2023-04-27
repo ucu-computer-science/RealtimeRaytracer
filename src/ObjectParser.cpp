@@ -39,8 +39,10 @@ void Model::parseObject()
 				triangle.push_back(index);
 			}
             for (int i=2; i<triangle.size(); i++) {
-                auto a = std::make_shared<Triangle>(nullptr, vertices[triangle[0]], vertices[triangle[i-1]], vertices[triangle[i]]);
-//			//a->isTwoSided = true;
+                ExtendedVertice vertice1{vertices[triangle[0]],{0,0}};
+                ExtendedVertice vertice2{vertices[triangle[i-1]],{0,1}};
+                ExtendedVertice vertice3{vertices[triangle[i]],{1,0}};
+                auto a = std::make_shared<Triangle>(nullptr, vertice1, vertice2, vertice3);
                 triangles.emplace_back(a);
             }
 		}
