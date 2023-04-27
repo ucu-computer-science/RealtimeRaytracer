@@ -11,7 +11,6 @@
 Color Raycast::castRay(Ray ray, int bounce)
 {
 	Color color{};
-
 	bool hit = false;
 	float colorImpact = 1;
 	for (int i = 0; i < bounce; ++i)
@@ -26,7 +25,7 @@ Color Raycast::castRay(Ray ray, int bounce)
 			break;
 		hit = true;
 
-		ray.interPoint += ray.surfaceNormal * ray.closestT/100.f;
+		ray.interPoint += ray.surfaceNormal * ray.closestT / 100.f;
 
 		auto mat = ray.closestMat;
 		if (mat->lit)

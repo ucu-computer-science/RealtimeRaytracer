@@ -46,10 +46,10 @@ bool Texture::loadImage(std::vector<uint8_t>& image, const std::filesystem::path
 	return (data != nullptr);
 }
 
-Color Texture::getColor(float x, float y) const
+Color Texture::getColor(float u, float v) const
 {
-	int x_ = (int)std::max(ceil(x * (float)width) - 1, 0.0f);
-	int y_ = (int)std::max(ceil(y * (float)height) - 1, 0.0f);
+	int x_ = (int)std::max(ceil(u * (float)width) - 1, 0.0f);
+	int y_ = (int)std::max(ceil(v * (float)height) - 1, 0.0f);
 	return getColor(x_, y_);
 }
 

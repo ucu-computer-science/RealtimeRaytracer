@@ -20,7 +20,7 @@ public:
 	Texture(const std::filesystem::path& path);
 
 	Color getColor(int x, int y) const;
-	Color getColor(float x, float y) const;
+	Color getColor(float u, float v) const;
 
 	int getWidth() const { return width; }
 	int getHeight() const { return height; }

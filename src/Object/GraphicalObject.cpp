@@ -18,15 +18,15 @@ GraphicalObject::GraphicalObject(const std::vector<std::shared_ptr<Triangle>>& t
 	for (auto& t : triangles)
 		t->attachTo(this);
 
-	updateCameraFacingTriangles();
+	//updateCameraFacingTriangles();
 	updateBVH();
 	Scene::graphicalObjects.emplace_back(this);
 
-	Camera::onCameraMove += [this]
-	{
-		updateCameraFacingTriangles();
-		updateBVH();
-	};
+	//Camera::onCameraMove += [this]
+	//{
+	//	updateCameraFacingTriangles();
+	//	updateBVH();
+	//};
 }
 
 
@@ -41,17 +41,17 @@ bool GraphicalObject::intersect(Ray& ray, bool intersectAll)
 	//return hit;
 	return root != nullptr ? root->intersect(ray, intersectAll) : false;
 }
-void GraphicalObject::updateCameraFacingTriangles()
-{
-	cameraFacingTriangles.clear();
-	for (const auto& triangle : triangles)
-	{
-		auto dir = triangle->points[0] - Camera::instance->getPos();
-		if (!triangle->isTwoSided && dot(triangle->normal, dir) >= 0)
-			continue;
-		cameraFacingTriangles.emplace_back(triangle);
-	}
-}
+//void GraphicalObject::updateCameraFacingTriangles()
+//{
+//	cameraFacingTriangles.clear();
+//	for (const auto& triangle : triangles)
+//	{
+//		auto dir = triangle->points[0] - Camera::instance->getPos();
+//		if (!triangle->isTwoSided && dot(triangle->normal, dir) >= 0)
+//			continue;
+//		cameraFacingTriangles.emplace_back(triangle);
+//	}
+//}
 AABB GraphicalObject::getBoundingBox() const
 {
 	if (triangles.empty()) return {{0, 0, 0}, {0, 0, 0}};
@@ -70,8 +70,8 @@ void GraphicalObject::setMaterial(Material material)
 }
 void GraphicalObject::updateBVH()
 {
-	auto intersectables = std::vector<IBoundable*>(cameraFacingTriangles.size());
-	std::ranges::transform(cameraFacingTriangles, intersectables.begin(),
+	auto intersectables = std::vector<IBoundable*>(triangles.size());
+	std::ranges::transform(triangles, intersectables.begin(),
 	                       [](const std::shared_ptr<Triangle>& obj) { return (IBoundable*)&*obj; });
 
 	root = intersectables.empty() ? nullptr : BVHNode::buildTree(intersectables, BVHNode::maxTrianglesPerBox);
@@ -169,7 +169,7 @@ bool Plane::intersect(Ray& ray, bool intersectAll)
 		if (t < ray.closestT && t > 0 && t < ray.maxDist)
 		{
 			ray.closestT = t;
-			ray.color = material.getColor();
+			ray.color = material.color;
 			ray.interPoint = ray.pos + t * ray.dir;
 			ray.surfaceNormal = normal;
 			ray.closestMat = &material;

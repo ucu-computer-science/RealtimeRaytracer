@@ -6,40 +6,65 @@
 #include "Object.h"
 #include "Ray.h"
 
-class PointLight : public Object
+class Light : public Object
 {
-public:
-	float distance;
-	float intensity;
+protected:
 	Color color;
-	PointLight(glm::vec3 pos, Color color, float distance, float intensity);
-	virtual void getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& inSpecular);
+	float intensity;
 
-    nlohmann::basic_json<> toJson() override;
+	Color colorIntensified;
+
+	Light(const glm::vec3& pos, const Color& color, float intensity);
+
+public:
+	virtual void getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& inSpecular) = 0;
+
+	nlohmann::basic_json<> toJson() override;
 };
 
-class Light : public PointLight
+class PointLight : public Light
 {
-private:
+	float distance;
+
+public:
+	PointLight(glm::vec3 pos, Color color, float intensity, float distance);
+
+	void getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& inSpecular) override;
+
+	nlohmann::basic_json<> toJson() override;
+};
+
+class AreaLight : public Light
+{
+	float distance;
+	glm::vec3 size;
+	glm::vec3 pointSize;
+
 	std::vector<glm::vec3> points;
 
 public:
-    glm::vec3 size;
-    glm::vec3 pointSize;
-	Light(glm::vec3 pos, Color color, float distance, float intensity,
-	      glm::vec3 size,
-	      glm::vec3 pointSize); //: PointLight(pos, color, distance, intensity);
+	AreaLight(glm::vec3 pos, Color color, float distance, float intensity, glm::vec3 size, glm::vec3 pointSize);
+
 	void getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& inSpecular) override;
 
-    nlohmann::basic_json<> toJson() override;
+	nlohmann::basic_json<> toJson() override;
 };
 
-class GlobalLight : public PointLight
+class GlobalLight : public Light
+{
+	glm::vec3 direction;
+
+public:
+	GlobalLight(glm::vec3 direction, Color color, float intensity);
+
+	void getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& inSpecular) override;
+};
+
+class EverywhereLight : public Light
 {
 public:
-	// pos is the inverse direction of the light
-	GlobalLight(glm::vec3 dirInv, Color color, float intensity) : PointLight(
-		normalize(dirInv), color, FLT_MAX, intensity) {}
+	EverywhereLight(const Color& color, float intensity);
+
 	void getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& inSpecular) override;
 };
 

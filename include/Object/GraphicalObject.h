@@ -16,7 +16,7 @@ class GraphicalObject : public Object, public IBoundable
 {
 public:
 	const std::vector<std::shared_ptr<Triangle>> triangles{};
-	std::vector<std::shared_ptr<Triangle>> cameraFacingTriangles{};
+	//std::vector<std::shared_ptr<Triangle>> cameraFacingTriangles{};
 	Material material;
 	std::shared_ptr<BVHNode> root;
 
@@ -27,7 +27,7 @@ public:
 	glm::vec3 getCenter() const override { return pos; }
 
 	void updateBVH();
-	void updateCameraFacingTriangles();
+	//void updateCameraFacingTriangles();
 
 	void setMaterial(Material material);
 

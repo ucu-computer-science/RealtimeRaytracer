@@ -158,7 +158,7 @@ bool BVHNode::intersectForVisual(Ray& ray)
 			ray.interPoint = point;
 			ray.closestT = t;
 			ray.closestMat = &material;
-			ray.color = material.getColor();
+			ray.color = material.color;
 			return true;
 		}
 	}

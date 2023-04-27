@@ -8,7 +8,7 @@ void SceneParser::parseScene(const std::filesystem::path& path)
 	json j;
 	file >> j;
 	auto camera = new Camera(glm::vec3((float)j["Cameras"][0]["pos"][0], (float)j["Cameras"][0]["pos"][1], (float)j["Cameras"][0]["pos"][2]),
-	                         (float)j["Cameras"][0]["fov"], glm::vec2((float)j["Cameras"][0]["size"][0], (float)j["Cameras"][0]["size"][1]));
+	                         (float)j["Cameras"][0]["fov"], (float)j["Cameras"][0]["aperture"], glm::vec2((float)j["Cameras"][0]["size"][0], (float)j["Cameras"][0]["size"][1]));
 	for (auto light : j["PointLights"])
 	{
 		auto light1 = new PointLight{
@@ -61,7 +61,7 @@ Material SceneParser::assignMaterial(json material)
 	mat.color[0] = (float)material["color"][0];
 	mat.color[1] = (float)material["color"][1];
 	mat.color[2] = (float)material["color"][2];
-	if ((std::string)material["texturePath"] != "")
+	if (material["texturePath"] != "")
 		mat.texture = std::make_shared<Texture>(material["texturePath"]);
 	mat.lit = (bool)material["lit"];
 	mat.diffuseCoeff = (float)material["diffuseCoeff"];

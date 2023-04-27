@@ -90,7 +90,7 @@ bool Triangle::intersect(Ray& ray, bool intersectAll)
 
 	ray.closestT = t;
 	ray.closestMat = &obj->material;
-	ray.surfaceNormal = normal;
+	ray.surfaceNormal = dot(normal, ray.dir) > 0 ? -normal : normal;
 	ray.interPoint = hit;
     ray.closestT = t;
     ray.color = obj->material.getColor(b1, b2);

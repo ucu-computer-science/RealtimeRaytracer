@@ -30,8 +30,8 @@ struct Material
 	                             specularDegree{specularDegree},
 	                             reflection{reflection} { }
 
-	Color getColor(float x = 0, float y = 0) const
+	Color getColor(float u, float v) const
 	{
-		return texture->getColor(x, y) * color;
+		return texture->getColor(u, v) * color;
 	}
 };

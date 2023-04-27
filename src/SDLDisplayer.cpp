@@ -96,7 +96,7 @@ void TriangleCounter::updateTriangleCounter()
 {
 	triangleCount = 0;
 	for (const auto& obj : Scene::graphicalObjects)
-		triangleCount += (int)obj->cameraFacingTriangles.size();
+		triangleCount += (int)obj->triangles.size();
 }
 
 void Time::updateTime()

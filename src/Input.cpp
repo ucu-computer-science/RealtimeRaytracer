@@ -43,11 +43,11 @@ void Input::updateInput()
 	}
 	if (keyboardState[SDL_SCANCODE_Q])
 	{
-		camera->translate(glm::vec3{0, 0, 1} * moveSpeed * Time::deltaTime);
+		camera->translate(camera->up() * moveSpeed * Time::deltaTime);
 	}
 	if (keyboardState[SDL_SCANCODE_E])
 	{
-		camera->translate(glm::vec3{0, 0, -1} * moveSpeed * Time::deltaTime);
+		camera->translate(camera->down() * moveSpeed * Time::deltaTime);
 	}
 
 	// Rotation
