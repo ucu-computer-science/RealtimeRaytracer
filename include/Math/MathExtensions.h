@@ -1,7 +1,7 @@
 #pragma once
 #ifndef RAYTRACER_MATHEXTENSIONS_H
 #define RAYTRACER_MATHEXTENSIONS_H
-#include "glm/vec3.hpp"
+#include <glm/vec3.hpp>
 
 constexpr float PI = 3.14159265358979323846f;
 constexpr float DEG_TO_RAD = (1 / (180 / PI));

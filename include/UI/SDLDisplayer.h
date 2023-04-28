@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDL.h>
+#include <SDL2/include/SDL.h>
 
 #include "Action.h"
 

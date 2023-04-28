@@ -1,8 +1,7 @@
 #pragma once
 #include <ostream>
-
-#include "glm/common.hpp"
-#include "glm/vec4.hpp"
+#include <glm/common.hpp>
+#include <glm/vec4.hpp>
 
 class Color : public glm::vec4
 {

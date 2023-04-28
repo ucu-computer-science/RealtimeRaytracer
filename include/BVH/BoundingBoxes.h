@@ -1,8 +1,9 @@
 #pragma once
 
-#include "GraphicalObject.h"
-#include "glm/vec3.hpp"
+#include <glm/vec3.hpp>
 #include <cfloat>
+#include "GraphicalObject.h"
+
 
 class IBoundable;
 

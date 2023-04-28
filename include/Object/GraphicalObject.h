@@ -1,10 +1,11 @@
 #pragma once
 
+#include <glm/vec3.hpp>
+#include <vector>
+
 #include "Object.h"
-#include "glm/vec3.hpp"
 #include "Material.h"
 #include "Texture.h"
-#include <vector>
 #include "IBoundable.h"
 
 class BVHNode;

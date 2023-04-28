@@ -1,7 +1,5 @@
-//
-// Created by ADMIN on 26-Apr-23.
-//
 
+#pragma once
 #ifndef RAYTRACER_POLYMESH_H
 #define RAYTRACER_POLYMESH_H
 

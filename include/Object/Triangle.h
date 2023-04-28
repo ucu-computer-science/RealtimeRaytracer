@@ -1,8 +1,9 @@
 #pragma once
 
+#include <glm/gtx/string_cast.hpp>
+#include <glm/vec3.hpp>
+
 #include "GraphicalObject.h"
-#include "glm/gtx/string_cast.hpp"
-#include "glm/vec3.hpp"
 #include "IBoundable.h"
 #include "ExtendedVertice.h"
 
