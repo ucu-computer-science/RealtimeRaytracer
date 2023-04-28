@@ -29,6 +29,9 @@ public:
 	float valRow2{};
 	float valRow3{};
 
+	glm::vec2 texVecU;
+	glm::vec2 texVecV;
+
 
 	Triangle(GraphicalObject* obj, Vertex v1, Vertex v2, Vertex v3, bool isTwoSided = false);
 	void attachTo(GraphicalObject* obj);

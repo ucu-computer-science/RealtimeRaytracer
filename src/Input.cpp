@@ -1,9 +1,14 @@
 #include "Input.h"
 
+#include "BoundingBoxes.h"
 #include "Camera.h"
+#include "GraphicalObject.h"
 #include "SDLDisplayer.h"
 #include "glm/gtx/string_cast.hpp"
 #include "MathExtensions.h"
+#include "Physics.h"
+#include "Ray.h"
+#include "Scene.h"
 
 bool Input::isFullscreen = false;
 bool Input::isFocused = true;
@@ -95,6 +100,26 @@ void Input::handleSDLEvent(SDL_Event event)
 				SDL_SetRelativeMouseMode(SDL_TRUE);
 			else
 				SDL_SetRelativeMouseMode(SDL_FALSE);
+		}
+
+		if (event.key.keysym.sym == SDLK_SPACE)
+		{
+			auto dir = Camera::instance->getScreenCenter() - Camera::instance->getPos();
+			auto ray = Ray(Camera::instance->getPos(), dir);
+			if (Physics::castRay(ray))
+			{
+				auto interPoint = ray.interPoint;
+				interPoint.x = (int)(interPoint.x / 2) * 2;
+				interPoint.y = (int)(interPoint.y / 2) * 2;
+				interPoint.z = (int)(interPoint.z / 2) * 2;
+				auto obj1 = new ImportedGraphicalObject("../../models/cube.obj", interPoint, {{0, 0, 0}});
+				auto tex = std::make_shared<Texture>();
+				obj1->setMaterial(Material(Color::white(), tex, true, 1, 0.5f, 2000, 0));
+
+				auto intersectables = std::vector<IBoundable*>(Scene::graphicalObjects.size());
+				std::ranges::transform(Scene::graphicalObjects, intersectables.begin(), [](const GraphicalObject* obj) { return (IBoundable*)obj; });
+				BVHNode::root = BVHNode::buildTree(intersectables, BVHNode::maxObjectsPerBox);
+			}
 		}
 	}
 

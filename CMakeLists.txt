@@ -15,6 +15,7 @@ include_directories(include/Raycast)
 include_directories(include/ObjectAppearance)
 include_directories(include/Parsers)
 include_directories(include/BVH)
+include_directories(include/Physics)
 
 include_directories(libs/thread_pool_light)
 include_directories(include/UI)
@@ -45,7 +46,8 @@ add_executable(${PROJECT_NAME}
         "src/ObjectAppearance/Texture.cpp"
         "src/Parsers/SceneParser.cpp"
         "src/Object/PolyMesh.cpp"
-        "include/Object/Vertex.h")
+        "include/Object/Vertex.h" 
+        "src/Physics/Physics.cpp")
 
 target_link_libraries(${PROJECT_NAME} SDL2)
 target_link_libraries(${PROJECT_NAME} SDL2main)

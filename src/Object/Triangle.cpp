@@ -5,6 +5,9 @@
 
 void Triangle::recalculateCoefficients()
 {
+	texVecU = vertices[1].uvPos - vertices[0].uvPos;
+	texVecV = vertices[2].uvPos - vertices[0].uvPos;
+
 	auto p1 = globalVertexPositions[0], p2 = globalVertexPositions[1], p3 = globalVertexPositions[2];
 	auto e1 = p2 - p1;
 	auto e2 = p3 - p1;
@@ -104,15 +107,13 @@ bool Triangle::intersect(Ray& ray, bool intersectAll)
 
 Color Triangle::getColorAt(float u, float v) const
 {
-	auto p1 = u * (vertices[1].uvPos - vertices[0].uvPos);
-	auto p2 = v * (vertices[2].uvPos - vertices[0].uvPos);
-	auto d = vertices[0].uvPos + p1 + p2;
+	auto d = vertices[0].uvPos + u * texVecU + v * texVecV;
 	return obj->material.texture->getColor(d.x, 1 - d.y);
 }
 glm::vec3 Triangle::getNormalAt(float u, float v, bool invert) const
 {
 	auto interpolatedNormal = normalize((1 - u - v) * globalVertexNormals[0] + u * globalVertexNormals[1] + v * globalVertexNormals[2]);
-	return /*invert ? -interpolatedNormal : */interpolatedNormal;
+	return invert ? -interpolatedNormal : interpolatedNormal;
 }
 
 AABB Triangle::getBoundingBox() const
