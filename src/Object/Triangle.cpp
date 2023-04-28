@@ -107,7 +107,7 @@ Color Triangle::getColorAt(float u, float v) const
 	auto p1 = u * (vertices[1].uvPos - vertices[0].uvPos);
 	auto p2 = v * (vertices[2].uvPos - vertices[0].uvPos);
 	auto d = vertices[0].uvPos + p1 + p2;
-	return obj->material.texture->getColor(d.x, d.y);
+	return obj->material.texture->getColor(d.x, 1 - d.y);
 }
 glm::vec3 Triangle::getNormalAt(float u, float v, bool invert) const
 {

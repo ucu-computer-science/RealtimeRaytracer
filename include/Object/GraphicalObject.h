@@ -35,13 +35,14 @@ public:
 	nlohmann::basic_json<> toJson() override;
 };
 
-class ImportedGraphicalObject : public GraphicalObject {
+class ImportedGraphicalObject : public GraphicalObject
+{
 public:
 	std::filesystem::path path;
 
-    ImportedGraphicalObject(const std::filesystem::path& path);
+	ImportedGraphicalObject(const std::filesystem::path& path, glm::vec3 pos = {0, 0, 0}, glm::quat rot = {{0, 0, 0}});
 
-    nlohmann::basic_json<> toJson() override;
+	nlohmann::basic_json<> toJson() override;
 };
 
 class Square : public GraphicalObject
@@ -54,12 +55,12 @@ public:
 class Cube final : public GraphicalObject
 {
 public:
-    float side;
+	float side;
 
-    Cube(glm::vec3 pos, glm::quat rot, float side);
-    std::vector<std::shared_ptr<Triangle>> generateTriangles(float side);
+	Cube(glm::vec3 pos, glm::quat rot, float side);
+	std::vector<std::shared_ptr<Triangle>> generateTriangles(float side);
 
-    nlohmann::basic_json<> toJson() override;
+	nlohmann::basic_json<> toJson() override;
 };
 
 class Sphere final : public GraphicalObject
@@ -74,14 +75,13 @@ public:
 	}
 
 	bool intersect(Ray& ray, bool intersectAll) override;
-    AABB getBoundingBox() const override;
+	AABB getBoundingBox() const override;
 
-    nlohmann::basic_json<> toJson() override;
+	nlohmann::basic_json<> toJson() override;
 };
 
 class Plane final : public GraphicalObject
 {
-
 public:
 	Plane(glm::vec3 pos, glm::vec3 normal, Color color) : GraphicalObject({}, pos), normal{normalize(normal)}
 	{
@@ -91,7 +91,7 @@ public:
 	bool intersect(Ray& ray, bool intersectAll) override;
 	bool includeInBVH() override { return false; }
 
-    glm::vec3 normal;
+	glm::vec3 normal;
 
-    nlohmann::basic_json<> toJson() override;
+	nlohmann::basic_json<> toJson() override;
 };

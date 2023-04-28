@@ -78,7 +78,8 @@ void GraphicalObject::updateBVH()
 	root = intersectables.empty() ? nullptr : BVHNode::buildTree(intersectables, BVHNode::maxTrianglesPerBox);
 }
 
-ImportedGraphicalObject::ImportedGraphicalObject(const std::filesystem::path& path) : GraphicalObject(Model(path).triangles), path(path) {}
+ImportedGraphicalObject::ImportedGraphicalObject(const std::filesystem::path& path, glm::vec3 pos, glm::quat rot) : GraphicalObject(Model(path).triangles, pos,
+	rot), path(path) {}
 
 Square::Square(glm::vec3 pos, glm::quat rot, float side, Material mat) : GraphicalObject(generateTriangles(side), pos, rot, std::move(mat)) {}
 std::vector<std::shared_ptr<Triangle>> Square::generateTriangles(float side)
