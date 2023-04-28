@@ -57,6 +57,12 @@ Triangle::Triangle(GraphicalObject* obj, Vertex v1, Vertex v2, Vertex v3, bool i
                                                                                              localNormal(normalize(cross(v2.pos - v1.pos, v3.pos - v2.pos))),
                                                                                              isTwoSided(isTwoSided)
 {
+	for (auto& v : vertices)
+	{
+		if (v.normal == glm::vec3(0, 0, 0))
+			v.normal = localNormal;
+	}
+
 	if (obj != nullptr)
 		attachTo(obj);
 }
@@ -106,7 +112,7 @@ Color Triangle::getColorAt(float u, float v) const
 glm::vec3 Triangle::getNormalAt(float u, float v, bool invert) const
 {
 	auto interpolatedNormal = normalize((1 - u - v) * globalVertexNormals[0] + u * globalVertexNormals[1] + v * globalVertexNormals[2]);
-	return invert ? -interpolatedNormal : interpolatedNormal;
+	return /*invert ? -interpolatedNormal : */interpolatedNormal;
 }
 
 AABB Triangle::getBoundingBox() const

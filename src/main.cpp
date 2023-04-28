@@ -69,9 +69,10 @@ int main(int argv, char* args[])
 	GlobalLight light9{{0, 1, 0}, Color::white(), 1};
 	GlobalLight ligh10{{0, -1, 0}, Color::white(), 1};
 	//PointLight light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 1, FLT_MAX};
-	ImportedGraphicalObject obj("../../models/mug.obj");
+	ImportedGraphicalObject obj("../../models/skull.obj");
 	auto tex = std::make_shared<Texture>();
-	obj.setMaterial(Material(Color::white(), tex, true, 1, 0.5, 2000, .1f));
+	obj.setMaterial(Material(Color::white(), tex, true, 1, 0, 2000, .1f));
+
 
 	//Cube cube1{glm::vec3{4, -4, -6.7}, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}, 6.6f};
 	//cube1.material.lit = false;
