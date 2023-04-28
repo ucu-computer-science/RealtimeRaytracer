@@ -6,11 +6,10 @@
 
 Model::Model(const std::filesystem::path& path)
 {
-    this->path = path;
-    parseObject();
+	parseObject(path);
 }
 
-void Model::parseObject()
+void Model::parseObject(const std::filesystem::path& path)
 {
 	std::ifstream file(path);
 	std::string line;
@@ -38,11 +37,14 @@ void Model::parseObject()
 				int index = std::stoi(token.substr(0, pos)) - 1; // OBJ indices are 1-based, so subtract 1
 				triangle.push_back(index);
 			}
-            for (int i=2; i<triangle.size(); i++) {
-                auto a = std::make_shared<Triangle>(nullptr, vertices[triangle[0]], vertices[triangle[i-1]], vertices[triangle[i]]);
-//			//a->isTwoSided = true;
-                triangles.emplace_back(a);
-            }
+			for (int i = 2; i < triangle.size(); i++)
+			{
+				Vertex vertice1{vertices[triangle[0]], {0, 0}};
+				Vertex vertice2{vertices[triangle[i - 1]], {0, 1}};
+				Vertex vertice3{vertices[triangle[i]], {1, 0}};
+				auto a = std::make_shared<Triangle>(nullptr, vertice1, vertice2, vertice3);
+				triangles.emplace_back(a);
+			}
 		}
 	}
 }

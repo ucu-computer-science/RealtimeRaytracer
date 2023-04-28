@@ -1,4 +1,4 @@
-#include "BoundingBoxes.h"
+#include "BVH/BoundingBoxes.h"
 
 #include <algorithm>
 #include <iostream>

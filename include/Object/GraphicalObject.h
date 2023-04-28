@@ -1,10 +1,11 @@
 #pragma once
 
+#include <glm/vec3.hpp>
+#include <vector>
+
 #include "Object.h"
-#include "glm/vec3.hpp"
 #include "Material.h"
 #include "Texture.h"
-#include <vector>
 #include "IBoundable.h"
 
 class BVHNode;
@@ -56,7 +57,7 @@ public:
     float side;
 
     Cube(glm::vec3 pos, glm::quat rot, float side);
-    std::vector<std::shared_ptr<Triangle>> generateTriangles(float side);
+    std::vector<std::shared_ptr<Triangle>> generateTriangles();
 
     nlohmann::basic_json<> toJson() override;
 };

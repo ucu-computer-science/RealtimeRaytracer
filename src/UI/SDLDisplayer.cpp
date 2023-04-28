@@ -1,9 +1,9 @@
 #include "SDLDisplayer.h"
-#include "Camera.h"
-#include "Input.h"
-#include "Matrix.h"
+
 #include <iostream>
 
+#include "Camera.h"
+#include "Input.h"
 #include "BoundingBoxes.h"
 #include "GraphicalObject.h"
 #include "Scene.h"

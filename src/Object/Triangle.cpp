@@ -8,7 +8,7 @@ void Triangle::recalculateValues()
 	auto p1 = points[0], p2 = points[1], p3 = points[2];
 	auto e1 = p2 - p1;
 	auto e2 = p3 - p1;
-	auto normal = obj->getRot() * cross(localPoints[1] - localPoints[0], localPoints[2] - localPoints[1]);
+	auto normal = obj->getRot() * cross(localPoints[1].pos - localPoints[0].pos, localPoints[2].pos - localPoints[1].pos);
 
 	// Depending on which component of the normal is largest, calculate
 	// coefficients:
@@ -53,9 +53,11 @@ void Triangle::recalculateValues()
 	}
 }
 
-Triangle::Triangle(GraphicalObject* obj, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, bool isTwoSided) : localPoints({p1, p2, p3}),
-	localNormal(normalize(cross(localPoints[1] - localPoints[0], localPoints[2] - localPoints[1]))),
-	isTwoSided(isTwoSided)
+Triangle::Triangle(GraphicalObject* obj, Vertex p1, Vertex p2, Vertex p3, bool isTwoSided) : localPoints({p1, p2, p3}),
+                                                                                             localNormal(normalize(
+	                                                                                             cross(localPoints[1].pos - localPoints[0].pos,
+	                                                                                                   localPoints[2].pos - localPoints[1].pos))),
+                                                                                             isTwoSided(isTwoSided)
 {
 	if (obj != nullptr)
 		attachTo(obj);
@@ -80,21 +82,33 @@ bool Triangle::intersect(Ray& ray, bool intersectAll)
 		return false;
 
 	const auto hit = ray.pos + ray.dir * t;
-	const float b1 = dot(row1, hit) + valRow1;
-	if (b1 < 0.0f || b1 > 1.0f)
+	const float u = dot(row1, hit) + valRow1;
+	if (u < 0.0f || u > 1.0f)
 		return false;
 
-	const float b2 = dot(row2, hit) + valRow2;
-	if (b2 < 0.0f || b1 + b2 > 1.0f)
+	const float v = dot(row2, hit) + valRow2;
+	if (v < 0.0f || u + v > 1.0f)
 		return false;
 
 	ray.closestT = t;
 	ray.closestMat = &obj->material;
-	ray.surfaceNormal = dot(normal, ray.dir) > 0 ? -normal : normal;
+	ray.surfaceNormal = getNormalAt(u, v, dot(normal, ray.dir) > 0);
 	ray.interPoint = hit;
-    ray.closestT = t;
-    ray.color = obj->material.getColor(b1, b2);
+	ray.closestT = t;
+	ray.color = getColorAt(u, v);
 	return true;
+}
+
+Color Triangle::getColorAt(float u, float v) const
+{
+	auto p1 = u * (localPoints[1].uvPos - localPoints[0].uvPos);
+	auto p2 = v * (localPoints[2].uvPos - localPoints[0].uvPos);
+	auto d = localPoints[0].uvPos + p1 + p2;
+	return obj->material.texture->getColor(d.x, d.y);
+}
+glm::vec3 Triangle::getNormalAt(float u, float v, bool invert) const
+{
+	return invert ? -normal : normal;
 }
 
 AABB Triangle::getBoundingBox() const
@@ -125,9 +139,15 @@ glm::vec3 Triangle::getCenter() const
 void Triangle::updateGeometry()
 {
 	points = {
-		obj->getRot() * localPoints[0] + obj->getPos(),
-		obj->getRot() * localPoints[1] + obj->getPos(),
-		obj->getRot() * localPoints[2] + obj->getPos()
+		obj->getRot() * localPoints[0].pos + obj->getPos(),
+		obj->getRot() * localPoints[1].pos + obj->getPos(),
+		obj->getRot() * localPoints[2].pos + obj->getPos()
 	};
+
+	//    points = {
+	//		obj->getRot() * localPoints[0]. + obj->getPos(),
+	//		obj->getRot() * localPoints[1] + obj->getPos(),
+	//		obj->getRot() * localPoints[2] + obj->getPos()
+	//	};
 	normal = obj->getRot() * localNormal;
 }

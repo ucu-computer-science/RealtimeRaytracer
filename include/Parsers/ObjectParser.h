@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once
 
 #include <vector>
 
@@ -6,12 +6,11 @@
 
 class Model
 {
-	void parseObject();
+	void parseObject(const std::filesystem::path& path);
 
 public:
 	std::vector<std::shared_ptr<Triangle>> triangles;
 	std::vector<glm::vec3> vertices;
-	std::filesystem::path path;
 
 	explicit Model(const std::filesystem::path& path);
 

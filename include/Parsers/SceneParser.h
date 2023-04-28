@@ -1,9 +1,10 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
-#include "iostream"
-#include "GraphicalObject.h"
+#include <iostream>
 #include <string>
 #include <sstream>
+
+#include "GraphicalObject.h"
 #include "Triangle.h"
 #include "Camera.h"
 #include "Light.h"

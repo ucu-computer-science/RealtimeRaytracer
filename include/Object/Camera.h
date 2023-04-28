@@ -1,10 +1,11 @@
 #pragma once
 
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <thread_pool_light.hpp>
+
 #include "Color.h"
 #include "Object.h"
-#include "glm/vec2.hpp"
-#include "glm/vec3.hpp"
-#include "thread_pool_light.hpp"
 #include "Action.h"
 
 struct PixelMatrix;

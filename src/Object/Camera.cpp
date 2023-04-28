@@ -57,9 +57,9 @@ void Camera::updatePixelMatrix(const PixelMatrix& pixelMatrix)
 					auto rayDir = lbDir + (float)x * dxDir + (float)y * dyDir;
 					for (int i = 0; i < samplesPerPixel; ++i)
 					{
-						//auto lensOffset = lensRadius * randomVectorInCircle(1) * rot;
+						auto lensOffset = lensRadius * randomVectorInCircle(1) * rot;
 						//auto aaOffset = rot * randomVectorInRectangle(dx, dy) * 1.0f;
-						pixelColor += Raycast::castRay(Ray(rayPos /*+ lensOffset*/, rayDir /*- lensOffset + aaOffset*/), 5);
+						pixelColor += Raycast::castRay(Ray(rayPos /*+ lensOffset*/, rayDir - lensOffset/* + aaOffset*/), 5);
 					}
 					pixelColor /= samplesPerPixel;
 					pixels[(height - y - 1) * width + x] = pixelColor.toColor32();
