@@ -57,7 +57,7 @@ public:
     float side;
 
     Cube(glm::vec3 pos, glm::quat rot, float side);
-    std::vector<std::shared_ptr<Triangle>> generateTriangles();
+    std::vector<std::shared_ptr<Triangle>> generateTriangles(float side);
 
     nlohmann::basic_json<> toJson() override;
 };

@@ -64,15 +64,21 @@ int main(int argv, char* args[])
 	constexpr float focusDistance = 30, lensRadius = 0.05f;
 	int width = 640 * 2, height = 360 * 2;
 
-	Camera camera{{0, -35, 0}, focusDistance, lensRadius, glm::vec2((float)width / (float)height * focusDistance, focusDistance)};
+	Camera camera{{0, -30, 0}, focusDistance, lensRadius, glm::vec2((float)width / (float)height * focusDistance, focusDistance)};
 
-	ImportedGraphicalObject obj("../../models/Man.obj");
-	auto tex = std::make_shared<Texture>("../../textures/earth.png");
-	obj.setMaterial(Material({}, tex, false, false, 0, 4000, .1f));
+	GlobalLight light9{{0, 1, 0}, Color::white(), 1};
+	GlobalLight ligh10{{0, -1, 0}, Color::white(), 1};
+	//PointLight light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 1, FLT_MAX};
+	ImportedGraphicalObject obj("../../models/mug.obj");
+	auto tex = std::make_shared<Texture>();
+	obj.setMaterial(Material(Color::white(), tex, true, 1, 0.5, 2000, .1f));
+
+	//Cube cube1{glm::vec3{4, -4, -6.7}, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}, 6.6f};
+	//cube1.material.lit = false;
 
 	Canvas::mainCanvas = std::make_unique<Canvas>();
 
-    Texture crosshair{"./sprites/crosshair.png"};
+	Texture crosshair{"./sprites/crosshair.png"};
 	Canvas::mainCanvas->addElement(std::make_shared<Image>(glm::vec2(100, 100), &crosshair));
 
 	//SceneParser::recordScene(Scene::objects,"../../scenes/scene1.json");

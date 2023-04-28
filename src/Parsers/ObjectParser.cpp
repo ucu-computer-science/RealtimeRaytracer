@@ -13,6 +13,10 @@ void Model::parseObject(const std::filesystem::path& path)
 {
 	std::ifstream file(path);
 	std::string line;
+
+	std::vector<glm::vec3> vertexPositions;
+	std::vector<glm::vec2> vertexUVs;
+	std::vector<glm::vec3> vertexNormals;
 	while (std::getline(file, line))
 	{
 		std::stringstream ss(line);
@@ -20,30 +24,53 @@ void Model::parseObject(const std::filesystem::path& path)
 		ss >> token;
 		if (token == "v")
 		{
-			std::vector<float> vertex;
+			std::vector<float> pos;
 			while (ss >> token)
 			{
-				vertex.push_back(std::stof(token));
+				pos.push_back(std::stof(token));
 			}
-			glm::vec3 p(vertex[0], vertex[1], vertex[2]);
-			vertices.push_back(p);
+			vertexPositions.emplace_back(pos[0], pos[1], pos[2]);
+		}
+		else if (token == "vt")
+		{
+			std::vector<float> uv;
+			while (ss >> token)
+			{
+				uv.push_back(std::stof(token));
+			}
+			vertexUVs.emplace_back(uv[0], uv[1]);
+		}
+		else if (token == "vn")
+		{
+			std::vector<float> normal;
+			while (ss >> token)
+			{
+				normal.push_back(std::stof(token));
+			}
+			vertexNormals.push_back(normalize(glm::vec3(normal[0], normal[1], normal[2])));
 		}
 		else if (token == "f")
 		{
-			std::vector<int> triangle;
-			while (ss >> token)
+			std::vector<int> posIndexes;
+			std::vector<int> uvIndexes;
+			std::vector<int> normalIndexes;
+
+			char delimiter;
+			int num1, num2, num3;
+			while (ss >> num1 >> delimiter >> num2 >> delimiter >> num3)
 			{
-				size_t pos = token.find('/');
-				int index = std::stoi(token.substr(0, pos)) - 1; // OBJ indices are 1-based, so subtract 1
-				triangle.push_back(index);
+				posIndexes.push_back(num1 - 1);
+				uvIndexes.push_back(num2 - 1);
+				normalIndexes.push_back(num3 - 1);
 			}
-			for (int i = 2; i < triangle.size(); i++)
+
+			for (int i = 2; i < posIndexes.size(); i++)
 			{
-				Vertex vertice1{vertices[triangle[0]], {0, 0}};
-				Vertex vertice2{vertices[triangle[i - 1]], {0, 1}};
-				Vertex vertice3{vertices[triangle[i]], {1, 0}};
-				auto a = std::make_shared<Triangle>(nullptr, vertice1, vertice2, vertice3);
-				triangles.emplace_back(a);
+				auto v1 = Vertex(vertexPositions[posIndexes[0]], vertexUVs[uvIndexes[0]], vertexNormals[normalIndexes[0]]);
+				auto v2 = Vertex(vertexPositions[posIndexes[i - 1]], vertexUVs[uvIndexes[i - 1]], vertexNormals[normalIndexes[i - 1]]);
+				auto v3 = Vertex(vertexPositions[posIndexes[i]], vertexUVs[uvIndexes[i]], vertexNormals[normalIndexes[i]]);
+
+				triangles.emplace_back(std::make_shared<Triangle>(nullptr, v1, v2, v3));
 			}
 		}
 	}

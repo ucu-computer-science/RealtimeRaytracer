@@ -3,12 +3,12 @@
 #include "Ray.h"
 #include "BoundingBoxes.h"
 
-void Triangle::recalculateValues()
+void Triangle::recalculateCoefficients()
 {
-	auto p1 = points[0], p2 = points[1], p3 = points[2];
+	auto p1 = globalVertexPositions[0], p2 = globalVertexPositions[1], p3 = globalVertexPositions[2];
 	auto e1 = p2 - p1;
 	auto e2 = p3 - p1;
-	auto normal = obj->getRot() * cross(localPoints[1].pos - localPoints[0].pos, localPoints[2].pos - localPoints[1].pos);
+	auto normal = obj->getRot() * cross(vertices[1].pos - vertices[0].pos, vertices[2].pos - vertices[1].pos);
 
 	// Depending on which component of the normal is largest, calculate
 	// coefficients:
@@ -53,10 +53,8 @@ void Triangle::recalculateValues()
 	}
 }
 
-Triangle::Triangle(GraphicalObject* obj, Vertex p1, Vertex p2, Vertex p3, bool isTwoSided) : localPoints({p1, p2, p3}),
-                                                                                             localNormal(normalize(
-	                                                                                             cross(localPoints[1].pos - localPoints[0].pos,
-	                                                                                                   localPoints[2].pos - localPoints[1].pos))),
+Triangle::Triangle(GraphicalObject* obj, Vertex v1, Vertex v2, Vertex v3, bool isTwoSided) : vertices({v1, v2, v3}),
+                                                                                             localNormal(normalize(cross(v2.pos - v1.pos, v3.pos - v2.pos))),
                                                                                              isTwoSided(isTwoSided)
 {
 	if (obj != nullptr)
@@ -67,7 +65,6 @@ void Triangle::attachTo(GraphicalObject* obj)
 	this->obj = obj;
 
 	updateGeometry();
-	recalculateValues();
 }
 
 bool Triangle::intersect(Ray& ray, bool intersectAll)
@@ -92,7 +89,7 @@ bool Triangle::intersect(Ray& ray, bool intersectAll)
 
 	ray.closestT = t;
 	ray.closestMat = &obj->material;
-	ray.surfaceNormal = getNormalAt(u, v, dot(normal, ray.dir) > 0);
+	ray.surfaceNormal = getNormalAt(u, v, dot(globalNormal, ray.dir) > 0);
 	ray.interPoint = hit;
 	ray.closestT = t;
 	ray.color = getColorAt(u, v);
@@ -101,14 +98,15 @@ bool Triangle::intersect(Ray& ray, bool intersectAll)
 
 Color Triangle::getColorAt(float u, float v) const
 {
-	auto p1 = u * (localPoints[1].uvPos - localPoints[0].uvPos);
-	auto p2 = v * (localPoints[2].uvPos - localPoints[0].uvPos);
-	auto d = localPoints[0].uvPos + p1 + p2;
+	auto p1 = u * (vertices[1].uvPos - vertices[0].uvPos);
+	auto p2 = v * (vertices[2].uvPos - vertices[0].uvPos);
+	auto d = vertices[0].uvPos + p1 + p2;
 	return obj->material.texture->getColor(d.x, d.y);
 }
 glm::vec3 Triangle::getNormalAt(float u, float v, bool invert) const
 {
-	return invert ? -normal : normal;
+	auto interpolatedNormal = normalize((1 - u - v) * globalVertexNormals[0] + u * globalVertexNormals[1] + v * globalVertexNormals[2]);
+	return invert ? -interpolatedNormal : interpolatedNormal;
 }
 
 AABB Triangle::getBoundingBox() const
@@ -117,37 +115,39 @@ AABB Triangle::getBoundingBox() const
 	float y_min = FLT_MAX, y_max = -FLT_MAX;
 	float z_min = FLT_MAX, z_max = -FLT_MAX;
 
-	for (const auto& p : points)
+	for (const auto& pos : globalVertexPositions)
 	{
-		x_min = std::min(x_min, p.x);
-		x_max = std::max(x_max, p.x);
+		x_min = std::min(x_min, pos.x);
+		x_max = std::max(x_max, pos.x);
 
-		y_min = std::min(y_min, p.y);
-		y_max = std::max(y_max, p.y);
-
-		z_min = std::min(z_min, p.z);
-		z_max = std::max(z_max, p.z);
+		y_min = std::min(y_min, pos.y);
+		y_max = std::max(y_max, pos.y);
+		z_min = std::min(z_min, pos.z);
+		z_max = std::max(z_max, pos.z);
 	}
 	return {{x_min - 0.05f, y_min - 0.05f, z_min - 0.05f}, {x_max + 0.05f, y_max + 0.05f, z_max + 0.05f}};
 }
 
 glm::vec3 Triangle::getCenter() const
 {
-	return (points[0] + points[1] + points[2]) * 0.333f;
+	return (globalVertexPositions[0] + globalVertexPositions[1] + globalVertexPositions[2]) * 0.333f;
 }
 
 void Triangle::updateGeometry()
 {
-	points = {
-		obj->getRot() * localPoints[0].pos + obj->getPos(),
-		obj->getRot() * localPoints[1].pos + obj->getPos(),
-		obj->getRot() * localPoints[2].pos + obj->getPos()
+	globalVertexPositions = {
+		obj->getRot() * vertices[0].pos + obj->getPos(),
+		obj->getRot() * vertices[1].pos + obj->getPos(),
+		obj->getRot() * vertices[2].pos + obj->getPos()
 	};
 
-	//    points = {
-	//		obj->getRot() * localPoints[0]. + obj->getPos(),
-	//		obj->getRot() * localPoints[1] + obj->getPos(),
-	//		obj->getRot() * localPoints[2] + obj->getPos()
-	//	};
-	normal = obj->getRot() * localNormal;
+	globalNormal = obj->getRot() * localNormal;
+
+	globalVertexNormals = {
+		obj->getRot() * vertices[0].normal,
+		obj->getRot() * vertices[1].normal,
+		obj->getRot() * vertices[2].normal
+	};
+
+	recalculateCoefficients();
 }

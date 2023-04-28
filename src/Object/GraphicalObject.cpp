@@ -102,9 +102,9 @@ std::vector<std::shared_ptr<Triangle>> Square::generateTriangles(float side)
 	return triangles;
 }
 
-Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(generateTriangles(), pos, rot), side(side) {}
+Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(generateTriangles(side), pos, rot), side(side) {}
 
-std::vector<std::shared_ptr<Triangle>> Cube::generateTriangles()
+std::vector<std::shared_ptr<Triangle>> Cube::generateTriangles(float side)
 {
 	auto p1 = glm::vec3(-side / 2, -side / 2, -side / 2);
 	auto p2 = glm::vec3(-side / 2, -side / 2, side / 2);
@@ -117,20 +117,20 @@ std::vector<std::shared_ptr<Triangle>> Cube::generateTriangles()
 	auto p8 = glm::vec3(side / 2, side / 2, -side / 2);
 
 	std::vector<std::shared_ptr<Triangle>> triangles;
-	//	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p3, p2));
-	//	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p4, p3));
-	//	triangles.emplace_back(std::make_shared<Triangle>(this, p5, p6, p7));
-	//	triangles.emplace_back(std::make_shared<Triangle>(this, p5, p7, p8));
-	//
-	//	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p2, p6));
-	//	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p6, p5));
-	//	triangles.emplace_back(std::make_shared<Triangle>(this, p4, p7, p3));
-	//	triangles.emplace_back(std::make_shared<Triangle>(this, p4, p8, p7));
-	//
-	//	triangles.emplace_back(std::make_shared<Triangle>(this, p2, p3, p7));
-	//	triangles.emplace_back(std::make_shared<Triangle>(this, p2, p7, p6));
-	//	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p8, p4));
-	//	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p5, p8));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p3, p2));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p4, p3));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p5, p6, p7));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p5, p7, p8));
+
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p2, p6));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p6, p5));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p4, p7, p3));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p4, p8, p7));
+
+	triangles.emplace_back(std::make_shared<Triangle>(this, p2, p3, p7));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p2, p7, p6));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p8, p4));
+	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p5, p8));
 	return triangles;
 }
 
