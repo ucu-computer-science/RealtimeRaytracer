@@ -10,7 +10,7 @@ struct Material
 	bool lit = true;
 	float diffuseCoeff = 1;
 	float specularCoeff = 0;
-	int specularDegree = 0;
+	float specularDegree = 0;
 	float reflection = 0;
 
 
@@ -21,7 +21,7 @@ struct Material
 	         bool lit,
 	         float diffuseCoeff,
 	         float specularCoeff,
-	         int specularDegree,
+	         float specularDegree,
 	         float reflection) : color{color},
 	                             texture{texture},
 	                             lit{lit},

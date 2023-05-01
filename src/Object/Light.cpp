@@ -42,6 +42,34 @@ void PointLight::getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& i
 	inSpecular += distanceImpact * (float)std::pow(std::max(dot(h, ray.surfaceNormal), 0.0f), ray.closestMat->specularDegree) * colorIntensified;
 }
 
+nlohmann::basic_json<> PointLight::toJson()
+{
+	auto j = Light::toJson();
+	j["type"] = "PointLight";
+	j["distance"] = distance;
+	return j;
+};
+
+AreaLight::AreaLight(glm::vec3 pos, Color color, float intensity, float distance, glm::vec3 size, glm::vec3 pointSize) : Light(pos, color, intensity),
+distance(distance), size(size), pointSize(pointSize)
+{
+	float dx = size.x / pointSize.x;
+	float dy = size.y / pointSize.y;
+	float dz = size.z / pointSize.z;
+	for (int x = 0; x < pointSize.x; ++x)
+	{
+		for (int y = 0; y < pointSize.y; ++y)
+		{
+			for (int z = 0; z < pointSize.z; ++z)
+			{
+				auto point = pos - size / 2.0f + glm::vec3(x * dx, y * dy, z * dz);
+				points.emplace_back(point);
+			}
+		}
+	}
+	colorIntensified /= (float)points.size();
+}
+
 void AreaLight::getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& inSpecular)
 {
 	for (const auto& lightPoint : points)
@@ -63,36 +91,18 @@ void AreaLight::getIlluminationAtPoint(const Ray& ray, Color& inColor, Color& in
 	}
 }
 
-AreaLight::AreaLight(glm::vec3 pos, Color color, float distance, float intensity, glm::vec3 size, glm::vec3 pointSize): Light(pos, color, intensity),
-	distance(distance), size(size), pointSize(pointSize)
+nlohmann::basic_json<> AreaLight::toJson()
 {
-	float dx = size.x / pointSize.x;
-	float dy = size.y / pointSize.y;
-	float dz = size.z / pointSize.z;
-	for (int x = 0; x < pointSize.x; ++x)
-	{
-		for (int y = 0; y < pointSize.y; ++y)
-		{
-			for (int z = 0; z < pointSize.z; ++z)
-			{
-				auto point = pos - size / 2.0f + glm::vec3(x * dx, y * dy, z * dz);
-				points.emplace_back(point);
-			}
-		}
-	}
-	colorIntensified /= (float)points.size();
-}
-
-std::pair<Color, Color> getIlluminationAtPoint(const Ray& ray)
-{
-	Color color{};
-	Color specular{};
-	for (const auto& light : Scene::lights)
-	{
-		light->getIlluminationAtPoint(ray, color, specular);
-	}
-	return {color, specular};
-}
+	auto j = Light::toJson();
+	j["type"] = "AreaLight";
+	j["size"][0] = size[0];
+	j["size"][1] = size[1];
+	j["size"][2] = size[2];
+	j["pointSize"][0] = pointSize[0];
+	j["pointSize"][1] = pointSize[1];
+	j["pointSize"][2] = pointSize[2];
+	return j;
+};
 
 GlobalLight::GlobalLight(glm::vec3 direction, Color color, float intensity) : Light({}, color, intensity), direction(direction) {}
 
@@ -114,23 +124,14 @@ void EverywhereLight::getIlluminationAtPoint(const Ray& ray, Color& inColor, Col
 	inColor += colorIntensified;
 }
 
-nlohmann::basic_json<> PointLight::toJson()
-{
-	auto j = Light::toJson();
-	j["type"] = "PointLight";
-	j["distance"] = distance;
-	return j;
-};
 
-nlohmann::basic_json<> AreaLight::toJson()
+std::pair<Color, Color> getIlluminationAtPoint(const Ray& ray)
 {
-	auto j = Light::toJson();
-	j["type"] = "AreaLight";
-	j["size"][0] = size[0];
-	j["size"][1] = size[1];
-	j["size"][2] = size[2];
-	j["pointSize"][0] = pointSize[0];
-	j["pointSize"][1] = pointSize[1];
-	j["pointSize"][2] = pointSize[2];
-	return j;
-};
+	Color diffuse{};
+	Color specular{};
+	for (const auto& light : Scene::lights)
+	{
+		light->getIlluminationAtPoint(ray, diffuse, specular);
+	}
+	return {diffuse, specular};
+}

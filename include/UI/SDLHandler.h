@@ -28,45 +28,19 @@ struct PixelMatrix
 };
 
 
-class SDLDisplayer
+class SDLHandler
 {
 public:
 	inline static SDL_Renderer* renderer;
 	inline static SDL_Window* window;
 	inline static SDL_Event event;
-	inline static SDL_Texture* renderTexture;
+	inline static SDL_GLContext context;
 
-	inline static int width, height;
+	inline static bool windowFocused = true;
+	inline static bool isFullscreen = false;
 
-	inline static Action onUpdate{};
-
-	static int display(int width, int height);
-	static void loop();
-};
-
-class FPSCounter
-{
-	inline static int frameCount = 0;
-	inline static int lastFrameTime = 0;
-
-public:
-	inline static int fps = 0;
-	static void updateFPSCounter();
-};
-
-class TriangleCounter
-{
-public:
-	inline static int triangleCount = 0;
-
-	static void updateTriangleCounter();
-};
-
-class Time
-{
-public:
-	inline static float time = 0;
-	inline static float deltaTime = 0;
-
-	static void updateTime();
+	static void initialize(int width, int height);
+	//static void loop();
+	static bool update();
+	static void quit();
 };

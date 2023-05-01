@@ -2,27 +2,28 @@
 
 #include "BoundingBoxes.h"
 #include "Camera.h"
+#include "glad.h"
 #include "GraphicalObject.h"
-#include "SDLDisplayer.h"
+#include "SDLHandler.h"
 #include "glm/gtx/string_cast.hpp"
 #include "MathExtensions.h"
+#include "MyTime.h"
 #include "Physics.h"
 #include "Ray.h"
+#include "Raytracer.h"
 #include "Scene.h"
 
-bool Input::isFullscreen = false;
-bool Input::isFocused = true;
-float Input::defaultMoveSpeed = 40.0f;
-float Input::keyRotationSpeed = 90.0f;
-float Input::mouseRotationSpeed = 0.4f;
+float defaultMoveSpeed = 40.0f;
+float keyRotationSpeed = 90.0f;
+float mouseRotationSpeed = 0.4f;
 
 void Input::updateInput()
 {
-	if (!isFocused) return;
+	if (!SDLHandler::windowFocused) return;
 
 	auto moveSpeed = defaultMoveSpeed;
 	auto& camera = Camera::instance;
-	keyboardState = SDL_GetKeyboardState(nullptr);
+	auto keyboardState = SDL_GetKeyboardState(nullptr);
 
 	// Movement
 	if (keyboardState[SDL_SCANCODE_LSHIFT])
@@ -32,27 +33,27 @@ void Input::updateInput()
 
 	if (keyboardState[SDL_SCANCODE_W])
 	{
-		camera->translate(camera->forward() * moveSpeed * Time::deltaTime);
+		camera->translate(camera->forward() * moveSpeed * Time::clampedDeltaTime);
 	}
 	if (keyboardState[SDL_SCANCODE_S])
 	{
-		camera->translate(camera->backward() * moveSpeed * Time::deltaTime);
+		camera->translate(camera->backward() * moveSpeed * Time::clampedDeltaTime);
 	}
 	if (keyboardState[SDL_SCANCODE_A])
 	{
-		camera->translate(camera->left() * moveSpeed * Time::deltaTime);
+		camera->translate(camera->left() * moveSpeed * Time::clampedDeltaTime);
 	}
 	if (keyboardState[SDL_SCANCODE_D])
 	{
-		camera->translate(camera->right() * moveSpeed * Time::deltaTime);
+		camera->translate(camera->right() * moveSpeed * Time::clampedDeltaTime);
 	}
 	if (keyboardState[SDL_SCANCODE_Q])
 	{
-		camera->translate(camera->up() * moveSpeed * Time::deltaTime);
+		camera->translate(camera->up() * moveSpeed * Time::clampedDeltaTime);
 	}
 	if (keyboardState[SDL_SCANCODE_E])
 	{
-		camera->translate(camera->down() * moveSpeed * Time::deltaTime);
+		camera->translate(camera->down() * moveSpeed * Time::clampedDeltaTime);
 	}
 
 	// Rotation
@@ -70,11 +71,11 @@ void Input::updateInput()
 	}
 	if (keyboardState[SDL_SCANCODE_LEFT])
 	{
-		camera->rotate({0, 0, keyRotationSpeed * Time::deltaTime});
+		camera->rotate({0, 0, keyRotationSpeed * Time::clampedDeltaTime});
 	}
 	if (keyboardState[SDL_SCANCODE_RIGHT])
 	{
-		camera->rotate({0, 0, -keyRotationSpeed * Time::deltaTime});
+		camera->rotate({0, 0, -keyRotationSpeed * Time::clampedDeltaTime});
 	}
 
 	// Reset camera position and rotation
@@ -90,19 +91,19 @@ void Input::handleSDLEvent(SDL_Event event)
 	{
 		if (event.key.keysym.sym == SDLK_F11)
 		{
-			isFullscreen = !isFullscreen;
-			SDL_SetWindowFullscreen(SDLDisplayer::window, isFullscreen ? 1 : 0);
+			SDLHandler::isFullscreen = !SDLHandler::isFullscreen;
+			SDL_SetWindowFullscreen(SDLHandler::window, SDLHandler::isFullscreen ? 1 : 0);
 		}
 		if (event.key.keysym.sym == SDLK_ESCAPE)
 		{
-			isFocused = !isFocused;
-			if (isFocused)
+			SDLHandler::windowFocused = !SDLHandler::windowFocused;
+			if (SDLHandler::windowFocused)
 				SDL_SetRelativeMouseMode(SDL_TRUE);
 			else
 				SDL_SetRelativeMouseMode(SDL_FALSE);
 		}
 
-		if (event.key.keysym.sym == SDLK_SPACE)
+		/*if (event.key.keysym.sym == SDLK_SPACE)
 		{
 			auto dir = Camera::instance->getScreenCenter() - Camera::instance->getPos();
 			auto ray = Ray(Camera::instance->getPos(), dir);
@@ -120,16 +121,16 @@ void Input::handleSDLEvent(SDL_Event event)
 				std::ranges::transform(Scene::graphicalObjects, intersectables.begin(), [](const GraphicalObject* obj) { return (IBoundable*)obj; });
 				BVHNode::root = BVHNode::buildTree(intersectables, BVHNode::maxObjectsPerBox);
 			}
-		}
+		}*/
 	}
 
-	if (event.type == SDL_MOUSEMOTION && isFocused)
+	if (event.type == SDL_MOUSEMOTION && SDLHandler::windowFocused)
 	{
 		auto dx = (float)event.motion.xrel;
 		auto dy = (float)event.motion.yrel;
 
 		auto& camera = Camera::instance;
-		auto rot = glm::eulerAngles(camera->getRot()) * RAD_TO_DEG;
+		auto rot = eulerAngles(camera->getRot()) * RAD_TO_DEG;
 
 		auto newX = glm::clamp(rot.x - dy * mouseRotationSpeed, -90.0f, 90.0f);
 		auto newY = rot.y;

@@ -1,26 +1,31 @@
 #pragma once
 
-#include <unordered_map>
 #include <functional>
 
 template <typename... Ts>
 class Action
 {
-	std::unordered_map<int, std::function<void(Ts...)>> callbacks{};
-	int nextAvailableId = 0;
+	std::vector<std::function<void(Ts...)>> callbacks{};
 
 public:
 	int subscribe(const std::function<void(Ts...)>& func)
 	{
-		callbacks[nextAvailableId] = func;
-		return nextAvailableId++;
+		callbacks.emplace_back(func);
+		return callbacks.size() - 1;
 	}
-	void unsubscribe(int id) { callbacks.erase(id); }
+	void unsubscribe(int id)
+	{
+		callbacks.erase(id);
+	}
 
-	void operator+=(const std::function<void(Ts...)>& func) { subscribe(func); }
+	void operator+=(const std::function<void(Ts...)>& func)
+	{
+		subscribe(func);
+	}
+
 	void operator()(Ts... args) const
 	{
-		for (auto& [id, func] : callbacks)
+		for (auto& func : callbacks)
 			func(args...);
 	}
 };

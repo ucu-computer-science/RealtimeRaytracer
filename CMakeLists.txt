@@ -16,6 +16,8 @@ include_directories(include/ObjectAppearance)
 include_directories(include/Parsers)
 include_directories(include/BVH)
 include_directories(include/Physics)
+include_directories(include/shaders)
+include_directories(include/OpenGL)
 
 include_directories(libs/thread_pool_light)
 include_directories(include/UI)
@@ -27,12 +29,11 @@ link_directories(libs/SDL2/lib/x64)
 enable_testing()
 
 add_executable(${PROJECT_NAME}
-        "src/main.cpp"
+        "src/Raytracer.cpp"
         "src/Object/GraphicalObject.cpp"
         "src/Object/Object.cpp"
         "src/Ray/Raycast.cpp"
         "src/Object/Camera.cpp"
-        "src/UI/SDLDisplayer.cpp"
         "src/Input.cpp"
         "src/Object/Light.cpp"
         "src/ObjectAppearance/Material.cpp"
@@ -47,7 +48,14 @@ add_executable(${PROJECT_NAME}
         "src/Parsers/SceneParser.cpp"
         "src/Object/PolyMesh.cpp"
         "include/Object/Vertex.h" 
-        "src/Physics/Physics.cpp")
+        "src/Physics/Physics.cpp"
+        "src/Utils.cpp"
+        "src/UI/SDLHandler.cpp"
+        "src/OpenGL/glad.c" 
+        "src/OpenGL/Shader.cpp"
+        "src/Logger.cpp" 
+        "src/MyTime.cpp" 
+        "src/OpenGL/RaytracerShader.cpp")
 
 target_link_libraries(${PROJECT_NAME} SDL2)
 target_link_libraries(${PROJECT_NAME} SDL2main)

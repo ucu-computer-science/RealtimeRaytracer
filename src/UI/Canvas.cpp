@@ -1,7 +1,7 @@
 #include "Canvas.h"
 
 #include "Color.h"
-#include "SDLDisplayer.h"
+#include "SDLHandler.h"
 #include "Texture.h"
 
 

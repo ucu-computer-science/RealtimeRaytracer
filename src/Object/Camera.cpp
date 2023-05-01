@@ -1,29 +1,50 @@
 #include "Camera.h"
 
+#include <glm/gtx/quaternion.hpp>
+
 #include "MathExtensions.h"
 #include "Ray.h"
 #include "Raycast.h"
-#include "SDLDisplayer.h"
+#include "Raytracer.h"
+#include "SDLHandler.h"
 #include "Triangle.h"
 
-Camera::Camera(glm::vec3 pos, float fov, float lensRadius, glm::vec2 size) : Object(pos), fov(fov), lensRadius(lensRadius), size{size}, bgColor(Color::black())
+Camera::Camera(glm::vec3 pos, float focalDistance, float lensRadius, glm::vec2 size) : Object(pos), focalDistance(focalDistance), lensRadius(lensRadius),
+                                                                                       size{size},
+                                                                                       bgColor(Color::black())
 {
 	if (instance != nullptr)
 		throw std::runtime_error("Camera object already exists.");
 	instance = this;
-}
-void Camera::translate(const glm::vec3& v)
-{
-	Object::translate(v);
-	onCameraMove();
-}
-void Camera::rotate(const glm::vec3& degrees)
-{
-	Object::rotate(degrees);
-	onCameraRotate();
+
+	Raytracer::mainShader->setFloat3("cameraPos", pos);
+
+	Raytracer::mainShader->setFloat("focalDistance", focalDistance);
+	Raytracer::mainShader->setFloat2("screenSize", size);
+	Raytracer::mainShader->setInt("rayBounceCount", 5);
+
+	onCameraRotate += [this] { Raytracer::mainShader->setMatrix4X4("cameraRotMat", mat4_cast(this->rot)); };
+	onCameraMove += [this] { Raytracer::mainShader->setFloat3("cameraPos", this->pos); };
 }
 
-glm::vec3 Camera::getScreenCenter() const { return pos + forward() * fov; }
+void Camera::setBackgroundColor(Color color)
+{
+	bgColor = color;
+	Raytracer::mainShader->setFloat4("bgColor", bgColor);
+}
+
+void Camera::setRot(glm::quat rot)
+{
+	Object::setRot(rot);
+	onCameraRotate();
+}
+void Camera::setPos(glm::vec3 pos)
+{
+	Object::setPos(pos);
+	onCameraMove();
+}
+
+glm::vec3 Camera::getScreenCenter() const { return pos + forward() * focalDistance; }
 glm::vec3 Camera::getLeftBotCorner() const
 {
 	return getScreenCenter() - 0.5f * size.y * up() - 0.5f * size.x * right();
@@ -113,7 +134,7 @@ void Camera::updatePixelMatrix(const PixelMatrix& pixelMatrix)
 nlohmann::basic_json<> Camera::toJson()
 {
 	auto j = Object::toJson();
-	j["fov"] = fov;
+	j["fov"] = focalDistance;
 	j["lensRadius"] = lensRadius;
 	j["size"][0] = size[0];
 	j["size"][1] = size[1];

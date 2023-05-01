@@ -16,6 +16,7 @@ class Triangle;
 class GraphicalObject : public Object, public IBoundable
 {
 public:
+	unsigned int vertexArray = 0;
 	const std::vector<std::shared_ptr<Triangle>> triangles{};
 	//std::vector<std::shared_ptr<Triangle>> cameraFacingTriangles{};
 	Material material;
@@ -65,11 +66,12 @@ public:
 
 class Sphere final : public GraphicalObject
 {
-	float radius;
 	float radiusSquared;
 
 public:
-	Sphere(glm::vec3 pos, float radius, Color color) : GraphicalObject({}, pos), radius(radius), radiusSquared{radius * radius}
+	float radius;
+
+	Sphere(glm::vec3 pos, float radius, Color color = Color::white()) : GraphicalObject({}, pos), radius(radius), radiusSquared{radius * radius}
 	{
 		material.color = color;
 	}
@@ -83,15 +85,15 @@ public:
 class Plane final : public GraphicalObject
 {
 public:
-	Plane(glm::vec3 pos, glm::vec3 normal, Color color) : GraphicalObject({}, pos), normal{normalize(normal)}
+	glm::vec3 normal;
+
+	Plane(glm::vec3 pos, glm::vec3 normal, Color color = Color::white()) : GraphicalObject({}, pos), normal{normalize(normal)}
 	{
 		material.color = color;
 	}
 
 	bool intersect(Ray& ray, bool intersectAll) override;
 	bool includeInBVH() override { return false; }
-
-	glm::vec3 normal;
 
 	nlohmann::basic_json<> toJson() override;
 };

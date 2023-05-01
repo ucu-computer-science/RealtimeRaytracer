@@ -21,7 +21,7 @@ public:
 	static Color gray() { return {0.2f, 0.2f, 0.2f}; }
 
 	static Color darkGreen() { return {0.f, 0.5f, 0.f}; }
-	static Color skyBlue() { return {.529f, .808f, .922f}; }
+	static Color skyblue() { return {.529f, .808f, .922f}; }
 	static Color gold() { return {1.f, .843f, 0.f}; }
 	static Color pink() { return {255, 192, 203}; }
 	static Color hotPink() { return {255, 105, 180}; }

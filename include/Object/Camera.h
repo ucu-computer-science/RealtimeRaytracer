@@ -18,21 +18,22 @@ public:
 	inline static Action onCameraMove{};
 	inline static Action onCameraRotate{};
 
-	float fov, lensRadius;
+	float focalDistance, lensRadius;
 	glm::vec2 size;
 	Color bgColor;
 	BS::thread_pool_light pool;
 
-	Camera(glm::vec3 pos, float fov, float lensRadius, glm::vec2 size);
+	Camera(glm::vec3 pos, float focalDistance, float lensRadius, glm::vec2 size);
 
-	void translate(const glm::vec3& v) override;
-	void rotate(const glm::vec3& degrees) override;
+	void setBackgroundColor(Color color);
+
+	void setRot(glm::quat rot) override;
+	void setPos(glm::vec3 pos) override;
 
 	glm::vec3 getScreenCenter() const;
 	glm::vec3 getLeftBotCorner() const;
 
 	void updatePixelMatrix(const PixelMatrix& pixelMatrix);
-	void setBackgroundColor(Color color) { bgColor = color; }
 
 	nlohmann::basic_json<> toJson() override;
 };

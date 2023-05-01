@@ -4,20 +4,54 @@
 #include <utility>
 
 #include "Camera.h"
-#include "SDLDisplayer.h"
+#include "SDLHandler.h"
 #include "Scene.h"
 #include "Triangle.h"
 #include "MathExtensions.h"
 #include "BoundingBoxes.h"
+#include "glad.h"
 #include "ObjectParser.h"
 #include "Ray.h"
 
 
 GraphicalObject::GraphicalObject(const std::vector<std::shared_ptr<Triangle>>& triangles, const glm::vec3 pos, glm::quat rot,
                                  Material material) : Object(pos, rot), triangles(triangles), material(std::move(material))
+
 {
 	for (auto& t : triangles)
 		t->attachTo(this);
+
+	auto vertices = new float[triangles.size() * 9];
+	auto connections = new int[triangles.size() * 3];
+	for (int i = 0; i < (int)triangles.size(); ++i)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			vertices[i * 9 + j * 3 + 0] = triangles[i]->globalVertexPositions[j].x;
+			vertices[i * 9 + j * 3 + 1] = triangles[i]->globalVertexPositions[j].y;
+			vertices[i * 9 + j * 3 + 2] = triangles[i]->globalVertexPositions[j].z;
+		}
+		connections[i * 3 + 0] = i * 3 + 0;
+		connections[i * 3 + 1] = i * 3 + 1;
+		connections[i * 3 + 2] = i * 3 + 2;
+	}
+
+	glGenVertexArrays(1, &vertexArray);
+	glBindVertexArray(vertexArray);
+
+	unsigned int vertexBuffer;
+	glGenBuffers(1, &vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * triangles.size() * 9, vertices, GL_STATIC_DRAW);
+
+	unsigned int elementBuffer;
+	glGenBuffers(1, &elementBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float) * triangles.size() * 3, connections, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)nullptr);
+	glEnableVertexAttribArray(0);
+
 
 	//updateCameraFacingTriangles();
 	updateBVH();
@@ -69,6 +103,7 @@ void GraphicalObject::setMaterial(Material material)
 {
 	this->material = std::move(material);
 }
+
 void GraphicalObject::updateBVH()
 {
 	auto intersectables = std::vector<IBoundable*>(triangles.size());
@@ -148,15 +183,13 @@ bool Sphere::intersect(Ray& ray, bool intersectAll)
 		{
 			ray.closestT = x0;
 			ray.interPoint = ray.pos + x0 * ray.dir;
-
-
 			ray.surfaceNormal = normalize(ray.interPoint - pos);
-			// transformation to uv coordinates. cyllindric projection.
+			ray.closestMat = &material;
+
 			auto n = ray.surfaceNormal;
 			float u = atan2(-n.x, n.y) / (2.0f * PI) + 0.5f;
 			float v = -n.z * 0.5f + 0.5f;
 			ray.color = material.getColor(u, v);
-			ray.closestMat = &material;
 
 			return true;
 		}

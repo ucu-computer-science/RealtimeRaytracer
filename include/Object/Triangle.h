@@ -10,10 +10,10 @@
 class Triangle : public IBoundable
 {
 	GraphicalObject* obj = nullptr;
-	std::vector<Vertex> vertices;
 	glm::vec3 localNormal;
 
 public:
+	std::vector<Vertex> vertices;
 	bool isTwoSided;
 	std::vector<glm::vec3> globalVertexPositions;
 	std::vector<glm::vec3> globalVertexNormals;
@@ -25,9 +25,9 @@ public:
 	glm::vec3 row1{};
 	glm::vec3 row2{};
 	glm::vec3 row3{};
-	float valRow1{};
-	float valRow2{};
-	float valRow3{};
+	float row1Val{};
+	float row2Val{};
+	float row3Val{};
 
 	glm::vec2 texVecU;
 	glm::vec2 texVecV;
