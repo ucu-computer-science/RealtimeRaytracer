@@ -12,6 +12,7 @@
 #include "Logger.h"
 #include "MathExtensions.h"
 #include "MyTime.h"
+#include "ObjectParser.h"
 #include "SDLHandler.h"
 #include "Triangle.h"
 #include "RaytracerShader.h"
@@ -56,48 +57,53 @@ void Raytracer::initializeScene()
 	camera->setBackgroundColor(Color::black());
 	auto tex = std::make_shared<Texture>();
 
-	//auto obj = new ImportedGraphicalObject("../../models/man.obj");
-	//obj->material.lit = false;
+	auto model = Model("../../models/skull.obj");
+	auto obj = new Mesh({0, 0, 0}, model.triangles, {{0, 0, 90 * DEG_TO_RAD}});
 
+	new GlobalLight({1, 0, 0}, Color::white(), 1);
 
-	//auto light = new PointLight({1, 0, 5}, Color::white(), 1, FLT_MAX);
+	//auto obj = new Cube({0, 0, 0}, 2, {{0, 0, 0}});
+	//obj->material = new Material(Color::blue(), true, tex, 1, 0, 2000, 0);
 
-	//auto obj = new Cube({0, 0, 0}, {{0, 0, 0}}, 2);
-	//obj->setMaterial(Material(Color::blue(), tex, true, 1, 0, 2000, 0));
+	//auto obj1 = new Cube({5, 10, 0}, 2, {{0, 0, 0}});
+	//obj1->material = new Material(Color::blue(), true, tex, 1, 0, 2000, 0);
 
-	//auto obj1 = new Cube({5, 10, 0}, {{0, 0, 0}}, 2);
-	//obj1->setMaterial(Material(Color::blue(), tex, true, 1, 0, 2000, 0));
+	//auto obj2 = new Cube({0, 10, 5}, 2, {{0, 0, 0}});
+	//obj2->material = new Material(Color::blue(), true, tex, 1, 0, 2000, 0);
 
-	//auto obj2 = new Cube({0, 10, 5}, {{0, 0, 0}}, 2);
-	//obj2->setMaterial(Material(Color::blue(), tex, true, 1, 0, 2000, 0));
-
-	//auto obj3 = new Cube({5, 10, 5}, {{0, 0, 0}}, 2);
-	//obj3->setMaterial(Material(Color::blue(), tex, true, 1, 0, 2000, 0));
+	//auto obj3 = new Cube({5, 10, 5}, 2, {{0, 0, 0}});
+	//obj3->material = new Material(Color::blue(), true, tex, 1, 0, 2000, 0);
 
 	//auto obj4 = new Sphere({-2, 3, 0}, 2);
-	//obj4->setMaterial(Material(Color::red(), tex, true, 1, 0, 2000, 0));
+	//obj4->material = new Material(Color::skyblue(), true, tex, 1, 0, 2000, 0);
 
 	//auto obj5 = new Sphere({4, 10, 0}, 2);
-	//obj5->setMaterial(Material(Color::red(), tex, true, 1, 0, 2000, 0));
+	//obj5->material = new Material(Color::skyblue(), true, tex, 1, 0, 2000, 0);
 
 	//auto obj6 = new Plane({0, 0, -2}, {0, 0, 1});
-	//obj6->setMaterial(Material(Color::green(), tex, true, 1, 0, 2000, 0));
+	//obj6->material = new Material(Color::green(), true, tex, 1, 0, 2000, 0);
 
 
-	auto light = new AreaLight{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 1, 25, {0, 0, 0}, {1, 1, 1}};
-	auto square = new Square{{0, 0, 9.995f}, 5, {{-90 * DEG_TO_RAD, 0, 0}}};
-	square->material.color = {30.f, 30.f, 30.f};
-	auto plane1 = new Square{{-10, 0, 0}, 20, {{0, 0, -90 * DEG_TO_RAD}}, {Color::red()}};
-	auto plane2 = new Square{{10, 0, 0}, 20, {{0, 0, 90 * DEG_TO_RAD}}, Color::green()};
-	auto plane3 = new Square{{0, 10, 0}, 20, {{0, 0, 180 * DEG_TO_RAD}}, Color::white()};
-	auto plane4 = new Square{{0, 0, -10}, 20, {{90 * DEG_TO_RAD, 0, 0}}, Color::white()};
-	auto plane5 = new Square{{0, 0, 10}, 20, {{-90 * DEG_TO_RAD, 0, 0}}, Color::white()};
-	auto cube1 = new Cube{glm::vec3{4, -4, -6.7}, 6.6f, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}};
-	auto sphere1 = new Sphere{{-4, 2, -5}, 5, Color{100.f / 100.f, 49.8f / 100.f, 31.4f / 100.f}};
-	sphere1->material.color = Color::skyblue();
-	sphere1->material.reflection = 0.3f;
-	cube1->material.color = Color::skyblue();
-	cube1->material.reflection = 0.3f;
+	//auto light = new AreaLight{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 1, 25, {0, 0, 0}, {1, 1, 1}};
+	//auto square = new Square{{0, 0, 9.995f}, 5, {{-90 * DEG_TO_RAD, 0, 0}}};
+	//square->material->color = {30.f, 30.f, 30.f};
+	//auto plane1 = new Square{{-10, 0, 0}, 20, {{0, 0, -90 * DEG_TO_RAD}}};
+	//auto plane2 = new Square{{10, 0, 0}, 20, {{0, 0, 90 * DEG_TO_RAD}}};
+	//auto plane3 = new Square{{0, 10, 0}, 20, {{0, 0, 180 * DEG_TO_RAD}}};
+	//auto plane4 = new Square{{0, 0, -10}, 20, {{90 * DEG_TO_RAD, 0, 0}}};
+	//auto plane5 = new Square{{0, 0, 10}, 20, {{-90 * DEG_TO_RAD, 0, 0}}};
+	//auto cube1 = new Cube{glm::vec3{4, -4, -6.7}, 6.6f, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}};
+	//auto sphere1 = new Sphere{{-4, 2, -5}, 5};
+
+	//auto whiteWallMat = new Material(Color::white(), true, tex, 1, 0, 2000, 0);
+	//plane1->material = new Material(Color::red(), true, tex, 1, 0, 2000, 0);
+	//plane2->material = new Material(Color::green(), true, tex, 1, 0, 2000, 0);
+	//plane3->material = whiteWallMat;
+	//plane4->material = whiteWallMat;
+	//plane5->material = whiteWallMat;
+
+	//sphere1->material = new Material(Color::skyblue(), true, tex, 1, 0, 2000, 0.3f);
+	//cube1->material = new Material(Color::skyblue(), true, tex, 1, 0, 2000, 0.3f);
 }
 
 void Raytracer::initializeScreenVertexBuffer()
@@ -119,12 +125,12 @@ void Raytracer::initializeScreenVertexBuffer()
 	unsigned int vertexBuffer;
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof vertices, vertices, GL_STATIC_DRAW);
 
 	unsigned int elementBuffer;
 	glGenBuffers(1, &elementBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof indices, indices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)nullptr);
 	glEnableVertexAttribArray(0);

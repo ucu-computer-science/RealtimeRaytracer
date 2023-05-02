@@ -52,7 +52,8 @@ add_executable(${PROJECT_NAME}
         "src/Logger.cpp" 
         "src/MyTime.cpp" 
         "src/OpenGL/RaytracerShader.cpp"
-        "src/OpenGL/BufferController.cpp")
+        "src/OpenGL/BufferController.cpp" 
+        "src/ObjectAppearance/Material.cpp")
 
 target_link_libraries(${PROJECT_NAME} SDL2)
 target_link_libraries(${PROJECT_NAME} SDL2main)

@@ -87,7 +87,7 @@ void Model::parseObject(const std::filesystem::path& path)
 				auto v3 = Vertex(vertexPositions[posIndexes[i]], uvIndexes[i] != -1 ? vertexUVs[uvIndexes[i]] : glm::vec2(),
 				                 normalIndexes[i - 1] != -1 ? vertexNormals[normalIndexes[i]] : glm::vec3(0, 0, 0));
 
-				triangles.emplace_back(std::make_shared<Triangle>(nullptr, v1, v2, v3));
+				triangles.emplace_back(new Triangle(nullptr, v1, v2, v3));
 			}
 		}
 	}

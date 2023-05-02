@@ -10,6 +10,7 @@
 void BufferController::initializeUniformBuffers()
 {
 	initializeLightsBuffer();
+	initializeMaterialsBuffer();
 	initializeObjectsBuffer();
 	initializeTrianglesBuffer();
 	initializeBVHBuffer();
@@ -60,6 +61,25 @@ void BufferController::initializeLightsBuffer()
 
 	Raytracer::mainShader->setLightsUBO(data.data(), lights.size());
 }
+void BufferController::initializeMaterialsBuffer()
+{
+	auto ALIGN = RaytracerShader::materialAlign;
+	const auto& materials = Scene::materials;
+	std::vector<float> data(materials.size() * ALIGN);
+	for (int i = 0; i < materials.size(); ++i)
+	{
+		const auto& mat = materials[i];
+		data[i * ALIGN + 0] = mat->color.r();
+		data[i * ALIGN + 1] = mat->color.g();
+		data[i * ALIGN + 2] = mat->color.b();
+		data[i * ALIGN + 4] = mat->lit;
+		data[i * ALIGN + 5] = mat->diffuseCoeff;
+		data[i * ALIGN + 6] = mat->specularCoeff;
+		data[i * ALIGN + 7] = mat->specularDegree;
+		data[i * ALIGN + 8] = mat->reflection;
+	}
+	Raytracer::mainShader->setMaterialsUBO(data.data(), materials.size());
+}
 void BufferController::initializeObjectsBuffer()
 {
 	auto ALIGN = RaytracerShader::objectAlign;
@@ -68,41 +88,33 @@ void BufferController::initializeObjectsBuffer()
 	std::vector<float> data(objects.size() * ALIGN);
 	for (int i = 0; i < objects.size(); ++i)
 	{
-		data[i * ALIGN + 4] = objects[i]->getPos().x;
-		data[i * ALIGN + 5] = objects[i]->getPos().y;
-		data[i * ALIGN + 6] = objects[i]->getPos().z;
+		auto obj = objects[i];
+		data[i * ALIGN + 1] = obj->material->indexID;
+		data[i * ALIGN + 4] = obj->getPos().x;
+		data[i * ALIGN + 5] = obj->getPos().y;
+		data[i * ALIGN + 6] = obj->getPos().z;
 
-		const auto& mat = objects[i]->material;
-		data[i * ALIGN + 8] = mat.color.r();
-		data[i * ALIGN + 9] = mat.color.g();
-		data[i * ALIGN + 10] = mat.color.b();
-		data[i * ALIGN + 12] = mat.lit;
-		data[i * ALIGN + 16] = mat.diffuseCoeff;
-		data[i * ALIGN + 17] = mat.specularCoeff;
-		data[i * ALIGN + 18] = mat.specularDegree;
-		data[i * ALIGN + 19] = mat.reflection;
-
-		if (dynamic_cast<Mesh*>(objects[i]) != nullptr)
+		if (dynamic_cast<Mesh*>(obj) != nullptr)
 		{
-			auto mesh = (Mesh*)objects[i];
+			auto mesh = (Mesh*)obj;
 			data[i * ALIGN + 0] = 0;
-			data[i * ALIGN + 20] = triangleCount;
-			data[i * ALIGN + 21] = triangleCount + mesh->triangles.size();
+			data[i * ALIGN + 8] = triangleCount;
+			data[i * ALIGN + 9] = mesh->triangles.size();
 			triangleCount += mesh->triangles.size();
 		}
-		else if (dynamic_cast<Sphere*>(objects[i]) != nullptr)
+		else if (dynamic_cast<Sphere*>(obj) != nullptr)
 		{
-			auto sphere = (Sphere*)objects[i];
+			auto sphere = (Sphere*)obj;
 			data[i * ALIGN + 0] = 1;
-			data[i * ALIGN + 20] = sphere->radius * sphere->radius;
+			data[i * ALIGN + 8] = sphere->radius * sphere->radius;
 		}
-		else if (dynamic_cast<Plane*>(objects[i]) != nullptr)
+		else if (dynamic_cast<Plane*>(obj) != nullptr)
 		{
-			auto plane = (Plane*)objects[i];
+			auto plane = (Plane*)obj;
 			data[i * ALIGN + 0] = 2;
-			data[i * ALIGN + 20] = plane->normal.x;
-			data[i * ALIGN + 21] = plane->normal.y;
-			data[i * ALIGN + 22] = plane->normal.z;
+			data[i * ALIGN + 8] = plane->normal.x;
+			data[i * ALIGN + 9] = plane->normal.y;
+			data[i * ALIGN + 10] = plane->normal.z;
 		}
 	}
 	Raytracer::mainShader->setObjectsUBO(data.data(), objects.size());
@@ -131,7 +143,10 @@ void BufferController::initializeTrianglesBuffer()
 			data[i * ALIGN + k * 8 + 5] = normal.y;
 			data[i * ALIGN + k * 8 + 6] = normal.z;
 		}
-		data[i * ALIGN + 24] = triangle->mesh->indexID;
+		data[i * ALIGN + 24] = triangle->mesh->material->indexID;
+		data[i * ALIGN + 25] = triangle->globalNormal.x;
+		data[i * ALIGN + 26] = triangle->globalNormal.y;
+		data[i * ALIGN + 27] = triangle->globalNormal.z;
 
 		data[i * ALIGN + 28] = triangle->row1.x;
 		data[i * ALIGN + 29] = triangle->row1.y;

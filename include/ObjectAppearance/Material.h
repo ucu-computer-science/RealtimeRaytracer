@@ -3,9 +3,13 @@
 #include "Color.h"
 #include "Texture.h"
 
-struct Material
+
+class Material
 {
-	bool lit = true;
+public:
+	int indexID;
+
+	bool lit;
 	Color color;
 	std::shared_ptr<Texture> texture;
 
@@ -15,23 +19,21 @@ struct Material
 	float reflection = 0;
 
 
-	Material(Color color = Color::white(), bool lit = true) : lit(lit), color(color), texture(std::make_shared<Texture>()) {}
-	Material(bool lit,
-	         Color color,
+	Material(Color color = Color::white(), bool lit = true);
+	Material(Color color,
+	         bool lit,
 	         std::shared_ptr<Texture> texture,
 	         float diffuseCoeff,
 	         float specularCoeff,
 	         float specularDegree,
-	         float reflection) : lit{lit},
-	                             color{color},
-	                             texture{std::move(texture)},
-	                             diffuseCoeff{diffuseCoeff},
-	                             specularCoeff{specularCoeff},
-	                             specularDegree{specularDegree},
-	                             reflection{reflection} { }
+	         float reflection);
 
 	Color getColor(float u, float v) const
 	{
 		return texture->getColor(u, v) * color;
 	}
+
+
+	static Material* const defaultLit;
+	static Material* const defaultUnlit;
 };

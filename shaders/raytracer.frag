@@ -27,7 +27,6 @@ uniform vec4 bgColor = vec4(0.3, 0, 0, 1);
 
 
 // Light
-uniform int lightCount;
 struct Light {
     float lightType; // 0 - GlobalLight, 1 - PointLight, 2 - AreaLight(not implemented)
     vec4 pos;
@@ -36,16 +35,21 @@ struct Light {
     vec4 properties2; // [AreaLight(distance, pointSize)]
 };
 
-// Object
-uniform int objectCount;
-struct Object {
-    float objType; 
-    vec4 pos;
+//Material
+struct Material
+{
     vec4 color;
-    vec4 lit;
-    vec4 properties1; // diffuse coef, specular coef, specular degree, reflection
-    vec4 properties2; // Sphere(radiusSquared)]
+    vec4 properties1; // lit, diffuse coef, specular coef, specular degree
+    vec4 properties2; // reflection
 };
+
+// Object
+struct Object {
+    ivec4 data; // objType, materialIndex
+    vec4 pos; // pos
+    vec4 properties; // [Mesh(trianglesStart, triangleCount) : Sphere(radiusSquared) : Plane(normal)]
+};
+
 
 // Triangle
 struct Vertex {
@@ -53,15 +57,13 @@ struct Vertex {
     vec4 normalV;
 };
 
-uniform int triangleCount;
 struct Triangle {
     Vertex vertices[3];
-    float objInd;
+    vec4 materialIndex; // materialIndex, normal
     vec4 rows[3];
 };
 
 //const int LEAF_ARR_SIZE = 8;
-uniform int bvhNodeCount;
 struct BVHNode {
     vec4 min; // w = trianglesStart
     vec4 max; // w = triangleCount
@@ -71,19 +73,28 @@ struct BVHNode {
 
 
 // UNIFORM BUFFERS
+uniform int lightCount;
 layout(std140, binding = 0) uniform Lights {
-    Light lights[100];
+    Light lights[];
 };
 
-layout(std140, binding = 1) uniform Objects {
-    Object objects[100];
+uniform int materialCount;
+layout(std140, binding = 1) uniform Materials {
+    Material materials[];
 };
 
-layout(std140, binding = 2) uniform Triangles {
+uniform int objectCount;
+layout(std140, binding = 2) uniform Objects {
+    Object objects[];
+};
+
+uniform int triangleCount;
+layout(std140, binding = 3) uniform Triangles {
     Triangle triangles[];
 };
 
-layout(std140, binding = 3) uniform BVHNodes {
+uniform int bvhNodeCount;
+layout(std140, binding = 4) uniform BVHNodes {
     BVHNode nodes[];
 };
 
@@ -96,15 +107,15 @@ layout(std140, binding = 3) uniform BVHNodes {
 struct Ray
 {
     vec3 pos, dir;
+    float maxDis;
     float closestT;
-    Object closestObj;
+    int materialIndex;
     vec3 surfaceNormal;
     vec3 interPoint;
-    float maxDis;
 };
 
-#define RAY_DEFAULT_ARGS FLT_MAX, Object(0, vec4(0), vec4(0), vec4(0), vec4(0), vec4(0)), vec3(0), vec3(0), 10000
-#define RAY_DEFAULT_ARGS_WO_DIST Object(0, vec4(0), vec4(0), vec4(0), vec4(0), vec4(0)), vec3(0), vec3(0), 10000
+#define RAY_DEFAULT_ARGS FLT_MAX, FLT_MAX, -1, vec3(0), vec3(0)
+#define RAY_DEFAULT_ARGS_WO_DIST FLT_MAX, -1, vec3(0), vec3(0)
 
 
 vec3 getTriangleNormalAt(Triangle triangle, float u, float v, bool invert)
@@ -116,11 +127,11 @@ vec3 getTriangleNormalAt(Triangle triangle, float u, float v, bool invert)
 bool IntersectTriangle(out Ray ray, Triangle triangle)
 {
     float dz = dot(triangle.rows[2].xyz, ray.dir);
-	if (dz == 0.0) return false;
+	if (abs(dz) <= 1e-4) return false;
 
 	float oz = dot(triangle.rows[2].xyz, ray.pos) + triangle.rows[2].w;
 	float t = -oz / dz;
-	if (t < 0.0 || ray.closestT < t || t >= ray.maxDis) return false;
+	if (t < 0.0 || t > ray.closestT || t > ray.maxDis) return false;
 
 	vec3 hitPos = ray.pos + ray.dir * t;
 	float u = dot(triangle.rows[0].xyz, hitPos) + triangle.rows[0].w;
@@ -130,7 +141,7 @@ bool IntersectTriangle(out Ray ray, Triangle triangle)
 	if (v < 0.0 || u + v > 1.0) return false;
 
 	ray.closestT = t;
-	ray.closestObj = objects[int(triangle.objInd)];
+	ray.materialIndex = int(triangle.materialIndex);
 	ray.surfaceNormal = getTriangleNormalAt(triangle, u, v, false);
 	ray.interPoint = hitPos;
 
@@ -140,13 +151,10 @@ bool IntersectTriangle(out Ray ray, Triangle triangle)
 bool intersectTriangledObject(out Ray ray, Object obj)
 {
     bool hit = false;
-    for(int j = int(obj.properties2.x); j < obj.properties2.y; j++)
+    for(int j = int(obj.properties.x); j < obj.properties.x + obj.properties.y; j++)
     {
         if(IntersectTriangle(ray, triangles[j]))
-        {
             hit = true;
-            ray.closestObj = obj;
-        }      
     }
     return hit;
 }
@@ -179,7 +187,7 @@ bool intersectSphere(out Ray ray, Object sphere)
 	vec3 inter = (ray.pos - sphere.pos.xyz);
 	float a = dot(ray.dir, ray.dir);
 	float b = dot(ray.dir + ray.dir, inter);
-	float c = abs(dot(inter, inter)) - sphere.properties2.x;
+	float c = abs(dot(inter, inter)) - sphere.properties.x;
 
     if(!solveQuadratic(a, b, c, x0, x1)) return false;
 	if (!(x0 > 0 && x0 < ray.closestT && x0 < ray.maxDis)) return false;
@@ -187,7 +195,7 @@ bool intersectSphere(out Ray ray, Object sphere)
 	ray.closestT = x0;
 	ray.interPoint = ray.pos + x0 * ray.dir;
 	ray.surfaceNormal = normalize(ray.interPoint - sphere.pos.xyz);
-	ray.closestObj = sphere;
+	ray.materialIndex = sphere.data.y;
 
 //	vec3 n = ray.surfaceNormal;
 //	float u = atan(-n.x, n.y) / (2.0 * 3.141597) + 0.5;
@@ -198,7 +206,7 @@ bool intersectSphere(out Ray ray, Object sphere)
 
 bool intersectPlane(out Ray ray, Object plane)
 {
-    vec3 normal = plane.properties2.xyz;
+    vec3 normal = plane.properties.xyz;
     float denom = -dot(normal, ray.dir);
 	if (denom <= 1e-6f)
         return false;
@@ -211,24 +219,24 @@ bool intersectPlane(out Ray ray, Object plane)
 	ray.closestT = t;
 	ray.interPoint = ray.pos + t * ray.dir;
 	ray.surfaceNormal = normal;
-	ray.closestObj = plane;
+	ray.materialIndex = plane.data.y;
 
 	return true;
 }
 
 bool intersectObj(out Ray ray, Object obj)
 {
-    if(obj.objType == 0)
+    if(obj.data.x == 0)
     {
         if(intersectTriangledObject(ray, obj))
             return true;
     }
-    else if(obj.objType == 1)
+    else if(obj.data.x == 1)
     {
         if(intersectSphere(ray, obj))
             return true;
     }
-    else if(obj.objType == 2)
+    else if(obj.data.x == 2)
     {
         if(intersectPlane(ray, obj))
             return true;
@@ -272,7 +280,7 @@ bool intersectAABBForVisual(out Ray ray, vec4 min_, vec4 max_)
 			ray.surfaceNormal = vec3(0, 0, 1);
 			ray.interPoint = point;
 			ray.closestT = t;
-			ray.closestObj = objects[0];
+			ray.materialIndex = 0;
 			return true;
 		}
 	}
@@ -337,7 +345,7 @@ bool castShadowRays(Ray ray)
 #ifdef USE_BVH
     for(int objInd = 0; objInd < objectCount; objInd++)
     {
-        if(objects[objInd].objType!= 0 && intersectObj(ray, objects[objInd]))
+        if(objects[objInd].data.x != 0 && intersectObj(ray, objects[objInd]))
             return true;
     }
     return intersectBVHTree(ray);
@@ -355,14 +363,14 @@ bool castShadowRays(Ray ray)
 
 void getGlobalLightIllumination(Ray ray, Light globalLight, out vec4 diffuse, out vec4 specular)
 {
-    if (castShadowRays(Ray(globalLight.pos.xyz, - globalLight.properties1.yzw, RAY_DEFAULT_ARGS)))
+    if (castShadowRays(Ray(ray.interPoint, globalLight.properties1.yzw, RAY_DEFAULT_ARGS)))
 	    return;
 
     float light = max(dot(globalLight.properties1.yzw, ray.surfaceNormal), 0.0f);
     diffuse += light * globalLight.color * globalLight.properties1.x;
 
     vec3 h = normalize(globalLight.properties1.yzw - ray.dir);
-    specular += pow(max(dot(h, ray.surfaceNormal), 0.0f), ray.closestObj.properties1.z) * globalLight.color * globalLight.properties1.x;    
+    specular += pow(max(dot(h, ray.surfaceNormal), 0.0f), materials[ray.materialIndex].properties1.z) * globalLight.color * globalLight.properties1.x;    
 }
 
 void getPointLightIllumination(Ray ray, Light pointLight, out vec4 diffuse, out vec4 specular)
@@ -381,7 +389,7 @@ void getPointLightIllumination(Ray ray, Light pointLight, out vec4 diffuse, out 
 	diffuse += (distanceImpact * lightFacingAtPoint) * pointLight.color * pointLight.properties1.x;
 
 	vec3 h = normalize(dir - ray.dir);
-	specular += distanceImpact * pow(max(dot(h, ray.surfaceNormal), 0.0f), ray.closestObj.properties1.z) * pointLight.color * pointLight.properties1.x;
+	specular += distanceImpact * pow(max(dot(h, ray.surfaceNormal), 0.0f), materials[ray.materialIndex].properties1.z) * pointLight.color * pointLight.properties1.x;
 }
 
 void getAreaLightIllumination(Ray ray, Light areaLight, out vec4 diffuse, out vec4 specular)
@@ -413,7 +421,7 @@ void getAreaLightIllumination(Ray ray, Light areaLight, out vec4 diffuse, out ve
 		        diffuse += distanceImpact * lightFacingAtPoint * areaLight.color * intensity;
 
 		        vec3 h = normalize(dir - ray.dir);
-		        specular += distanceImpact * pow(max(dot(h, ray.surfaceNormal), 0.0f), ray.closestObj.properties1.z)* areaLight.color * intensity;
+		        specular += distanceImpact * pow(max(dot(h, ray.surfaceNormal), 0.0f), materials[ray.materialIndex].properties1.z)* areaLight.color * intensity;
 			}
 		}
 	}
@@ -456,7 +464,7 @@ vec4 castRay(Ray ray)
         #ifdef USE_BVH
         for(int objInd = 0; objInd < objectCount; objInd++)
         {
-            if(objects[objInd].objType == 0) continue;
+            if(objects[objInd].data.x == 0) continue;
             intersectObj(ray, objects[objInd]);
         }
         intersectBVHTree(ray);
@@ -473,17 +481,18 @@ vec4 castRay(Ray ray)
         hit = true;
         ray.interPoint += ray.surfaceNormal * 0.01f;
 
-		if (ray.closestObj.lit.x == 1)
+        Material mat = materials[ray.materialIndex];
+		if (mat.properties1.x == 1)
 		{
             vec4 diffuse, specular;
 			getIlluminationAtPoint(ray, diffuse, specular);
-			color += colorImpact * (1 - ray.closestObj.properties1.w) * ray.closestObj.color * diffuse * ray.closestObj.properties1.x;
-			color += specular * ray.closestObj.properties1.y;
+			color += colorImpact * (1 - mat.properties2.x) * mat.color * diffuse * mat.properties1.y;
+			color += specular * mat.properties1.z;
 		}
 		else
-			color += colorImpact * (1 - ray.closestObj.properties1.w) * ray.closestObj.color;
+			color += colorImpact * (1 - mat.properties2.x) * mat.color;
 
-		colorImpact *= ray.closestObj.properties1.w;
+		colorImpact *= mat.properties2.x;
 		if (colorImpact <= 1e-6f)
 			break;
             

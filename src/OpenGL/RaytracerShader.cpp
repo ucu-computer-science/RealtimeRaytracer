@@ -8,17 +8,21 @@ RaytracerShader::RaytracerShader(const char* vertexPath, const char* fragmentPat
 	glBindBuffer(GL_UNIFORM_BUFFER, uboLights);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboLights);
 
+	glGenBuffers(1, &uboMaterials);
+	glBindBuffer(GL_UNIFORM_BUFFER, uboMaterials);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, uboMaterials);
+
 	glGenBuffers(1, &uboObjects);
 	glBindBuffer(GL_UNIFORM_BUFFER, uboObjects);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, uboObjects);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 2, uboObjects);
 
 	glGenBuffers(1, &uboTriangles);
 	glBindBuffer(GL_UNIFORM_BUFFER, uboTriangles);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 2, uboTriangles);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 3, uboTriangles);
 
 	glGenBuffers(1, &uboBVHNodes);
 	glBindBuffer(GL_UNIFORM_BUFFER, uboBVHNodes);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 3, uboBVHNodes);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 4, uboBVHNodes);
 
 }
 void RaytracerShader::setLightsUBO(const float* data, int lightCount) const
@@ -28,6 +32,14 @@ void RaytracerShader::setLightsUBO(const float* data, int lightCount) const
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	setInt("lightCount", lightCount);
+}
+void RaytracerShader::setMaterialsUBO(const float* data, int materialCount) const
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, uboMaterials);
+	glBufferData(GL_UNIFORM_BUFFER, materialCount * materialAlign * sizeof(float), data, GL_STATIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	setInt("materialCount", materialCount);
 }
 
 void RaytracerShader::setObjectsUBO(const float* data, int objectCount) const

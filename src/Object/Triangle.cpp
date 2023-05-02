@@ -95,7 +95,7 @@ bool Triangle::intersect(Ray& ray, bool intersectAll) const
 		return false;
 
 	ray.closestT = t;
-	ray.closestMat = &mesh->material;
+	ray.closestMat = mesh->material;
 	ray.surfaceNormal = getNormalAt(u, v, dot(globalNormal, ray.dir) > 0);
 	ray.interPoint = hitPos;
 	ray.closestT = t;
@@ -106,7 +106,7 @@ bool Triangle::intersect(Ray& ray, bool intersectAll) const
 Color Triangle::getColorAt(float u, float v) const
 {
 	auto d = vertices[0].uvPos + u * texVecU + v * texVecV;
-	return mesh->material.texture->getColor(d.x, 1 - d.y);
+	return mesh->material->texture->getColor(d.x, 1 - d.y);
 }
 glm::vec3 Triangle::getNormalAt(float u, float v, bool invert) const
 {

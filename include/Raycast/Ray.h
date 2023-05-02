@@ -7,7 +7,7 @@
 
 class Triangle;
 class GraphicalObject;
-struct Material;
+class Material;
 
 struct Ray
 {
