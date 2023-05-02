@@ -60,8 +60,8 @@ void Raytracer::initializeScene()
 	auto model = Model("../../models/skull.obj");
 	auto obj = new Mesh({0, 0, -9 }, model.triangles);
 
-	//new GlobalLight({0, 1, 0}, Color::white(), 1);
 	new GlobalLight({0, -1, 0}, Color::white(), 1);
+	//new GlobalLight({0, 1, 0}, Color::white(), 1);
 
 	//auto obj = new Cube({0, 0, 0}, 2, {{0, 0, 0}});
 	//obj->material = new Material(Color::blue(), true, tex, 1, 0, 2000, 0);

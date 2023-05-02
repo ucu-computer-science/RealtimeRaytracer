@@ -34,6 +34,7 @@ public:
 	}
 
 
+	static Material* const debugLine;
 	static Material* const defaultLit;
 	static Material* const defaultUnlit;
 };

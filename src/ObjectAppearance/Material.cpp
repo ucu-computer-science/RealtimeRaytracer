@@ -3,7 +3,8 @@
 #include "Scene.h"
 
 
-Material*  const Material::defaultLit = new Material(Color::white(), true);
+Material* const Material::debugLine = new Material(Color::blue(), false);
+Material* const Material::defaultLit = new Material(Color::white(), true);
 Material* const Material::defaultUnlit = new Material(Color::white(), false);
 
 Material::Material(Color color, bool lit): lit(lit), color(color), texture(std::make_shared<Texture>())
