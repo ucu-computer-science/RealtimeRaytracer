@@ -53,14 +53,15 @@ void Raytracer::initialize(int width, int height)
 
 void Raytracer::initializeScene()
 {
-	auto camera = new Camera({0.0f, -30.0f, 0.5f}, 1, 0, {(float)width / (float)height, 1});
+	auto camera = new Camera({0.0f, -50.0f, 0.5f}, 1, 0, {(float)width / (float)height, 1});
 	camera->setBackgroundColor(Color::black());
 	auto tex = std::make_shared<Texture>();
 
 	auto model = Model("../../models/skull.obj");
-	auto obj = new Mesh({0, 0, 0}, model.triangles, {{0, 0, 90 * DEG_TO_RAD}});
+	auto obj = new Mesh({0, 0, -9 }, model.triangles);
 
-	new GlobalLight({1, 0, 0}, Color::white(), 1);
+	//new GlobalLight({0, 1, 0}, Color::white(), 1);
+	new GlobalLight({0, -1, 0}, Color::white(), 1);
 
 	//auto obj = new Cube({0, 0, 0}, 2, {{0, 0, 0}});
 	//obj->material = new Material(Color::blue(), true, tex, 1, 0, 2000, 0);

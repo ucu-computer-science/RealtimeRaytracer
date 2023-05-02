@@ -107,6 +107,7 @@ layout(std140, binding = 4) uniform BVHNodes {
 struct Ray
 {
     vec3 pos, dir;
+    vec3 invDir;
     float maxDis;
     float closestT;
     int materialIndex;
@@ -296,7 +297,7 @@ bool intersectsAABB(out Ray ray, vec4 min_, vec4 max_, float tMin, float tMax)
 
 	for (int i = 0; i < 3; i++)
 	{
-		float invD = 1.0f / ray.dir[i];
+		float invD = ray.invDir[i];
 		float t0 = (min_[i] - ray.pos[i]) * invD;
 		float t1 = (max_[i] - ray.pos[i]) * invD;
 		if (invD < 0.0f)
@@ -314,7 +315,6 @@ bool intersectsAABB(out Ray ray, vec4 min_, vec4 max_, float tMin, float tMax)
 	return true;
 }
 
-vec4 DEBUG_COLOR = vec4(0);
 bool intersectBVHTree(out Ray ray)
 {
     int curr = 0;
@@ -363,7 +363,7 @@ bool castShadowRays(Ray ray)
 
 void getGlobalLightIllumination(Ray ray, Light globalLight, out vec4 diffuse, out vec4 specular)
 {
-    if (castShadowRays(Ray(ray.interPoint, globalLight.properties1.yzw, RAY_DEFAULT_ARGS)))
+    if (castShadowRays(Ray(ray.interPoint, globalLight.properties1.yzw, 1 / globalLight.properties1.yzw, RAY_DEFAULT_ARGS)))
 	    return;
 
     float light = max(dot(globalLight.properties1.yzw, ray.surfaceNormal), 0.0f);
@@ -381,7 +381,7 @@ void getPointLightIllumination(Ray ray, Light pointLight, out vec4 diffuse, out 
 		return;
 
 	dir = normalize(dir);
-	if (castShadowRays(Ray(pointLight.pos.xyz, -dir, dist, RAY_DEFAULT_ARGS_WO_DIST)))
+	if (castShadowRays(Ray(pointLight.pos.xyz, -dir, 1 / -dir, dist, RAY_DEFAULT_ARGS_WO_DIST)))
 		return;
 
 	float distanceImpact = min(1 - (dist / pointLight.properties1.y), 1.f);
@@ -413,7 +413,7 @@ void getAreaLightIllumination(Ray ray, Light areaLight, out vec4 diffuse, out ve
 			        continue;
 
 		        vec3 dir = normalize(lightPoint - ray.interPoint);
-		        if (castShadowRays(Ray(lightPoint/*areaLight.pos.xyz*/, -dir, dist, RAY_DEFAULT_ARGS_WO_DIST)))
+		        if (castShadowRays(Ray(lightPoint/*areaLight.pos.xyz*/, -dir, 1 / dir, dist, RAY_DEFAULT_ARGS_WO_DIST)))
 			        continue;
 
 		        float distanceImpact = max(1 - (dist / areaLight.properties2.x), 0.f);
@@ -497,7 +497,7 @@ vec4 castRay(Ray ray)
 			break;
             
 		vec3 dir = ray.dir - 2 * dot(ray.dir, ray.surfaceNormal) * ray.surfaceNormal;
-		ray = Ray(ray.interPoint, dir, RAY_DEFAULT_ARGS);
+		ray = Ray(ray.interPoint, dir, 1 / dir, RAY_DEFAULT_ARGS);
     }
     
     color += colorImpact * bgColor;
@@ -513,8 +513,5 @@ void main()
     vec4 up = cameraRotMat[2];
     vec4 lb = focalDistance * forward - 0.5 * right * screenSize.x - 0.5 * up;
     vec4 rayDir = normalize(lb + x * right + y * up);
-    Ray ray = Ray(cameraPos, rayDir.xyz, RAY_DEFAULT_ARGS);
-
-    vec4 color = castRay(ray);
-    outColor = DEBUG_COLOR == vec4(0) ? color : DEBUG_COLOR;
+    outColor = castRay(Ray(cameraPos, rayDir.xyz, 1 / rayDir.xyz, RAY_DEFAULT_ARGS));
 }
