@@ -1,7 +1,5 @@
 #include "SDLHandler.h"
 
-#include <iostream>
-
 #include "glad.h"
 #include "Input.h"
 

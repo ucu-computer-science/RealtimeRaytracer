@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-#include "BoundingBoxes.h"
+#include "BVHNode.h"
+#include "BVHBuilder.h"
 #include "Scene.h"
 #include "SDLHandler.h"
 
@@ -30,5 +31,5 @@ void Logger::logStats()
 		<< "FPS: " << fps
 		<< " Triangles: " << triangleCount
 		<< " Graphical Objects: " << Scene::graphicalObjects.size()
-		<< " Bounding Boxes: " << BVHNode::boxCount << '\n';
+		<< " Bounding Boxes: " << BVHBuilder::nodes.size()<< '\n';
 }

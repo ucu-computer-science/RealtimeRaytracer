@@ -4,10 +4,9 @@
 #include <glm/vec3.hpp>
 
 #include "GraphicalObject.h"
-#include "IBoundable.h"
 #include "Vertex.h"
 
-class Triangle : public IBoundable
+class Triangle
 {
 	GraphicalObject* obj = nullptr;
 	glm::vec3 localNormal;
@@ -37,9 +36,9 @@ public:
 	void attachTo(GraphicalObject* obj);
 	void recalculateCoefficients();
 
-	bool intersect(Ray& ray, bool intersectAll = false) override;
-	AABB getBoundingBox() const override;
-	glm::vec3 getCenter() const override;
+	bool intersect(Ray& ray, bool intersectAll = false) const;
+	AABB getBoundingBox() const;
+	glm::vec3 getCenter() const;
 
 	Color getColorAt(float u, float v) const;
 	glm::vec3 getNormalAt(float u, float v, bool invert) const;

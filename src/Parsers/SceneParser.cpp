@@ -8,7 +8,7 @@ void SceneParser::parseScene(const std::filesystem::path& path)
 	json j;
 	file >> j;
 	auto camera = new Camera(glm::vec3((float)j["Cameras"][0]["pos"][0], (float)j["Cameras"][0]["pos"][1], (float)j["Cameras"][0]["pos"][2]),
-	                         (float)j["Cameras"][0]["fov"], (float)j["Cameras"][0]["aperture"], glm::vec2((float)j["Cameras"][0]["size"][0], (float)j["Cameras"][0]["size"][1]));
+	                         (float)j["Cameras"][0]["fov"], (float)j["Cameras"][0]["lensRadius"], glm::vec2((float)j["Cameras"][0]["size"][0], (float)j["Cameras"][0]["size"][1]));
 	for (auto light : j["PointLights"])
 	{
 		auto light1 = new PointLight{

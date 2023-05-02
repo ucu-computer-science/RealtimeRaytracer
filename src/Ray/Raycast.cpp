@@ -4,8 +4,8 @@
 #include "GraphicalObject.h"
 #include "Light.h"
 #include "Ray.h"
-#include "BoundingBoxes.h"
-#include "Scene.h"
+#include "BVHNode.h"
+#include "BVHBuilder.h"
 
 
 Color Raycast::castRay(Ray ray, int bounce)
@@ -15,12 +15,12 @@ Color Raycast::castRay(Ray ray, int bounce)
 	float colorImpact = 1;
 	for (int i = 0; i < bounce; ++i)
 	{
-		for (const auto& obj : Scene::graphicalObjects)
-		{
-			if (obj->includeInBVH()) continue;
-			obj->intersect(ray);
-		}
-		BVHNode::root->intersect(ray);
+		//for (const auto& obj : Scene::graphicalObjects)
+		//{
+		//	if (obj->includeInBVH()) continue;
+		//	obj->intersect(ray);
+		//}
+		BVHBuilder::nodes[0]->intersect(ray);
 		if (!ray.hit())
 			break;
 		hit = true;
@@ -51,13 +51,13 @@ Color Raycast::castRay(Ray ray, int bounce)
 
 bool Raycast::castShadowRays(Ray ray)
 {
-	for (const auto& obj : Scene::graphicalObjects)
-	{
-		if (obj->includeInBVH())continue;
-		if (obj->intersect(ray))
-			return true;
-	}
+	//for (const auto& obj : Scene::graphicalObjects)
+	//{
+	//	if (obj->includeInBVH())continue;
+	//	if (obj->intersect(ray))
+	//		return true;
+	//}
 
-	BVHNode::root->intersect(ray);
+	BVHBuilder::nodes[0]->intersect(ray);
 	return ray.hit();
 }

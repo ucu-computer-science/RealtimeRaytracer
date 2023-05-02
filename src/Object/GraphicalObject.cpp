@@ -8,8 +8,7 @@
 #include "Scene.h"
 #include "Triangle.h"
 #include "MathExtensions.h"
-#include "BoundingBoxes.h"
-#include "glad.h"
+#include "BVHNode.h"
 #include "ObjectParser.h"
 #include "Ray.h"
 
@@ -19,42 +18,15 @@ GraphicalObject::GraphicalObject(const std::vector<std::shared_ptr<Triangle>>& t
 
 {
 	for (auto& t : triangles)
-		t->attachTo(this);
-
-	auto vertices = new float[triangles.size() * 9];
-	auto connections = new int[triangles.size() * 3];
-	for (int i = 0; i < (int)triangles.size(); ++i)
 	{
-		for (int j = 0; j < 3; ++j)
-		{
-			vertices[i * 9 + j * 3 + 0] = triangles[i]->globalVertexPositions[j].x;
-			vertices[i * 9 + j * 3 + 1] = triangles[i]->globalVertexPositions[j].y;
-			vertices[i * 9 + j * 3 + 2] = triangles[i]->globalVertexPositions[j].z;
-		}
-		connections[i * 3 + 0] = i * 3 + 0;
-		connections[i * 3 + 1] = i * 3 + 1;
-		connections[i * 3 + 2] = i * 3 + 2;
+		t->attachTo(this);
+		Scene::triangles.push_back(t.get());
 	}
 
-	glGenVertexArrays(1, &vertexArray);
-	glBindVertexArray(vertexArray);
-
-	unsigned int vertexBuffer;
-	glGenBuffers(1, &vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * triangles.size() * 9, vertices, GL_STATIC_DRAW);
-
-	unsigned int elementBuffer;
-	glGenBuffers(1, &elementBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float) * triangles.size() * 3, connections, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)nullptr);
-	glEnableVertexAttribArray(0);
-
-
 	//updateCameraFacingTriangles();
-	updateBVH();
+	//updateBVH();
+
+	indexID = (int)Scene::graphicalObjects.size();
 	Scene::graphicalObjects.emplace_back(this);
 
 	//Camera::onCameraMove += [this]
@@ -87,30 +59,10 @@ bool GraphicalObject::intersect(Ray& ray, bool intersectAll)
 //		cameraFacingTriangles.emplace_back(triangle);
 //	}
 //}
-AABB GraphicalObject::getBoundingBox() const
-{
-	if (triangles.empty()) return {{0, 0, 0}, {0, 0, 0}};
-	if (triangles.size() == 1) return triangles[0]->getBoundingBox();
 
-	auto united = triangles[0]->getBoundingBox();
-	for (size_t i = 1; i < triangles.size(); ++i)
-	{
-		united = AABB::getUnitedBox(united, triangles[i]->getBoundingBox());
-	}
-	return united;
-}
-void GraphicalObject::setMaterial(Material material)
+void GraphicalObject::setMaterial(const Material& material)
 {
-	this->material = std::move(material);
-}
-
-void GraphicalObject::updateBVH()
-{
-	auto intersectables = std::vector<IBoundable*>(triangles.size());
-	std::ranges::transform(triangles, intersectables.begin(),
-	                       [](const std::shared_ptr<Triangle>& obj) { return (IBoundable*)&*obj; });
-
-	root = intersectables.empty() ? nullptr : BVHNode::buildTree(intersectables, BVHNode::maxTrianglesPerBox);
+	this->material = material;
 }
 
 ImportedGraphicalObject::ImportedGraphicalObject(const std::filesystem::path& path, glm::vec3 pos, glm::quat rot) : GraphicalObject(Model(path).triangles, pos,
@@ -196,12 +148,7 @@ bool Sphere::intersect(Ray& ray, bool intersectAll)
 	}
 	return false;
 }
-AABB Sphere::getBoundingBox() const
-{
-	glm::vec3 min = pos - glm::vec3(radius, radius, radius);
-	glm::vec3 max = pos + glm::vec3(radius, radius, radius);
-	return {min, max};
-}
+
 bool Plane::intersect(Ray& ray, bool intersectAll)
 {
 	float denom = -dot(normal, ray.dir);

@@ -3,6 +3,10 @@ out vec4 outColor;
 
 #define FLT_MAX  1000000000
 
+// ----------- OPTIONS -----------
+//#define USE_BVH
+
+
 // Window
 uniform vec2 pixelSize;
 uniform vec2 screenSize;
@@ -10,13 +14,13 @@ uniform vec2 screenSize;
 
 // General
 uniform int rayBounceCount;
-
+uniform bool showBoundingBoxes = true;
 
 // Camera
 uniform float focalDistance;
 uniform vec3 cameraPos;
 uniform mat4x4 cameraRotMat = mat4x4(1.0);
-uniform vec4 bgColor = vec4(1, 0, 0, 1);
+uniform vec4 bgColor = vec4(0.3, 0, 0, 1);
 
 
 // Light
@@ -37,14 +41,13 @@ struct Object {
     vec4 color;
     vec4 lit;
     vec4 properties1; // diffuse coef, specular coef, specular degree, reflection
-    vec4 properties2; // [TriangledObject(triangle start, triangle end) : Sphere(radiusSquared)]
+    vec4 properties2; // Sphere(radiusSquared)]
 };
 
 // Triangle
 struct Vertex {
-    vec4 pos;
-    vec4 uvPos;
-    vec4 normal;
+    vec4 posU;
+    vec4 normalV;
 };
 
 uniform int triangleCount;
@@ -54,6 +57,13 @@ struct Triangle {
     vec4 rows[3];
 };
 
+//const int LEAF_ARR_SIZE = 8;
+uniform int bvhNodeCount;
+struct BVHNode {
+    vec4 min; // w = trianglesStart
+    vec4 max; // w = triangleCount
+    vec4 values; // hitNext, missNext, isLeaf
+};
 
 
 
@@ -70,7 +80,9 @@ layout(std140, binding = 2) uniform Triangles {
     Triangle triangles[];
 };
 
-
+layout(std140, binding = 3) uniform BVHNodes {
+    BVHNode nodes[];
+};
 
 
 
@@ -92,42 +104,34 @@ struct Ray
 #define RAY_DEFAULT_ARGS_WO_DIST Object(0, vec4(0), vec4(0), vec4(0), vec4(0), vec4(0)), vec3(0), vec3(0), 10000
 
 
-float PointIn(vec3 P1, vec3 P2, vec3 A, vec3 B)
-{
-    vec3 CP1 = cross(B - A, P1 - A);
-    vec3 CP2 = cross(B - A, P2 - A);
-    return step(0.0, dot(CP1, CP2));
-}
-bool PointInTriangle(vec3 px, vec3 p0, vec3 p1, vec3 p2)
-{
-    return PointIn(px, p0, p1, p2) * PointIn(px, p1, p2, p0) * PointIn(px, p2, p0, p1) > 0;
-}
 vec3 getTriangleNormalAt(Triangle triangle, float u, float v, bool invert)
 {
-	vec3 interpolatedNormal = normalize((1 - u - v) * triangle.vertices[0].normal.xyz + u * triangle.vertices[1].normal.xyz + v * triangle.vertices[2].normal.xyz);
+	vec3 interpolatedNormal = normalize((1 - u - v) * triangle.vertices[0].normalV.xyz + u * triangle.vertices[1].normalV.xyz + v * triangle.vertices[2].normalV.xyz);
 	return invert ? -interpolatedNormal : interpolatedNormal;
 }
+
 bool IntersectTriangle(out Ray ray, Triangle triangle)
 {
     float dz = dot(triangle.rows[2].xyz, ray.dir);
-	if (dz < 1e-6f) return false;
+	if (dz == 0.0) return false;
 
 	float oz = dot(triangle.rows[2].xyz, ray.pos) + triangle.rows[2].w;
 	float t = -oz / dz;
-	if (t < 0 || ray.closestT < t || t >= ray.maxDis) return false;
+	if (t < 0.0 || ray.closestT < t || t >= ray.maxDis) return false;
 
 	vec3 hitPos = ray.pos + ray.dir * t;
 	float u = dot(triangle.rows[0].xyz, hitPos) + triangle.rows[0].w;
-	if (u < 0 || u > 1) return false;
+	if (u < 0.0 || u > 1.0) return false;
 
-	const float v = dot(triangle.rows[1].xyz, hitPos) + triangle.rows[1].w;
-	if (v < 0 || u + v > 1) return false;
+	float v = dot(triangle.rows[1].xyz, hitPos) + triangle.rows[1].w;
+	if (v < 0.0 || u + v > 1.0) return false;
 
-    ray.closestT = t;
-    ray.closestObj = objects[int(triangle.objInd)];
-    ray.surfaceNormal = getTriangleNormalAt(triangle, u, v, false);
-    ray.interPoint = hitPos;
-    return true;
+	ray.closestT = t;
+	ray.closestObj = objects[int(triangle.objInd)];
+	ray.surfaceNormal = getTriangleNormalAt(triangle, u, v, false);
+	ray.interPoint = hitPos;
+
+	return true;
 }
 
 bool intersectTriangledObject(out Ray ray, Object obj)
@@ -175,7 +179,6 @@ bool intersectSphere(out Ray ray, Object sphere)
 	float c = abs(dot(inter, inter)) - sphere.properties2.x;
 
     if(!solveQuadratic(a, b, c, x0, x1)) return false;
-
 	if (!(x0 > 0 && x0 < ray.closestT && x0 < ray.maxDis)) return false;
 
 	ray.closestT = x0;
@@ -230,19 +233,117 @@ bool intersectObj(out Ray ray, Object obj)
     return false;
 }
 
+bool intersectsAABB(Ray ray, vec4 min_, vec4 max_, float tMin, float tMax)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		float invD = 1.0f / ray.dir[i];
+		float t0 = (min_[i] - ray.pos[i]) * invD;
+		float t1 = (max_[i] - ray.pos[i]) * invD;
+		if (invD < 0.0f)
+		{
+            float temp = t0;
+            t0 = t1;
+            t1 = temp;
+        }
+
+		tMin = max(t0, tMin);
+		tMax = min(t1, tMax);
+		if (tMax <= tMin)
+			return false;
+	}
+	return true;
+}
+
+const float lineWidth = 0.05f;
+bool intersectAABBForVisual(out Ray ray, vec4 min_, vec4 max_)
+{
+	float tMin = 0, tMax = FLT_MAX;
+	for (int i = 0; i < 3; i++)
+	{
+		float invD = 1.0f / ray.dir[i];
+		float t0 = (min_[i] - ray.pos[i]) * invD;
+		float t1 = (max_[i] - ray.pos[i]) * invD;
+		if (invD < 0.0f)
+		{
+            float temp = t0;
+            t0 = t1;
+            t1 = temp;
+        }
+
+		tMin = max(t0, tMin);
+		tMax = min(t1, tMax);
+		if (tMax <= tMin)
+			return false;
+	}
+
+    vec2 ts = vec2(tMin, tMax);
+	for (int i = 0; i < 2; i++)
+	{
+        float t = ts[i];
+		vec3 point = ray.pos + t * ray.dir;
+		if (ray.closestT > t && ((abs(min_.x - point.x) <= lineWidth || abs(max_.x - point.x) <= lineWidth ||
+				abs(min_.y - point.y) <= lineWidth || abs(max_.y - point.y) <= lineWidth) &&
+			(abs(min_.y - point.y) <= lineWidth || abs(max_.y - point.y) <= lineWidth ||
+				abs(min_.z - point.z) <= lineWidth || abs(max_.z - point.z) <= lineWidth) &&
+			(abs(min_.z - point.z) <= lineWidth || abs(max_.z - point.z) <= lineWidth ||
+				abs(min_.x - point.x) <= lineWidth || abs(max_.x - point.x) <= lineWidth)))
+		{
+			ray.surfaceNormal = vec3(0, 0, 1);
+			ray.interPoint = point;
+			ray.closestT = t;
+			ray.closestObj = objects[0];
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool intersectBVHTree(out Ray ray)
+{
+    int curr = 0;
+    while(curr != -1)
+    {
+        BVHNode node = nodes[curr];
+        if(intersectsAABB(ray, node.min, node.max, 0, FLT_MAX))
+        {
+            if(node.values.z == 1)
+            {
+                for (int i = int(node.min.w); i < node.min.w + node.max.w; i++)
+			        IntersectTriangle(ray, triangles[i]);
+            }
+            curr = int(node.values.x);
+        }
+        else
+            curr = int(node.values.y);
+    }
+    return ray.surfaceNormal != vec3(0);
+}
+
+
 // *************************************************************************
 // --------------------------------- LIGHT ---------------------------------
 // *************************************************************************
-
 bool castShadowRays(Ray ray)
 {
+#ifdef USE_BVH
+    for(int objInd = 0; objInd < objectCount; objInd++)
+    {
+        if(objects[objInd].objType!= 0 && intersectObj(ray, objects[objInd]))
+            return true;
+    }
+    return intersectBVHTree(ray);
+#else
     for(int objInd = 0; objInd < objectCount; objInd++)
     {
         if(intersectObj(ray, objects[objInd]))
             return true;
     }
     return false;
+#endif
 }
+
 
 
 void getGlobalLightIllumination(Ray ray, Light globalLight, out vec4 diffuse, out vec4 specular)
@@ -345,15 +446,25 @@ vec4 castRay(Ray ray)
     float colorImpact = 1;
     for(int bounce = 0; bounce < rayBounceCount; bounce++) 
     {
+        #ifdef USE_BVH
+        for(int objInd = 0; objInd < objectCount; objInd++)
+        {
+            if(objects[objInd].objType == 0) continue;
+            intersectObj(ray, objects[objInd]);
+        }
+        intersectBVHTree(ray);
+        #else
         for(int objInd = 0; objInd < objectCount; objInd++)
         {
             intersectObj(ray, objects[objInd]);
         }
+        #endif
+
         if(ray.surfaceNormal == vec3(0)) // no hit
             break;
 
         hit = true;
-        ray.interPoint += ray.surfaceNormal * 0.1f;
+        ray.interPoint += ray.surfaceNormal * 0.01f;
 
 		if (ray.closestObj.lit.x == 1)
 		{

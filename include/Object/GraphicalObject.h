@@ -6,32 +6,28 @@
 #include "Object.h"
 #include "Material.h"
 #include "Texture.h"
-#include "IBoundable.h"
 
 class BVHNode;
 class AABB;
 struct Ray;
 class Triangle;
 
-class GraphicalObject : public Object, public IBoundable
+class GraphicalObject : public Object
 {
 public:
-	unsigned int vertexArray = 0;
-	const std::vector<std::shared_ptr<Triangle>> triangles{};
+	int indexID = -1;
+
+	std::vector<std::shared_ptr<Triangle>> triangles{};
 	//std::vector<std::shared_ptr<Triangle>> cameraFacingTriangles{};
 	Material material;
 	std::shared_ptr<BVHNode> root;
 
 	GraphicalObject(const std::vector<std::shared_ptr<Triangle>>& triangles = {}, glm::vec3 pos = {0, 0, 0}, glm::quat rot = {1, 0, 0, 0}, Material material = {});
 
-	bool intersect(Ray& ray, bool intersectAll = false) override;
-	AABB getBoundingBox() const override;
-	glm::vec3 getCenter() const override { return pos; }
-
-	void updateBVH();
+	virtual bool intersect(Ray& ray, bool intersectAll = false);
 	//void updateCameraFacingTriangles();
 
-	void setMaterial(Material material);
+	void setMaterial(const Material& material);
 
 	nlohmann::basic_json<> toJson() override;
 };
@@ -77,7 +73,6 @@ public:
 	}
 
 	bool intersect(Ray& ray, bool intersectAll) override;
-	AABB getBoundingBox() const override;
 
 	nlohmann::basic_json<> toJson() override;
 };
@@ -93,7 +88,6 @@ public:
 	}
 
 	bool intersect(Ray& ray, bool intersectAll) override;
-	bool includeInBVH() override { return false; }
 
 	nlohmann::basic_json<> toJson() override;
 };

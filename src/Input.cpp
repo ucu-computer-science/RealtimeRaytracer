@@ -1,6 +1,6 @@
 #include "Input.h"
 
-#include "BoundingBoxes.h"
+#include "BVHNode.h"
 #include "Camera.h"
 #include "glad.h"
 #include "GraphicalObject.h"

@@ -1,7 +1,7 @@
 #include "Triangle.h"
 
 #include "Ray.h"
-#include "BoundingBoxes.h"
+#include "BVHNode.h"
 
 void Triangle::recalculateCoefficients()
 {
@@ -76,7 +76,7 @@ void Triangle::attachTo(GraphicalObject* obj)
 	updateGeometry();
 }
 
-bool Triangle::intersect(Ray& ray, bool intersectAll)
+bool Triangle::intersect(Ray& ray, bool intersectAll) const
 {
 	const float dz = dot(row3, ray.dir);
 	if (dz == 0.0f)

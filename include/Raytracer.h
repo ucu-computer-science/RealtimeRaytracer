@@ -2,6 +2,7 @@
 
 #include "Action.h"
 #include "glad.h"
+#include "Light.h"
 #include "RaytracerShader.h"
 
 class Raytracer
@@ -10,7 +11,6 @@ class Raytracer
 
 	static void initializeScreenVertexBuffer();
 	static void initializeScene();
-	static void initializeUniformBuffers();
 
 public:
 	inline static int width, height;

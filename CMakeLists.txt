@@ -39,10 +39,10 @@ add_executable(${PROJECT_NAME}
         "src/ObjectAppearance/Material.cpp"
         "include/ObjectAppearance/Material.h"
         "src/Parsers/ObjectParser.cpp"
-        "src/BVH/BoundingBoxes.cpp"
+        "src/BVH/BVHNode.cpp"
         "src/UI/Canvas.cpp"
         "src/Object/Triangle.cpp"
-        "include/BVH/IBoundable.h"
+        
         "libs/stb_image/stb_image.h"
         "src/ObjectAppearance/Texture.cpp"
         "src/Parsers/SceneParser.cpp"
@@ -55,7 +55,9 @@ add_executable(${PROJECT_NAME}
         "src/OpenGL/Shader.cpp"
         "src/Logger.cpp" 
         "src/MyTime.cpp" 
-        "src/OpenGL/RaytracerShader.cpp")
+        "src/OpenGL/RaytracerShader.cpp"
+        "src/OpenGL/BufferController.cpp" 
+        "src/BVH/BVHBuilder.cpp")
 
 target_link_libraries(${PROJECT_NAME} SDL2)
 target_link_libraries(${PROJECT_NAME} SDL2main)
