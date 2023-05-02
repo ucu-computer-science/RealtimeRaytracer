@@ -1,17 +1,10 @@
 #include "Input.h"
 
-#include "BVHNode.h"
 #include "Camera.h"
-#include "glad.h"
-#include "GraphicalObject.h"
 #include "SDLHandler.h"
 #include "glm/gtx/string_cast.hpp"
 #include "MathExtensions.h"
 #include "MyTime.h"
-#include "Physics.h"
-#include "Ray.h"
-#include "Raytracer.h"
-#include "Scene.h"
 
 float defaultMoveSpeed = 40.0f;
 float keyRotationSpeed = 90.0f;

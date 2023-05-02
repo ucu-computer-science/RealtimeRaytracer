@@ -4,95 +4,55 @@
 #include <utility>
 
 #include "Camera.h"
-#include "SDLHandler.h"
 #include "Scene.h"
 #include "Triangle.h"
-#include "MathExtensions.h"
-#include "BVHNode.h"
 #include "ObjectParser.h"
 #include "Ray.h"
 
 
-GraphicalObject::GraphicalObject(const std::vector<std::shared_ptr<Triangle>>& triangles, const glm::vec3 pos, glm::quat rot,
-                                 Material material) : Object(pos, rot), triangles(triangles), material(std::move(material))
+GraphicalObject::GraphicalObject(glm::vec3 pos, glm::quat rot, Material material) : Object(pos, rot), material(std::move(material))
 
 {
-	for (auto& t : triangles)
+	this->indexID = Scene::graphicalObjects.size();
+	Scene::graphicalObjects.emplace_back(this);
+}
+
+
+Mesh::Mesh(glm::vec3 pos, std::vector<Triangle*> triangles, glm::quat rot, Material material) : GraphicalObject(pos, rot, std::move(material)),
+                                                                                                triangles(std::move(triangles))
+{
+	for (auto& t : this->triangles)
 	{
 		t->attachTo(this);
-		Scene::triangles.push_back(t.get());
+		Scene::triangles.push_back(t);
 	}
-
-	//updateCameraFacingTriangles();
-	//updateBVH();
-
-	indexID = (int)Scene::graphicalObjects.size();
-	Scene::graphicalObjects.emplace_back(this);
-
-	//Camera::onCameraMove += [this]
-	//{
-	//	updateCameraFacingTriangles();
-	//	updateBVH();
-	//};
 }
 
 
-bool GraphicalObject::intersect(Ray& ray, bool intersectAll)
-{
-	//bool hit = false;
-	//for (const auto& triangle : cameraFacingTriangles)
-	//{
-	//	if (!triangle->intersect(ray))continue;
-	//	hit = true;
-	//}
-	//return hit;
-	return root != nullptr ? root->intersect(ray, intersectAll) : false;
-}
-//void GraphicalObject::updateCameraFacingTriangles()
-//{
-//	cameraFacingTriangles.clear();
-//	for (const auto& triangle : triangles)
-//	{
-//		auto dir = triangle->points[0] - Camera::instance->getPos();
-//		if (!triangle->isTwoSided && dot(triangle->normal, dir) >= 0)
-//			continue;
-//		cameraFacingTriangles.emplace_back(triangle);
-//	}
-//}
+Square::Square(glm::vec3 pos, float side, glm::quat rot, Material material) : Mesh(pos, generateTriangles(side), rot, std::move(material)) {}
 
-void GraphicalObject::setMaterial(const Material& material)
-{
-	this->material = material;
-}
-
-ImportedGraphicalObject::ImportedGraphicalObject(const std::filesystem::path& path, glm::vec3 pos, glm::quat rot) : GraphicalObject(Model(path).triangles, pos,
-	rot), path(path) {}
-
-Square::Square(glm::vec3 pos, glm::quat rot, float side, Material mat) : GraphicalObject(generateTriangles(side), pos, rot, std::move(mat)) {}
-std::vector<std::shared_ptr<Triangle>> Square::generateTriangles(float side)
+std::vector<Triangle*> Square::generateTriangles(float side)
 {
 	auto p1 = glm::vec3(-side / 2, 0, -side / 2);
 	auto p2 = glm::vec3(-side / 2, 0, side / 2);
 	auto p3 = glm::vec3(side / 2, 0, side / 2);
 	auto p4 = glm::vec3(side / 2, 0, -side / 2);
 
-	std::vector<std::shared_ptr<Triangle>> triangles;
-	//    std::make_shared<Triangle>()
-	//    triangles.emplace_back(std::make_shared<Triangle>(this, {p1,{0,0}}))
-	//    Triangle(this, {p1,{0,0}}, {p2,{0,1}}, {p3,{1,0}});
 	Vertex vertex1{p1, {0, 0}};
 	Vertex vertex2{p2, {1, 0}};
 	Vertex vertex3{p3, {1, 1}};
 	Vertex vertex4{p4, {0, 1}};
 
-	triangles.emplace_back(std::make_shared<Triangle>(this, vertex1, vertex2, vertex3));
-	triangles.emplace_back(std::make_shared<Triangle>(this, vertex1, vertex3, vertex4));
+	std::vector<Triangle*> triangles;
+	triangles.push_back(new Triangle(this, vertex1, vertex2, vertex3));
+	triangles.push_back(new Triangle(this, vertex1, vertex3, vertex4));
 	return triangles;
 }
 
-Cube::Cube(glm::vec3 pos, glm::quat rot, float side) : GraphicalObject(generateTriangles(side), pos, rot), side(side) {}
 
-std::vector<std::shared_ptr<Triangle>> Cube::generateTriangles(float side)
+Cube::Cube(glm::vec3 pos, float side, glm::quat rot) : Mesh(pos, generateTriangles(side), rot), side(side) {}
+
+std::vector<Triangle*> Cube::generateTriangles(float side)
 {
 	auto p1 = glm::vec3(-side / 2, -side / 2, -side / 2);
 	auto p2 = glm::vec3(-side / 2, -side / 2, side / 2);
@@ -104,71 +64,30 @@ std::vector<std::shared_ptr<Triangle>> Cube::generateTriangles(float side)
 	auto p7 = glm::vec3(side / 2, side / 2, side / 2);
 	auto p8 = glm::vec3(side / 2, side / 2, -side / 2);
 
-	std::vector<std::shared_ptr<Triangle>> triangles;
-	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p3, p2));
-	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p4, p3));
-	triangles.emplace_back(std::make_shared<Triangle>(this, p5, p6, p7));
-	triangles.emplace_back(std::make_shared<Triangle>(this, p5, p7, p8));
+	std::vector<Triangle*> triangles;
+	triangles.push_back(new Triangle(this, p1, p3, p2));
+	triangles.push_back(new Triangle(this, p1, p4, p3));
+	triangles.push_back(new Triangle(this, p5, p6, p7));
+	triangles.push_back(new Triangle(this, p5, p7, p8));
 
-	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p2, p6));
-	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p6, p5));
-	triangles.emplace_back(std::make_shared<Triangle>(this, p4, p7, p3));
-	triangles.emplace_back(std::make_shared<Triangle>(this, p4, p8, p7));
+	triangles.push_back(new Triangle(this, p1, p2, p6));
+	triangles.push_back(new Triangle(this, p1, p6, p5));
+	triangles.push_back(new Triangle(this, p4, p7, p3));
+	triangles.push_back(new Triangle(this, p4, p8, p7));
 
-	triangles.emplace_back(std::make_shared<Triangle>(this, p2, p3, p7));
-	triangles.emplace_back(std::make_shared<Triangle>(this, p2, p7, p6));
-	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p8, p4));
-	triangles.emplace_back(std::make_shared<Triangle>(this, p1, p5, p8));
+	triangles.push_back(new Triangle(this, p2, p3, p7));
+	triangles.push_back(new Triangle(this, p2, p7, p6));
+	triangles.push_back(new Triangle(this, p1, p8, p4));
+	triangles.push_back(new Triangle(this, p1, p5, p8));
 	return triangles;
 }
 
-bool Sphere::intersect(Ray& ray, bool intersectAll)
-{
-	float x0, x1;
-	auto inter = (ray.pos - pos);
-	float a = dot(ray.dir, ray.dir);
-	float b = dot(ray.dir + ray.dir, inter);
-	float c = fabsf(dot(inter, inter)) - radiusSquared;
-	if (solveQuadratic(a, b, c, x0, x1))
-	{
-		if (x0 > 0 && x0 < ray.closestT && x0 < ray.maxDist)
-		{
-			ray.closestT = x0;
-			ray.interPoint = ray.pos + x0 * ray.dir;
-			ray.surfaceNormal = normalize(ray.interPoint - pos);
-			ray.closestMat = &material;
 
-			auto n = ray.surfaceNormal;
-			float u = atan2(-n.x, n.y) / (2.0f * PI) + 0.5f;
-			float v = -n.z * 0.5f + 0.5f;
-			ray.color = material.getColor(u, v);
+Sphere::Sphere(glm::vec3 pos, float radius, Material material) : GraphicalObject(pos, {}, std::move(material)), radius(radius) { }
 
-			return true;
-		}
-	}
-	return false;
-}
 
-bool Plane::intersect(Ray& ray, bool intersectAll)
-{
-	float denom = -dot(normal, ray.dir);
-	if (denom > 1e-6f)
-	{
-		glm::vec3 dir = pos - ray.pos;
-		float t = -dot(dir, normal) / denom;
-		if (t < ray.closestT && t > 0 && t < ray.maxDist)
-		{
-			ray.closestT = t;
-			ray.color = material.color;
-			ray.interPoint = ray.pos + t * ray.dir;
-			ray.surfaceNormal = normal;
-			ray.closestMat = &material;
+Plane::Plane(glm::vec3 pos, glm::vec3 normal, Material material) : GraphicalObject({}, pos, std::move(material)), normal{normalize(normal)} { }
 
-			return true;
-		}
-	}
-	return false;
-}
 
 nlohmann::basic_json<> GraphicalObject::toJson()
 {
@@ -182,40 +101,31 @@ nlohmann::basic_json<> GraphicalObject::toJson()
 	j["material"]["specularCoeff"] = material.specularCoeff;
 	j["material"]["specularDegree"] = material.specularDegree;
 	j["material"]["reflection"] = material.reflection;
-	j["type"] = "GraphicalObject";
 	return j;
 }
 
 nlohmann::basic_json<> Cube::toJson()
 {
 	auto j = GraphicalObject::toJson();
-	j["side"] = side;
 	j["type"] = "Cube";
+	j["side"] = side;
 	return j;
 }
 
 nlohmann::basic_json<> Sphere::toJson()
 {
 	auto j = GraphicalObject::toJson();
-	j["radius"] = radius;
 	j["type"] = "Sphere";
+	j["radius"] = radius;
 	return j;
 }
 
 nlohmann::basic_json<> Plane::toJson()
 {
 	auto j = GraphicalObject::toJson();
+	j["type"] = "Plane";
 	j["normal"][0] = normal[0];
 	j["normal"][1] = normal[1];
 	j["normal"][2] = normal[2];
-	j["type"] = "Plane";
-	return j;
-}
-
-nlohmann::basic_json<> ImportedGraphicalObject::toJson()
-{
-	auto j = GraphicalObject::toJson();
-	j["importPath"] = path;
-	j["type"] = "ImportedGraphicalObject";
 	return j;
 }

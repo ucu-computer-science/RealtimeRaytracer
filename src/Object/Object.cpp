@@ -46,6 +46,5 @@ nlohmann::basic_json<> Object::toJson()
 	j["rot"][1] = getRot()[1];
 	j["rot"][2] = getRot()[2];
 	j["rot"][3] = getRot()[3];
-	j["type"] = "Object";
 	return j;
 }

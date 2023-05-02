@@ -4,7 +4,10 @@ out vec4 outColor;
 #define FLT_MAX  1000000000
 
 // ----------- OPTIONS -----------
-//#define USE_BVH
+#define USE_BVH
+//#define SHOW_BOXES
+
+const float boxLineWidth = 0.05f;
 
 
 // Window
@@ -233,29 +236,6 @@ bool intersectObj(out Ray ray, Object obj)
     return false;
 }
 
-bool intersectsAABB(Ray ray, vec4 min_, vec4 max_, float tMin, float tMax)
-{
-	for (int i = 0; i < 3; i++)
-	{
-		float invD = 1.0f / ray.dir[i];
-		float t0 = (min_[i] - ray.pos[i]) * invD;
-		float t1 = (max_[i] - ray.pos[i]) * invD;
-		if (invD < 0.0f)
-		{
-            float temp = t0;
-            t0 = t1;
-            t1 = temp;
-        }
-
-		tMin = max(t0, tMin);
-		tMax = min(t1, tMax);
-		if (tMax <= tMin)
-			return false;
-	}
-	return true;
-}
-
-const float lineWidth = 0.05f;
 bool intersectAABBForVisual(out Ray ray, vec4 min_, vec4 max_)
 {
 	float tMin = 0, tMax = FLT_MAX;
@@ -282,12 +262,12 @@ bool intersectAABBForVisual(out Ray ray, vec4 min_, vec4 max_)
 	{
         float t = ts[i];
 		vec3 point = ray.pos + t * ray.dir;
-		if (ray.closestT > t && ((abs(min_.x - point.x) <= lineWidth || abs(max_.x - point.x) <= lineWidth ||
-				abs(min_.y - point.y) <= lineWidth || abs(max_.y - point.y) <= lineWidth) &&
-			(abs(min_.y - point.y) <= lineWidth || abs(max_.y - point.y) <= lineWidth ||
-				abs(min_.z - point.z) <= lineWidth || abs(max_.z - point.z) <= lineWidth) &&
-			(abs(min_.z - point.z) <= lineWidth || abs(max_.z - point.z) <= lineWidth ||
-				abs(min_.x - point.x) <= lineWidth || abs(max_.x - point.x) <= lineWidth)))
+		if (ray.closestT > t && ((abs(min_.x - point.x) <= boxLineWidth || abs(max_.x - point.x) <= boxLineWidth ||
+				abs(min_.y - point.y) <= boxLineWidth || abs(max_.y - point.y) <= boxLineWidth) &&
+			(abs(min_.y - point.y) <= boxLineWidth || abs(max_.y - point.y) <= boxLineWidth ||
+				abs(min_.z - point.z) <= boxLineWidth || abs(max_.z - point.z) <= boxLineWidth) &&
+			(abs(min_.z - point.z) <= boxLineWidth || abs(max_.z - point.z) <= boxLineWidth ||
+				abs(min_.x - point.x) <= boxLineWidth || abs(max_.x - point.x) <= boxLineWidth)))
 		{
 			ray.surfaceNormal = vec3(0, 0, 1);
 			ray.interPoint = point;
@@ -300,11 +280,38 @@ bool intersectAABBForVisual(out Ray ray, vec4 min_, vec4 max_)
 	return false;
 }
 
+bool intersectsAABB(out Ray ray, vec4 min_, vec4 max_, float tMin, float tMax)
+{
+#ifdef SHOW_BOXES
+    intersectAABBForVisual(ray, min_, max_);
+#endif
+
+	for (int i = 0; i < 3; i++)
+	{
+		float invD = 1.0f / ray.dir[i];
+		float t0 = (min_[i] - ray.pos[i]) * invD;
+		float t1 = (max_[i] - ray.pos[i]) * invD;
+		if (invD < 0.0f)
+		{
+            float temp = t0;
+            t0 = t1;
+            t1 = temp;
+        }
+
+		tMin = max(t0, tMin);
+		tMax = min(t1, tMax);
+		if (tMax <= tMin)
+			return false;
+	}
+	return true;
+}
+
+vec4 DEBUG_COLOR = vec4(0);
 bool intersectBVHTree(out Ray ray)
 {
     int curr = 0;
     while(curr != -1)
-    {
+    {    
         BVHNode node = nodes[curr];
         if(intersectsAABB(ray, node.min, node.max, 0, FLT_MAX))
         {
@@ -398,7 +405,7 @@ void getAreaLightIllumination(Ray ray, Light areaLight, out vec4 diffuse, out ve
 			        continue;
 
 		        vec3 dir = normalize(lightPoint - ray.interPoint);
-		        if (castShadowRays(Ray(areaLight.pos.xyz/*lightPoint*/, -dir, dist, RAY_DEFAULT_ARGS_WO_DIST)))
+		        if (castShadowRays(Ray(lightPoint/*areaLight.pos.xyz*/, -dir, dist, RAY_DEFAULT_ARGS_WO_DIST)))
 			        continue;
 
 		        float distanceImpact = max(1 - (dist / areaLight.properties2.x), 0.f);
@@ -499,5 +506,6 @@ void main()
     vec4 rayDir = normalize(lb + x * right + y * up);
     Ray ray = Ray(cameraPos, rayDir.xyz, RAY_DEFAULT_ARGS);
 
-    outColor = castRay(ray);
+    vec4 color = castRay(ray);
+    outColor = DEBUG_COLOR == vec4(0) ? color : DEBUG_COLOR;
 }

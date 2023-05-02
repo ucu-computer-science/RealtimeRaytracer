@@ -1,7 +1,6 @@
 #include "BufferController.h"
 
-#include "BVHNode.h"
-#include "BVHBuilder.h"
+#include "BoundingBoxes.h"
 #include "GraphicalObject.h"
 #include "Raytracer.h"
 #include "Scene.h"
@@ -59,7 +58,7 @@ void BufferController::initializeLightsBuffer()
 		}
 	}
 
-	Raytracer::mainShader->setLightsUBO(data.data(), (int)lights.size());
+	Raytracer::mainShader->setLightsUBO(data.data(), lights.size());
 }
 void BufferController::initializeObjectsBuffer()
 {
@@ -83,7 +82,15 @@ void BufferController::initializeObjectsBuffer()
 		data[i * ALIGN + 18] = mat.specularDegree;
 		data[i * ALIGN + 19] = mat.reflection;
 
-		if (dynamic_cast<Sphere*>(objects[i]) != nullptr)
+		if (dynamic_cast<Mesh*>(objects[i]) != nullptr)
+		{
+			auto mesh = (Mesh*)objects[i];
+			data[i * ALIGN + 0] = 0;
+			data[i * ALIGN + 20] = triangleCount;
+			data[i * ALIGN + 21] = triangleCount + mesh->triangles.size();
+			triangleCount += mesh->triangles.size();
+		}
+		else if (dynamic_cast<Sphere*>(objects[i]) != nullptr)
 		{
 			auto sphere = (Sphere*)objects[i];
 			data[i * ALIGN + 0] = 1;
@@ -97,62 +104,49 @@ void BufferController::initializeObjectsBuffer()
 			data[i * ALIGN + 21] = plane->normal.y;
 			data[i * ALIGN + 22] = plane->normal.z;
 		}
-		else
-		{
-			data[i * ALIGN + 0] = 0;
-			data[i * ALIGN + 20] = (float)triangleCount;
-			data[i * ALIGN + 21] = (float)triangleCount + (float)objects[i]->triangles.size();
-			triangleCount += (int)objects[i]->triangles.size();
-		}
 	}
-	Raytracer::mainShader->setObjectsUBO(data.data(), (int)objects.size());
+	Raytracer::mainShader->setObjectsUBO(data.data(), objects.size());
 }
 void BufferController::initializeTrianglesBuffer()
 {
-	int triangleCount = 0;
-	for (auto obj : Scene::graphicalObjects)
-		triangleCount += obj->triangles.size();
-
 	auto ALIGN = RaytracerShader::triangleAlign;
-	int filledTriangleCount = 0;
-	std::vector<float> data(triangleCount * ALIGN);
-	for (int i = 0; i < Scene::graphicalObjects.size(); i++)
+	const auto& triangles = Scene::triangles;
+	std::vector<float> data(triangles.size() * ALIGN);
+	for (int i = 0; i < triangles.size(); i++)
 	{
-		for (const auto& triangle : Scene::graphicalObjects[i]->triangles)
+		const auto& triangle = triangles[i];
+		for (int k = 0; k < 3; ++k)
 		{
-			for (int k = 0; k < 3; ++k)
-			{
-				auto globalPos = triangle->globalVertexPositions[k];
-				data[filledTriangleCount * ALIGN + k * 8 + 0] = globalPos.x;
-				data[filledTriangleCount * ALIGN + k * 8 + 1] = globalPos.y;
-				data[filledTriangleCount * ALIGN + k * 8 + 2] = globalPos.z;
+			auto globalPos = triangle->globalVertexPositions[k];
+			data[i * ALIGN + k * 8 + 0] = globalPos.x;
+			data[i * ALIGN + k * 8 + 1] = globalPos.y;
+			data[i * ALIGN + k * 8 + 2] = globalPos.z;
 
-				const auto& v = triangle->vertices[k];
-				data[filledTriangleCount * ALIGN + k * 8 + 3] = v.uvPos.x;
-				data[filledTriangleCount * ALIGN + k * 8 + 7] = v.uvPos.y;
+			const auto& v = triangle->vertices[k];
+			data[i * ALIGN + k * 8 + 3] = v.uvPos.x;
+			data[i * ALIGN + k * 8 + 7] = v.uvPos.y;
 
-				auto normal = triangle->globalVertexNormals[k];
-				data[filledTriangleCount * ALIGN + k * 8 + 4] = normal.x;
-				data[filledTriangleCount * ALIGN + k * 8 + 5] = normal.y;
-				data[filledTriangleCount * ALIGN + k * 8 + 6] = normal.z;
-			}
-			data[filledTriangleCount * ALIGN + 24] = i;
-			data[filledTriangleCount * ALIGN + 28] = triangle->row1.x;
-			data[filledTriangleCount * ALIGN + 29] = triangle->row1.y;
-			data[filledTriangleCount * ALIGN + 30] = triangle->row1.z;
-			data[filledTriangleCount * ALIGN + 31] = triangle->row1Val;
-			data[filledTriangleCount * ALIGN + 32] = triangle->row2.x;
-			data[filledTriangleCount * ALIGN + 33] = triangle->row2.y;
-			data[filledTriangleCount * ALIGN + 34] = triangle->row2.z;
-			data[filledTriangleCount * ALIGN + 35] = triangle->row2Val;
-			data[filledTriangleCount * ALIGN + 36] = triangle->row3.x;
-			data[filledTriangleCount * ALIGN + 37] = triangle->row3.y;
-			data[filledTriangleCount * ALIGN + 38] = triangle->row3.z;
-			data[filledTriangleCount * ALIGN + 39] = triangle->row3Val;
-			filledTriangleCount++;
+			auto normal = triangle->globalVertexNormals[k];
+			data[i * ALIGN + k * 8 + 4] = normal.x;
+			data[i * ALIGN + k * 8 + 5] = normal.y;
+			data[i * ALIGN + k * 8 + 6] = normal.z;
 		}
+		data[i * ALIGN + 24] = triangle->mesh->indexID;
+
+		data[i * ALIGN + 28] = triangle->row1.x;
+		data[i * ALIGN + 29] = triangle->row1.y;
+		data[i * ALIGN + 30] = triangle->row1.z;
+		data[i * ALIGN + 31] = triangle->row1Val;
+		data[i * ALIGN + 32] = triangle->row2.x;
+		data[i * ALIGN + 33] = triangle->row2.y;
+		data[i * ALIGN + 34] = triangle->row2.z;
+		data[i * ALIGN + 35] = triangle->row2Val;
+		data[i * ALIGN + 36] = triangle->row3.x;
+		data[i * ALIGN + 37] = triangle->row3.y;
+		data[i * ALIGN + 38] = triangle->row3.z;
+		data[i * ALIGN + 39] = triangle->row3Val;
 	}
-	Raytracer::mainShader->setTrianglesUBO(data.data(), filledTriangleCount);
+	Raytracer::mainShader->setTrianglesUBO(data.data(), triangles.size());
 }
 void BufferController::initializeBVHBuffer()
 {
@@ -170,13 +164,12 @@ void BufferController::initializeBVHBuffer()
 		data[i * ALIGN + 5] = box.max.y;
 		data[i * ALIGN + 6] = box.max.z;
 
-		auto isLeaf = node->isLeaf;
-		data[i * ALIGN + 8] = (float)node->hitNext;
-		data[i * ALIGN + 9] = (float)node->missNext;
-		data[i * ALIGN + 10] = isLeaf;
-		data[i * ALIGN + 3] = isLeaf ? (float)node->leafTrianglesStart : 0;
-		data[i * ALIGN + 7] = isLeaf ? (float)node->leafTriangleCount : 0;
+		data[i * ALIGN + 8] = node->hitNext;
+		data[i * ALIGN + 9] = node->missNext;
+		data[i * ALIGN + 10] = node->isLeaf;
+		data[i * ALIGN + 3] = node->leafTrianglesStart;
+		data[i * ALIGN + 7] = node->leafTriangleCount;
 	}
 
-	Raytracer::mainShader->setBVHNodesUBO(data.data(), (int)nodes.size());
+	Raytracer::mainShader->setBVHNodesUBO(data.data(), nodes.size());
 }

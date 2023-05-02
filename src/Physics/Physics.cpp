@@ -1,7 +1,6 @@
 #include "Physics.h"
 
-#include "BVHNode.h"
-#include "BVHBuilder.h"
+#include "BoundingBoxes.h"
 #include "Ray.h"
 
 

@@ -1,7 +1,7 @@
 #include "Triangle.h"
 
+#include "BoundingBoxes.h"
 #include "Ray.h"
-#include "BVHNode.h"
 
 void Triangle::recalculateCoefficients()
 {
@@ -11,7 +11,7 @@ void Triangle::recalculateCoefficients()
 	auto p1 = globalVertexPositions[0], p2 = globalVertexPositions[1], p3 = globalVertexPositions[2];
 	auto e1 = p2 - p1;
 	auto e2 = p3 - p1;
-	auto normal = obj->getRot() * cross(vertices[1].pos - vertices[0].pos, vertices[2].pos - vertices[1].pos);
+	auto normal = mesh->getRot() * cross(vertices[1].pos - vertices[0].pos, vertices[2].pos - vertices[1].pos);
 
 	// Depending on which component of the normal is largest, calculate
 	// coefficients:
@@ -56,9 +56,7 @@ void Triangle::recalculateCoefficients()
 	}
 }
 
-Triangle::Triangle(GraphicalObject* obj, Vertex v1, Vertex v2, Vertex v3, bool isTwoSided) : vertices({v1, v2, v3}),
-                                                                                             localNormal(normalize(cross(v2.pos - v1.pos, v3.pos - v2.pos))),
-                                                                                             isTwoSided(isTwoSided)
+Triangle::Triangle(Mesh* mesh, Vertex v1, Vertex v2, Vertex v3) : vertices({v1, v2, v3}),localNormal(normalize(cross(v2.pos - v1.pos, v3.pos - v2.pos)))
 {
 	for (auto& v : vertices)
 	{
@@ -66,12 +64,12 @@ Triangle::Triangle(GraphicalObject* obj, Vertex v1, Vertex v2, Vertex v3, bool i
 			v.normal = localNormal;
 	}
 
-	if (obj != nullptr)
-		attachTo(obj);
+	if (mesh != nullptr)
+		attachTo(mesh);
 }
-void Triangle::attachTo(GraphicalObject* obj)
+void Triangle::attachTo(Mesh* obj)
 {
-	this->obj = obj;
+	this->mesh = obj;
 
 	updateGeometry();
 }
@@ -97,7 +95,7 @@ bool Triangle::intersect(Ray& ray, bool intersectAll) const
 		return false;
 
 	ray.closestT = t;
-	ray.closestMat = &obj->material;
+	ray.closestMat = &mesh->material;
 	ray.surfaceNormal = getNormalAt(u, v, dot(globalNormal, ray.dir) > 0);
 	ray.interPoint = hitPos;
 	ray.closestT = t;
@@ -108,7 +106,7 @@ bool Triangle::intersect(Ray& ray, bool intersectAll) const
 Color Triangle::getColorAt(float u, float v) const
 {
 	auto d = vertices[0].uvPos + u * texVecU + v * texVecV;
-	return obj->material.texture->getColor(d.x, 1 - d.y);
+	return mesh->material.texture->getColor(d.x, 1 - d.y);
 }
 glm::vec3 Triangle::getNormalAt(float u, float v, bool invert) const
 {
@@ -143,17 +141,17 @@ glm::vec3 Triangle::getCenter() const
 void Triangle::updateGeometry()
 {
 	globalVertexPositions = {
-		obj->getRot() * vertices[0].pos + obj->getPos(),
-		obj->getRot() * vertices[1].pos + obj->getPos(),
-		obj->getRot() * vertices[2].pos + obj->getPos()
+		mesh->getRot() * vertices[0].pos + mesh->getPos(),
+		mesh->getRot() * vertices[1].pos + mesh->getPos(),
+		mesh->getRot() * vertices[2].pos + mesh->getPos()
 	};
 
-	globalNormal = obj->getRot() * localNormal;
+	globalNormal = mesh->getRot() * localNormal;
 
 	globalVertexNormals = {
-		obj->getRot() * vertices[0].normal,
-		obj->getRot() * vertices[1].normal,
-		obj->getRot() * vertices[2].normal
+		mesh->getRot() * vertices[0].normal,
+		mesh->getRot() * vertices[1].normal,
+		mesh->getRot() * vertices[2].normal
 	};
 
 	recalculateCoefficients();

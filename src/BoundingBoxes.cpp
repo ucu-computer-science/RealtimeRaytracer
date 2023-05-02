@@ -1,12 +1,39 @@
-#include "BVHNode.h"
+#include "BoundingBoxes.h"
 
 #include <algorithm>
 
-#include "BVHBuilder.h"
 #include "Ray.h"
 #include "Scene.h"
 #include "Triangle.h"
 
+
+void BVHBuilder::initializeBVH()
+{
+	buildTree(Scene::triangles);
+}
+
+
+void BVHBuilder::buildTree(const std::vector<Triangle*>& objects)
+{
+	nodes.clear();
+
+	nodes.push_back(nullptr);
+	nodes[0] = std::make_shared<BVHNode>(nodes, Scene::triangles, 0, Scene::triangles.size() - 1, maxTrianglesPerBox);
+}
+
+
+AABB AABB::getUnitedBox(const AABB& box1, const AABB& box2)
+{
+	auto x_min = std::min(box1.min.x, box2.min.x);
+	auto x_max = std::max(box1.max.x, box2.max.x);
+
+	auto y_min = std::min(box1.min.y, box2.min.y);
+	auto y_max = std::max(box1.max.y, box2.max.y);
+
+	auto z_min = std::min(box1.min.z, box2.min.z);
+	auto z_max = std::max(box1.max.z, box2.max.z);
+	return {{x_min, y_min, z_min}, {x_max, y_max, z_max}};
+}
 
 bool AABB::intersects(const Ray& ray, float tMin, float tMax) const
 {
@@ -24,19 +51,6 @@ bool AABB::intersects(const Ray& ray, float tMin, float tMax) const
 			return false;
 	}
 	return tMax > 0;
-}
-
-AABB AABB::getUnitedBox(const AABB& box1, const AABB& box2)
-{
-	auto x_min = std::min(box1.min.x, box2.min.x);
-	auto x_max = std::max(box1.max.x, box2.max.x);
-
-	auto y_min = std::min(box1.min.y, box2.min.y);
-	auto y_max = std::max(box1.max.y, box2.max.y);
-
-	auto z_min = std::min(box1.min.z, box2.min.z);
-	auto z_max = std::max(box1.max.z, box2.max.z);
-	return {{x_min, y_min, z_min}, {x_max, y_max, z_max}};
 }
 
 BVHNode::BVHNode(std::vector<std::shared_ptr<BVHNode>>& nodes, std::vector<Triangle*>& triangles,
@@ -70,7 +84,7 @@ BVHNode::BVHNode(std::vector<std::shared_ptr<BVHNode>>& nodes, std::vector<Trian
 	box = AABB::getUnitedBox(nodes[leftInd]->box, nodes[rightInd]->box);
 }
 
-size_t BVHNode::getSplitIndex(std::vector<Triangle*>& triangles, size_t start, size_t end) const
+int BVHNode::getSplitIndex(std::vector<Triangle*>& triangles, int start, int end) const
 {
 	glm::vec3 min{FLT_MAX}, max{-FLT_MAX};
 	for (size_t i = start; i <= end; i++)
@@ -98,7 +112,7 @@ size_t BVHNode::getSplitIndex(std::vector<Triangle*>& triangles, size_t start, s
 }
 
 
-bool BVHNode::intersect(Ray& ray, bool intersectAll) const
+bool BVHNode::intersect(Ray& ray) const
 {
 	if (!box.intersects(ray))
 		return false;
@@ -108,13 +122,13 @@ bool BVHNode::intersect(Ray& ray, bool intersectAll) const
 		bool hit = false;
 		for (int i = leafTrianglesStart; i < leafTrianglesStart + leafTriangleCount; i++)
 		{
-			if (!Scene::triangles[i]->intersect(ray, intersectAll)) continue;
+			if (!Scene::triangles[i]->intersect(ray)) continue;
 			hit = true;
 		}
 		return hit;
 	}
 
-	auto hitLeft = Scene::triangles[leftInd]->intersect(ray, intersectAll);
-	auto hitRight = Scene::triangles[rightInd]->intersect(ray, intersectAll);
+	auto hitLeft = Scene::triangles[leftInd]->intersect(ray);
+	auto hitRight = Scene::triangles[rightInd]->intersect(ray);
 	return hitLeft || hitRight;
 }

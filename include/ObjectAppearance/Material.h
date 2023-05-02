@@ -5,26 +5,26 @@
 
 struct Material
 {
-	Color color;
-	std::shared_ptr<Texture> texture{new Texture()};
 	bool lit = true;
+	Color color;
+	std::shared_ptr<Texture> texture;
+
 	float diffuseCoeff = 1;
 	float specularCoeff = 0;
 	float specularDegree = 0;
 	float reflection = 0;
 
 
-	Material(): color(Color::white()) { }
-	Material(Color color) : color(color) {}
-	Material(Color color,
-	         std::shared_ptr<Texture>& texture,
-	         bool lit,
+	Material(Color color = Color::white(), bool lit = true) : lit(lit), color(color), texture(std::make_shared<Texture>()) {}
+	Material(bool lit,
+	         Color color,
+	         std::shared_ptr<Texture> texture,
 	         float diffuseCoeff,
 	         float specularCoeff,
 	         float specularDegree,
-	         float reflection) : color{color},
-	                             texture{texture},
-	                             lit{lit},
+	         float reflection) : lit{lit},
+	                             color{color},
+	                             texture{std::move(texture)},
 	                             diffuseCoeff{diffuseCoeff},
 	                             specularCoeff{specularCoeff},
 	                             specularDegree{specularDegree},

@@ -11,10 +11,10 @@ protected:
 	glm::vec3 pos;
 	glm::quat rot;
 
-public:
 	virtual ~Object() = default;
-	explicit Object(glm::vec3 pos, glm::quat rot = {1, 0, 0, 0});
+	Object(glm::vec3 pos, glm::quat rot = {1, 0, 0, 0});
 
+public:
 	glm::vec3 getPos() const { return pos; }
 	glm::quat getRot() const { return rot; }
 	virtual void setPos(glm::vec3 pos);

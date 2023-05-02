@@ -2,8 +2,7 @@
 
 #include <iostream>
 
-#include "BVHNode.h"
-#include "BVHBuilder.h"
+#include "BoundingBoxes.h"
 #include "Scene.h"
 #include "SDLHandler.h"
 
@@ -23,13 +22,9 @@ void Logger::logStats()
 {
 	if (!SDLHandler::windowFocused) return;
 
-	auto triangleCount = 0;
-	for (const auto& obj : Scene::graphicalObjects)
-		triangleCount += (int)obj->triangles.size();
-
 	std::cout
 		<< "FPS: " << fps
-		<< " Triangles: " << triangleCount
+		<< " Triangles: " << Scene::triangles.size()
 		<< " Graphical Objects: " << Scene::graphicalObjects.size()
 		<< " Bounding Boxes: " << BVHBuilder::nodes.size()<< '\n';
 }

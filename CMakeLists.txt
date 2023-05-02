@@ -14,7 +14,6 @@ include_directories(include/Object/GraphicalObject)
 include_directories(include/Raycast)
 include_directories(include/ObjectAppearance)
 include_directories(include/Parsers)
-include_directories(include/BVH)
 include_directories(include/Physics)
 include_directories(include/shaders)
 include_directories(include/OpenGL)
@@ -36,13 +35,10 @@ add_executable(${PROJECT_NAME}
         "src/Object/Camera.cpp"
         "src/Input.cpp"
         "src/Object/Light.cpp"
-        "src/ObjectAppearance/Material.cpp"
-        "include/ObjectAppearance/Material.h"
         "src/Parsers/ObjectParser.cpp"
-        "src/BVH/BVHNode.cpp"
+        "src/BoundingBoxes.cpp"
         "src/UI/Canvas.cpp"
         "src/Object/Triangle.cpp"
-        
         "libs/stb_image/stb_image.h"
         "src/ObjectAppearance/Texture.cpp"
         "src/Parsers/SceneParser.cpp"
@@ -56,8 +52,7 @@ add_executable(${PROJECT_NAME}
         "src/Logger.cpp" 
         "src/MyTime.cpp" 
         "src/OpenGL/RaytracerShader.cpp"
-        "src/OpenGL/BufferController.cpp" 
-        "src/BVH/BVHBuilder.cpp")
+        "src/OpenGL/BufferController.cpp")
 
 target_link_libraries(${PROJECT_NAME} SDL2)
 target_link_libraries(${PROJECT_NAME} SDL2main)

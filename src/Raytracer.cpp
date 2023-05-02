@@ -1,11 +1,10 @@
 #include "Raytracer.h"
 
 #include <iostream>
-#include <glm/glm.hpp>
 #include <SDL.h>
 
 #include "BufferController.h"
-#include "BVHBuilder.h"
+#include "BoundingBoxes.h"
 #include "Camera.h"
 #include "GraphicalObject.h"
 #include "Input.h"
@@ -85,20 +84,20 @@ void Raytracer::initializeScene()
 	//obj6->setMaterial(Material(Color::green(), tex, true, 1, 0, 2000, 0));
 
 
-	auto light = new AreaLight{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 1, 25, {4, 4, 0}, {1, 1, 1}};
-	auto square = new Square{{0, 0, 9.995f}, {{-90 * DEG_TO_RAD, 0, 0}}, 5};
-	square->material.color = {3.f, 3.f, 3.f};
-	auto plane1 = new Square{{-10, 0, 0}, {{0, 0, -90 * DEG_TO_RAD}}, 20, Color::red()};
-	auto plane2 = new Square{{10, 0, 0}, {{0, 0, 90 * DEG_TO_RAD}}, 20, Color::green()};
-	//auto plane3 = new Square{{0, 10, 0}, {{0, 0, 180 * DEG_TO_RAD}}, 20, Color::white()};
-	//auto plane4 = new Square{{0, 0, -10}, {{90 * DEG_TO_RAD, 0, 0}}, 20, Color::white()};
-	//auto plane5 = new Square{{0, 0, 10}, {{-90 * DEG_TO_RAD, 0, 0}}, 20, Color::white()};
-	auto cube1 = new Cube{glm::vec3{4, -4, -6.7}, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}, 6.6f};
+	auto light = new AreaLight{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 1, 25, {0, 0, 0}, {1, 1, 1}};
+	auto square = new Square{{0, 0, 9.995f}, 5, {{-90 * DEG_TO_RAD, 0, 0}}};
+	square->material.color = {30.f, 30.f, 30.f};
+	auto plane1 = new Square{{-10, 0, 0}, 20, {{0, 0, -90 * DEG_TO_RAD}}, {Color::red()}};
+	auto plane2 = new Square{{10, 0, 0}, 20, {{0, 0, 90 * DEG_TO_RAD}}, Color::green()};
+	auto plane3 = new Square{{0, 10, 0}, 20, {{0, 0, 180 * DEG_TO_RAD}}, Color::white()};
+	auto plane4 = new Square{{0, 0, -10}, 20, {{90 * DEG_TO_RAD, 0, 0}}, Color::white()};
+	auto plane5 = new Square{{0, 0, 10}, 20, {{-90 * DEG_TO_RAD, 0, 0}}, Color::white()};
+	auto cube1 = new Cube{glm::vec3{4, -4, -6.7}, 6.6f, {{0 * DEG_TO_RAD, 0 * DEG_TO_RAD, -28 * DEG_TO_RAD}}};
 	auto sphere1 = new Sphere{{-4, 2, -5}, 5, Color{100.f / 100.f, 49.8f / 100.f, 31.4f / 100.f}};
 	sphere1->material.color = Color::skyblue();
 	sphere1->material.reflection = 0.3f;
 	cube1->material.color = Color::skyblue();
-	cube1->material.reflection = 0.3f; 
+	cube1->material.reflection = 0.3f;
 }
 
 void Raytracer::initializeScreenVertexBuffer()

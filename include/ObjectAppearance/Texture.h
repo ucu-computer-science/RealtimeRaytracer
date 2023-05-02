@@ -6,9 +6,8 @@
 #include "Color.h"
 
 
-struct Texture
+class Texture
 {
-private:
 	std::filesystem::path path;
 	std::vector<Color> pixelColors;
 	int width = 0, height = 0;
