@@ -1,7 +1,35 @@
 #pragma once
 
+#include <filesystem>
+
 #include "Color.h"
-#include "Texture.h"
+
+
+class Texture
+{
+	std::filesystem::path path;
+
+	bool readImage(std::vector<uint8_t>& image, const std::filesystem::path& filename);
+
+public:
+	int indexID;
+
+	std::vector<Color> pixelColors;
+	int width = 0, height = 0;
+
+	Texture();
+	Texture(const std::filesystem::path& path);
+
+	Color getColor(int x, int y) const;
+	Color getColor(float u, float v) const;
+
+	int getWidth() const { return width; }
+	int getHeight() const { return height; }
+	std::filesystem::path getPath() const { return path; }
+
+
+	static Texture* const defaultTex;
+};
 
 
 class Material
@@ -11,7 +39,7 @@ public:
 
 	bool lit;
 	Color color;
-	std::shared_ptr<Texture> texture;
+	Texture* texture;
 
 	float diffuseCoeff = 1;
 	float specularCoeff = 0;
@@ -22,7 +50,7 @@ public:
 	Material(Color color = Color::white(), bool lit = true);
 	Material(Color color,
 	         bool lit,
-	         std::shared_ptr<Texture> texture,
+	         Texture* texture,
 	         float diffuseCoeff,
 	         float specularCoeff,
 	         float specularDegree,

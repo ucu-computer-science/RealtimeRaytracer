@@ -1,8 +1,8 @@
 #include "Canvas.h"
 
 #include "Color.h"
+#include "Material.h"
 #include "SDLHandler.h"
-#include "Texture.h"
 
 
 void Canvas::drawUI(const PixelMatrix* pixelMatrix) const

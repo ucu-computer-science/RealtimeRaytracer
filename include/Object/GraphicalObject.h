@@ -5,7 +5,6 @@
 
 #include "Object.h"
 #include "Material.h"
-#include "Texture.h"
 
 
 class BVHNode;
@@ -22,7 +21,7 @@ public:
 	int indexID;
 	Material* material = Material::defaultLit;
 
-	virtual bool intersect(Ray& ray) { return false; };
+	virtual bool intersect(Ray& ray) { return false; }
 
 	nlohmann::basic_json<> toJson() override;
 };
@@ -35,6 +34,8 @@ public:
 
 	Mesh(glm::vec3 pos, std::vector<Triangle*> triangles, glm::quat rot = {});
 	~Mesh() override;
+
+	//void updateCameraFacingTriangles();
 };
 
 

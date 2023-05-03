@@ -17,11 +17,12 @@
 #include "Triangle.h"
 #include "RaytracerShader.h"
 #include "SceneParser.h"
+#include "stb_image.h"
 
 
 int main(int argv, char* args[])
 {
-	Raytracer::initialize(640 * 2, 360 * 2);
+	Raytracer::initialize(640 * 3, 360 * 3);
 
 	Raytracer::loop();
 
@@ -35,33 +36,59 @@ void Raytracer::initialize(int width, int height)
 	Raytracer::height = height;
 
 	SDLHandler::initialize(width, height);
-	mainShader = new RaytracerShader("shaders/raytracer.vert", "shaders/raytracer.frag");
-	mainShader->use();
-	mainShader->setFloat2("pixelSize", {width, height});
+	shader = new RaytracerShader("shaders/raytracer.vert", "shaders/raytracer.frag");
+	shader->use();
+
+	// SETTINGS
+	shader->setInt("maxRayBounce", 5);
+	shader->setFloat2("pixelSize", {width, height});
 
 	onUpdate += Time::updateTime;
 	onUpdate += Input::updateInput;
 	onUpdate += Logger::updateFPSCounter;
 	onUpdate += Logger::logStats;
 
+	//initializeSkybox();
 	initializeScene();
-
-	initializeScreenVertexBuffer();
 	BVHBuilder::initializeBVH();
 	BufferController::initializeUniformBuffers();
 }
-
+//void Raytracer::initializeSkybox()
+//{
+//	std::string cubemapPaths[6] =
+//	{
+//		"textures/skybox/right.jpg",
+//		"textures/skybox/left.jpg",
+//		"textures/skybox/top.jpg",
+//		"textures/skybox/bottom.jpg",
+//		"textures/skybox/front.jpg",
+//		"textures/skybox/back.jpg"
+//	};
+//
+//	int width, height, nrChannels;
+//	for (unsigned int i = 0; i < 6; i++)
+//	{
+//		unsigned char* data = stbi_load(cubemapPaths[i].c_str(), &width, &height, &nrChannels, 0);
+//		mainShader->skybox->setFaceTexture(data, i, width, height);
+//	}
+//}
 void Raytracer::initializeScene()
 {
-	auto camera = new Camera({0.0f, -50.0f, 0.5f}, 1, 0, {(float)width / (float)height, 1});
+	auto camera = new Camera({0.305388, -9.574623, 3.030889}, 1, 0, {(float)width / (float)height, 1});
+	camera->setRot({0.992115, 0.125332, 0.000000, 0.000004});
+	//auto camera = new Camera({ 0, -50, 0 }, 1, 0, { (float)width / (float)height, 1 });
 	camera->setBackgroundColor(Color::black());
-	auto tex = std::make_shared<Texture>();
+	auto tex = Texture::defaultTex;
 
-	auto model = Model("models/skull.obj");
-	auto obj = new Mesh({0, 0, -9 }, model.triangles);
+	//auto model = Model("models/skull.obj");
+	//auto obj = new Mesh({0, 0, -9}, model.triangles);
 
-	new GlobalLight({0, -1, 0}, Color::white(), 1);
-	//new GlobalLight({0, 1, 0}, Color::white(), 1);
+	//new GlobalLight({0, -1, 0}, Color::white(), 1);
+
+	auto model = Model("models/west.obj");
+	auto obj = new Mesh({0, 0, 0}, model.triangles);
+	obj->material = new Material(Color::white(), true, tex, 1, 0.3, 2000, 0);
+	auto light = new AreaLight{{0.334557, 2, 14.720142}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 1, FLT_MAX, {3, 3, 2}, {6, 6, 1}};
 
 	//auto obj = new Cube({0, 0, 0}, 2, {{0, 0, 0}});
 	//obj->material = new Material(Color::blue(), true, tex, 1, 0, 2000, 0);
@@ -107,51 +134,20 @@ void Raytracer::initializeScene()
 	//cube1->material = new Material(Color::skyblue(), true, tex, 1, 0, 2000, 0.3f);
 }
 
-void Raytracer::initializeScreenVertexBuffer()
-{
-	float vertices[] = {
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		-1.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f,
-	};
-	unsigned int indices[] = {
-		0, 1, 2,
-		2, 1, 3,
-	};
-
-	glGenVertexArrays(1, &vaoScreen);
-	glBindVertexArray(vaoScreen);
-
-	unsigned int vertexBuffer;
-	glGenBuffers(1, &vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof vertices, vertices, GL_STATIC_DRAW);
-
-	unsigned int elementBuffer;
-	glGenBuffers(1, &elementBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof indices, indices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)nullptr);
-	glEnableVertexAttribArray(0);
-}
-
-
-
 void Raytracer::loop()
 {
 	while (true)
 	{
 		onUpdate();
 
-		mainShader->use();
-		glBindVertexArray(vaoScreen);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, mainShader->cubeMapNodeLinks);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		shader->use();
+		glBindVertexArray(shader->vaoScreen->id);
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, shader->skybox->id);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 
+		SDL_GL_SwapWindow(SDLHandler::window);
 		if (!SDLHandler::update())
 			break;
 	}
@@ -162,5 +158,5 @@ void Raytracer::loop()
 void Raytracer::quit()
 {
 	SDLHandler::quit();
-	delete mainShader;
+	delete shader;
 }

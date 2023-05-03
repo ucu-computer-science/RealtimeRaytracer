@@ -40,7 +40,7 @@ add_executable(${PROJECT_NAME}
         "src/UI/Canvas.cpp"
         "src/Object/Triangle.cpp"
         "libs/stb_image/stb_image.h"
-        "src/ObjectAppearance/Texture.cpp"
+        
         "src/Parsers/SceneParser.cpp"
         "src/Object/PolyMesh.cpp"
         "include/Object/Vertex.h" 
@@ -53,7 +53,8 @@ add_executable(${PROJECT_NAME}
         "src/MyTime.cpp" 
         "src/OpenGL/RaytracerShader.cpp"
         "src/OpenGL/BufferController.cpp" 
-        "src/ObjectAppearance/Material.cpp")
+        "src/ObjectAppearance/Material.cpp"
+        "src/OpenGL/GLObject.cpp")
 
 target_link_libraries(${PROJECT_NAME} SDL2)
 target_link_libraries(${PROJECT_NAME} SDL2main)

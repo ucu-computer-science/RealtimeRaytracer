@@ -6,7 +6,7 @@
 #include "MathExtensions.h"
 #include "MyTime.h"
 
-float defaultMoveSpeed = 40.0f;
+float defaultMoveSpeed = 15.0f;
 float keyRotationSpeed = 90.0f;
 float mouseRotationSpeed = 0.4f;
 

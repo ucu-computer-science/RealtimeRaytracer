@@ -7,6 +7,7 @@ class Light;
 class Object;
 class GraphicalObject;
 class Triangle;
+class Texture;
 
 class Scene
 {
@@ -17,4 +18,5 @@ public:
 	inline static std::vector<Triangle*> triangles{};
 
 	inline static std::vector<Material*> materials{};
+	inline static std::vector<Texture*> textures{};
 };

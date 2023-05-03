@@ -39,7 +39,6 @@ bool SDLHandler::update()
 		if (event.type == SDL_QUIT)
 			return false;
 	}
-	SDL_GL_SwapWindow(window);
 	return true;
 }
 

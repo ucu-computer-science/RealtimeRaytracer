@@ -122,3 +122,4 @@ void Shader::checkCompileErrors(unsigned shader, const std::string& type)
 		}
 	}
 }
+

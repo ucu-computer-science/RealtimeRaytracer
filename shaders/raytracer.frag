@@ -1,7 +1,7 @@
 #version 460 core
 out vec4 outColor;
 
-#define FLT_MAX  1000000000
+#define FLT_MAX  1000000
 
 // ----------- OPTIONS -----------
 #define USE_BVH
@@ -35,7 +35,7 @@ struct Material
 {
     vec4 color;
     vec4 properties1; // lit, diffuse coeff, specular coeff, specular degree
-    vec4 properties2; // reflection
+    vec4 properties2; // reflection, textureIndex
 };
 
 struct Object {
@@ -54,9 +54,9 @@ struct Triangle {
     Vertex vertices[3];
     vec4 materialIndex; // materialIndex, normal
     vec4 rows[3];
+    vec4 texVec; // texVecU, texVecV
 };
 
-//const int LEAF_ARR_SIZE = 8;
 struct BVHNode {
     vec4 min; // min, trianglesStart
     vec4 max; // max, triangleCount
@@ -66,30 +66,33 @@ struct BVHNode {
 
 
 // UNIFORM BUFFERS
-uniform int lightCount;
-layout(std140, binding = 0) buffer Lights {
-    Light lights[];
-};
+uniform int textureCount;
+layout(std140, binding = 0) uniform sampler2D[] textures;
 
 uniform int materialCount;
 layout(std140, binding = 1) buffer Materials {
     Material materials[];
 };
 
+uniform int lightCount;
+layout(std140, binding = 2) buffer Lights {
+    Light lights[];
+};
+
 uniform int objectCount;
-layout(std140, binding = 2) buffer Objects {
+layout(std140, binding = 3) buffer Objects {
     Object objects[];
 };
 
 uniform int triangleCount;
-layout(std140, binding = 3) buffer Triangles {
+layout(std140, binding = 4) buffer Triangles {
     Triangle triangles[];
 };
 //layout(binding = 3, rgba32f) uniform imageBuffer triangleMap;
 
 
 uniform int bvhNodeCount;
-layout(std140, binding = 4) buffer BVHNodes {
+layout(std140, binding = 5) buffer BVHNodes {
     BVHNode nodes[];
 };
 
@@ -110,10 +113,11 @@ struct Ray
     int materialIndex;
     vec3 surfaceNormal;
     vec3 interPoint;
+    vec2 uvPos;
 };
 
-#define RAY_DEFAULT_ARGS FLT_MAX, FLT_MAX, -1, vec3(0), vec3(0)
-#define RAY_DEFAULT_ARGS_WO_DIST FLT_MAX, -1, vec3(0), vec3(0)
+#define RAY_DEFAULT_ARGS FLT_MAX, FLT_MAX, -1, vec3(0), vec3(0), vec2(0)
+#define RAY_DEFAULT_ARGS_WO_DIST FLT_MAX, -1, vec3(0), vec3(0), vec2(0)
 
 
 vec3 getTriangleNormalAt(Triangle triangle, float u, float v, bool invert)
@@ -125,7 +129,7 @@ vec3 getTriangleNormalAt(Triangle triangle, float u, float v, bool invert)
 bool IntersectTriangle(out Ray ray, Triangle triangle)
 {
     float dz = dot(triangle.rows[2].xyz, ray.dir);
-	if (abs(dz) <= 1e-4) return false;
+	if (dz == 0) return false;
 
 	float oz = dot(triangle.rows[2].xyz, ray.pos) + triangle.rows[2].w;
 	float t = -oz / dz;
@@ -142,6 +146,7 @@ bool IntersectTriangle(out Ray ray, Triangle triangle)
 	ray.materialIndex = int(triangle.materialIndex);
 	ray.surfaceNormal = getTriangleNormalAt(triangle, u, v, false);
 	ray.interPoint = hitPos;
+    ray.uvPos = vec2(triangle.vertices[0].posU.w, triangle.vertices[0].normalV.w) + u * triangle.texVec.xy + v * triangle.texVec.zw;
 
 	return true;
 }
@@ -196,9 +201,10 @@ bool intersectSphere(out Ray ray, Object sphere)
 	ray.surfaceNormal = normalize(ray.interPoint - sphere.pos.xyz);
 	ray.materialIndex = int(sphere.data.y);
 
-//	vec3 n = ray.surfaceNormal;
-//	float u = atan(-n.x, n.y) / (2.0 * 3.141597) + 0.5;
-//	float v = -n.z * 0.5 + 0.5;
+	vec3 n = ray.surfaceNormal;
+	float u = atan(-n.x, n.y) / (2.0 * 3.141597) + 0.5;
+	float v = -n.z * 0.5 + 0.5;
+    ray.uvPos = vec2(u, v);
 
 	return true;
 }
@@ -370,7 +376,7 @@ void getGlobalLightIllumination(Ray ray, Light globalLight, out vec4 diffuse, ou
     diffuse += light * globalLight.color * globalLight.properties1.x;
 
     vec3 h = normalize(globalLight.properties1.yzw - ray.dir);
-    specular += pow(max(dot(h, ray.surfaceNormal), 0.0f), materials[ray.materialIndex].properties1.z) * globalLight.color * globalLight.properties1.x;    
+    specular += pow(max(dot(h, ray.surfaceNormal), 0.0f), materials[ray.materialIndex].properties1.w) * globalLight.color * globalLight.properties1.x;    
 }
 
 void getPointLightIllumination(Ray ray, Light pointLight, out vec4 diffuse, out vec4 specular)
@@ -389,7 +395,7 @@ void getPointLightIllumination(Ray ray, Light pointLight, out vec4 diffuse, out 
 	diffuse += (distanceImpact * lightFacingAtPoint) * pointLight.color * pointLight.properties1.x;
 
 	vec3 h = normalize(dir - ray.dir);
-	specular += distanceImpact * pow(max(dot(h, ray.surfaceNormal), 0.0f), materials[ray.materialIndex].properties1.z) * pointLight.color * pointLight.properties1.x;
+	specular += distanceImpact * pow(max(dot(h, ray.surfaceNormal), 0.0f), materials[ray.materialIndex].properties1.w) * pointLight.color * pointLight.properties1.x;
 }
 
 void getAreaLightIllumination(Ray ray, Light areaLight, out vec4 diffuse, out vec4 specular)
@@ -421,13 +427,13 @@ void getAreaLightIllumination(Ray ray, Light areaLight, out vec4 diffuse, out ve
 		        diffuse += distanceImpact * lightFacingAtPoint * areaLight.color * intensity;
 
 		        vec3 h = normalize(dir - ray.dir);
-		        specular += distanceImpact * pow(max(dot(h, ray.surfaceNormal), 0.0f), materials[ray.materialIndex].properties1.z)* areaLight.color * intensity;
+		        specular += distanceImpact * pow(max(dot(h, ray.surfaceNormal), 0.0f), materials[ray.materialIndex].properties1.w)* areaLight.color * intensity;
 			}
 		}
 	}
 }
 
-void getIlluminationAtPoint(Ray ray, out vec4 diffuse, vec4 specular)
+void getIlluminationAtPoint(Ray ray, out vec4 diffuse, out vec4 specular)
 {
     diffuse = vec4(0);
     specular = vec4(0);
@@ -482,15 +488,16 @@ vec4 castRay(Ray ray)
         ray.interPoint += ray.surfaceNormal * 0.01f;
 
         Material mat = materials[ray.materialIndex];
+        vec4 uvColor = texture(textures[0], vec2(ray.uvPos.x, 1-ray.uvPos.y));
 		if (mat.properties1.x == 1)
 		{
             vec4 diffuse, specular;
 			getIlluminationAtPoint(ray, diffuse, specular);
-			color += colorImpact * (1 - mat.properties2.x) * mat.color * diffuse * mat.properties1.y;
+			color += colorImpact * (1 - mat.properties2.x) * uvColor * mat.color * diffuse * mat.properties1.y;
 			color += specular * mat.properties1.z;
 		}
 		else
-			color += colorImpact * (1 - mat.properties2.x) * mat.color;
+			color += colorImpact * (1 - mat.properties2.x) * uvColor * mat.color;
 
 		colorImpact *= mat.properties2.x;
 		if (colorImpact <= 1e-6f)
@@ -505,7 +512,7 @@ vec4 castRay(Ray ray)
 }
 
 
-uniform samplerCube cubemap;
+//uniform samplerCube cubemap;
 
 void main()
 {
@@ -516,6 +523,6 @@ void main()
     vec4 up = cameraRotMat[2];
     vec4 lb = focalDistance * forward - 0.5 * right * screenSize.x - 0.5 * up;
     vec4 rayDir = normalize(lb + x * right + y * up);
-//    outColor = castRay(Ray(cameraPos, rayDir.xyz, RAY_DEFAULT_ARGS));
-    outColor = texture(cubemap, rayDir.xyz);
+    outColor = castRay(Ray(cameraPos, rayDir.xyz, RAY_DEFAULT_ARGS));
+//    outColor = vec4(1,0,0,1);
 }

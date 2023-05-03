@@ -1,5 +1,6 @@
 #include "Camera.h"
 
+#include <iostream>
 #include <glm/gtx/quaternion.hpp>
 
 #include "MathExtensions.h"
@@ -17,20 +18,21 @@ Camera::Camera(glm::vec3 pos, float focalDistance, float lensRadius, glm::vec2 s
 		throw std::runtime_error("Camera object already exists.");
 	instance = this;
 
-	Raytracer::mainShader->setFloat3("cameraPos", pos);
+	Raytracer::shader->setFloat3("cameraPos", pos);
 
-	Raytracer::mainShader->setFloat("focalDistance", focalDistance);
-	Raytracer::mainShader->setFloat2("screenSize", size);
-	Raytracer::mainShader->setInt("maxRayBounce", 5);
+	Raytracer::shader->setFloat("focalDistance", focalDistance);
+	Raytracer::shader->setFloat2("screenSize", size);
 
-	onCameraRotate += [this] { Raytracer::mainShader->setMatrix4X4("cameraRotMat", mat4_cast(this->rot)); };
-	onCameraMove += [this] { Raytracer::mainShader->setFloat3("cameraPos", this->pos); };
+	onCameraRotate += [this] { Raytracer::shader->setMatrix4X4("cameraRotMat", mat4_cast(this->rot)); };
+	onCameraMove += [this] { Raytracer::shader->setFloat3("cameraPos", this->pos); };
+	onCameraMove += [this] { std::cout << to_string(this->pos); };
+	onCameraRotate += [this] { std::cout << to_string(this->rot); };
 }
 
 void Camera::setBackgroundColor(Color color)
 {
 	bgColor = color;
-	Raytracer::mainShader->setFloat4("bgColor", bgColor);
+	Raytracer::shader->setFloat4("bgColor", bgColor);
 }
 
 void Camera::setRot(glm::quat rot)

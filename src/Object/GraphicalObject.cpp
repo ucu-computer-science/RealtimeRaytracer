@@ -32,6 +32,18 @@ Mesh::~Mesh()
 		delete triangle;
 }
 
+//void Mesh::updateCameraFacingTriangles()
+//{
+//	cameraFacingTriangles.clear();
+//	for (const auto& triangle : triangles)
+//	{
+//		auto dir = triangle->vertices[0].pos - Camera::instance->getPos();
+//		if (dot(triangle->globalNormal, dir) >= 0)
+//			continue;
+//		cameraFacingTriangles.emplace_back(triangle);
+//	}
+//}
+
 Square::Square(glm::vec3 pos, float side, glm::quat rot) : Mesh(pos, generateTriangles(side), rot) {}
 
 std::vector<Triangle*> Square::generateTriangles(float side)

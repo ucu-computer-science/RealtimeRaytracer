@@ -1,22 +1,19 @@
 #pragma once
 
 #include "Action.h"
-#include "glad.h"
-#include "Light.h"
 #include "RaytracerShader.h"
 
 class Raytracer
 {
 	inline static constexpr int triangleBufferSize = 1000;
 
-	static void initializeScreenVertexBuffer();
+	//static void initializeSkybox();
 	static void initializeScene();
 
 public:
 	inline static int width, height;
 
-	inline static RaytracerShader* mainShader;
-	inline static GLuint vaoScreen;
+	inline static RaytracerShader* shader;
 
 	inline static Action onUpdate{};
 

@@ -66,7 +66,7 @@ Material* SceneParser::loadMaterial(const json& material)
 	mat->color[1] = (float)material["color"][1];
 	mat->color[2] = (float)material["color"][2];
 	if (!material["texturePath"].empty())
-		mat->texture = std::make_shared<Texture>(material["texturePath"]);
+		mat->texture = new Texture(material["texturePath"]);
 	mat->lit = (bool)material["lit"];
 	mat->diffuseCoeff = (float)material["diffuseCoeff"];
 	mat->specularCoeff = (float)material["specularCoeff"];

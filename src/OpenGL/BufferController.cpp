@@ -2,6 +2,7 @@
 
 #include "BoundingBoxes.h"
 #include "GraphicalObject.h"
+#include "Light.h"
 #include "Raytracer.h"
 #include "Scene.h"
 #include "Triangle.h"
@@ -9,13 +10,36 @@
 
 void BufferController::initializeUniformBuffers()
 {
-	initializeLightsBuffer();
+	initializeTexturesBuffer();
 	initializeMaterialsBuffer();
+	initializeLightsBuffer();
 	initializeObjectsBuffer();
 	initializeTrianglesBuffer();
 	initializeBVHBuffer();
 }
 
+void BufferController::initializeTexturesBuffer()
+{
+	for (const auto& tex : Scene::textures)
+	{
+		Raytracer::shader->addTexture2D(tex);
+	}
+}
+void BufferController::initializeMaterialsBuffer()
+{
+	std::vector<MaterialStruct> data{};
+	for (const auto& mat : Scene::materials)
+	{
+		MaterialStruct materialStruct{};
+		materialStruct.color = mat->color;
+		materialStruct.properties1 = glm::vec4(mat->lit, mat->diffuseCoeff, mat->specularCoeff, mat->specularDegree);
+		materialStruct.properties2.x = mat->reflection;
+		materialStruct.properties2.y = mat->texture->indexID;
+		data.push_back(materialStruct);
+	}
+	Raytracer::shader->ssboMaterials->setData((float*)data.data(), data.size());
+	Raytracer::shader->setInt("materialCount", data.size());
+}
 void BufferController::initializeLightsBuffer()
 {
 	std::vector<LightStruct> data{};
@@ -47,20 +71,8 @@ void BufferController::initializeLightsBuffer()
 		}
 		data.push_back(lightStruct);
 	}
-	Raytracer::mainShader->setLights((float*)data.data(), data.size());
-}
-void BufferController::initializeMaterialsBuffer()
-{
-	std::vector<MaterialStruct> data{};
-	for (const auto& mat : Scene::materials)
-	{
-		MaterialStruct materialStruct{};
-		materialStruct.color = mat->color;
-		materialStruct.properties1 = glm::vec4(mat->lit, mat->diffuseCoeff, mat->specularCoeff, mat->specularDegree);
-		materialStruct.properties2.x = mat->reflection;
-		data.push_back(materialStruct);
-	}
-	Raytracer::mainShader->setMaterials((float*)data.data(), data.size());
+	Raytracer::shader->ssboLights->setData((float*)data.data(), data.size());
+	Raytracer::shader->setInt("lightCount", data.size());
 }
 void BufferController::initializeObjectsBuffer()
 {
@@ -94,7 +106,8 @@ void BufferController::initializeObjectsBuffer()
 		}
 		data.push_back(objectStruct);
 	}
-	Raytracer::mainShader->setObjects((float*)data.data(), data.size());
+	Raytracer::shader->ssboObjects->setData((float*)data.data(), data.size());
+	Raytracer::shader->setInt("objectCount", data.size());
 }
 
 void BufferController::initializeTrianglesBuffer()
@@ -113,9 +126,11 @@ void BufferController::initializeTrianglesBuffer()
 		triangleStruct.rows[0] = glm::vec4(triangle->row1, triangle->row1Val);
 		triangleStruct.rows[1] = glm::vec4(triangle->row2, triangle->row2Val);
 		triangleStruct.rows[2] = glm::vec4(triangle->row3, triangle->row3Val);
+		triangleStruct.texVec = glm::vec4(triangle->texVecU, triangle->texVecV);
 		data.push_back(triangleStruct);
 	}
-	Raytracer::mainShader->setTriangles((float*)data.data(), data.size());
+	Raytracer::shader->ssboTriangles->setData((float*)data.data(), data.size());
+	Raytracer::shader->setInt("triangleCount", data.size());
 }
 void BufferController::initializeBVHBuffer()
 {
@@ -129,5 +144,6 @@ void BufferController::initializeBVHBuffer()
 		bvhNodeStruct.values = glm::vec4(node->hitNext, node->missNext, node->isLeaf, 0);
 		data.push_back(bvhNodeStruct);
 	}
-	Raytracer::mainShader->setBVHNodes((float*)data.data(), nodes.size());
+	Raytracer::shader->ssboBVHNodes->setData((float*)data.data(), data.size());
+	Raytracer::shader->setInt("bvhNodeCount", data.size());
 }
