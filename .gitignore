@@ -9,3 +9,5 @@ build/
 /.PVS-Studio
 
 out/
+
+libs/glslang/

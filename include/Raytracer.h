@@ -16,7 +16,7 @@ public:
 	inline static int width, height;
 
 	inline static RaytracerShader* mainShader;
-	inline static GLuint screenVertexArray;
+	inline static GLuint vaoScreen;
 
 	inline static Action onUpdate{};
 

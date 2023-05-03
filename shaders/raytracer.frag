@@ -10,7 +10,7 @@ out vec4 outColor;
 
 // ----------- SETTINGS -----------
 const float boxLineWidth = 0.05f;
-uniform int rayBounceCount;
+uniform int maxRayBounce;
 
 
 // Camera
@@ -58,8 +58,8 @@ struct Triangle {
 
 //const int LEAF_ARR_SIZE = 8;
 struct BVHNode {
-    vec4 min; // w = trianglesStart
-    vec4 max; // w = triangleCount
+    vec4 min; // min, trianglesStart
+    vec4 max; // max, triangleCount
     vec4 values; // hitNext, missNext, isLeaf
 };
 
@@ -67,25 +67,25 @@ struct BVHNode {
 
 // UNIFORM BUFFERS
 uniform int lightCount;
-layout(std140, binding = 0) uniform Lights {
+layout(std140, binding = 0) buffer Lights {
     Light lights[];
 };
 
 uniform int materialCount;
-layout(std140, binding = 1) uniform Materials {
+layout(std140, binding = 1) buffer Materials {
     Material materials[];
 };
 
 uniform int objectCount;
-layout(std140, binding = 2) uniform Objects {
+layout(std140, binding = 2) buffer Objects {
     Object objects[];
 };
 
 uniform int triangleCount;
-//layout(std140, binding = 3) buffer Triangles {
-//    Triangle triangles[];
-//};
-layout(binding = 3, rgba32f) uniform imageBuffer triangleMap;
+layout(std140, binding = 3) buffer Triangles {
+    Triangle triangles[];
+};
+//layout(binding = 3, rgba32f) uniform imageBuffer triangleMap;
 
 
 uniform int bvhNodeCount;
@@ -116,36 +116,31 @@ struct Ray
 #define RAY_DEFAULT_ARGS_WO_DIST FLT_MAX, -1, vec3(0), vec3(0)
 
 
-vec3 getTriangleNormalAt(int triangleIndex, float u, float v, bool invert)
+vec3 getTriangleNormalAt(Triangle triangle, float u, float v, bool invert)
 {
-	vec3 interpolatedNormal = normalize((1 - u - v) * imageLoad(triangleMap, triangleIndex * 10 + 1).xyz + u * imageLoad(triangleMap, triangleIndex * 10 + 3).xyz + v * imageLoad(triangleMap, triangleIndex * 10 + 5).xyz);
+	vec3 interpolatedNormal = normalize((1 - u - v) * triangle.vertices[0].normalV.xyz + u * triangle.vertices[1].normalV.xyz + v * triangle.vertices[2].normalV.xyz);
 	return invert ? -interpolatedNormal : interpolatedNormal;
 }
 
-bool IntersectTriangle(out Ray ray, int triangleIndex)
+bool IntersectTriangle(out Ray ray, Triangle triangle)
 {
-    vec4 row3 = imageLoad(triangleMap, triangleIndex * 10 + 9);
-    vec3 row3xyz = row3.xyz;
-    float dz = dot(row3xyz, ray.dir);
+    float dz = dot(triangle.rows[2].xyz, ray.dir);
 	if (abs(dz) <= 1e-4) return false;
 
-	float oz = dot(row3xyz, ray.pos) + row3.w;
+	float oz = dot(triangle.rows[2].xyz, ray.pos) + triangle.rows[2].w;
 	float t = -oz / dz;
 	if (t < 0.0 || t > ray.closestT || t > ray.maxDis) return false;
 
-    vec4 row1 = imageLoad(triangleMap, triangleIndex * 10 + 7);
 	vec3 hitPos = ray.pos + ray.dir * t;
-	float u = dot(row1.xyz, hitPos) + row1.w;
+	float u = dot(triangle.rows[0].xyz, hitPos) + triangle.rows[0].w;
 	if (u < 0.0 || u > 1.0) return false;
 
-    vec4 row2 = imageLoad(triangleMap, triangleIndex * 10 + 8);
-	float v = dot(row2.xyz, hitPos) + row2.w;
+	float v = dot(triangle.rows[1].xyz, hitPos) + triangle.rows[1].w;
 	if (v < 0.0 || u + v > 1.0) return false;
 
-    vec4 materialInd = imageLoad(triangleMap, triangleIndex * 10 + 6);
 	ray.closestT = t;
-	ray.materialIndex = int(materialInd.x);
-	ray.surfaceNormal = getTriangleNormalAt(triangleIndex, u, v, false);/*dot(triangle.materialIndex.yzw, ray.dir) > 0   getTriangleNormalAt(materialInd.yzw, u, v, false); */
+	ray.materialIndex = int(triangle.materialIndex);
+	ray.surfaceNormal = getTriangleNormalAt(triangle, u, v, false);
 	ray.interPoint = hitPos;
 
 	return true;
@@ -156,7 +151,7 @@ bool intersectTriangledObject(out Ray ray, Object obj)
     bool hit = false;
     for(int j = int(obj.properties.x); j < obj.properties.x + obj.properties.y; j++)
     {
-        if(IntersectTriangle(ray, j))
+        if(IntersectTriangle(ray, triangles[j]))
             hit = true;
     }
     return hit;
@@ -331,7 +326,7 @@ bool intersectBVHTree(out Ray ray, bool castingShadows)
             {
                 vec4 tri = texelFetch(trianglesTexture, 0);
                 for (int i = int(node.min.w); i < node.min.w + node.max.w; i++)
-			        IntersectTriangle(ray, i);
+			        IntersectTriangle(ray, triangles[i]);
             }
             curr = int(node.values.x);
         }
@@ -464,7 +459,7 @@ vec4 castRay(Ray ray)
     vec4 color = vec4(0);
     bool hit = false;
     float colorImpact = 1;
-    for(int bounce = 0; bounce < rayBounceCount; bounce++) 
+    for(int bounce = 0; bounce < maxRayBounce; bounce++) 
     {
         #ifdef USE_BVH
         for(int objInd = 0; objInd < objectCount; objInd++)
@@ -510,6 +505,8 @@ vec4 castRay(Ray ray)
 }
 
 
+uniform samplerCube cubemap;
+
 void main()
 {
     float x = gl_FragCoord.x / pixelSize.x * screenSize.x;
@@ -519,5 +516,6 @@ void main()
     vec4 up = cameraRotMat[2];
     vec4 lb = focalDistance * forward - 0.5 * right * screenSize.x - 0.5 * up;
     vec4 rayDir = normalize(lb + x * right + y * up);
-    outColor = castRay(Ray(cameraPos, rayDir.xyz, RAY_DEFAULT_ARGS));
+//    outColor = castRay(Ray(cameraPos, rayDir.xyz, RAY_DEFAULT_ARGS));
+    outColor = texture(cubemap, rayDir.xyz);
 }

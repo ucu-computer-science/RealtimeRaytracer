@@ -6,14 +6,16 @@
 class RaytracerShader : public Shader
 {
 public:
-	unsigned int uboLights = 0;
-	unsigned int uboMaterials = 0;
-	unsigned int uboObjects = 0;
+	unsigned int ssboLights = 0;
+	unsigned int ssboMaterials = 0;
+	unsigned int ssboObjects = 0;
 	unsigned int ssboTriangles = 0;
 	unsigned int ssboBVHNodes = 0;
 
 	unsigned int tboTriangles = 0;
 	unsigned int tboTrianglesTex = 0;
+
+	unsigned int cubeMapNodeLinks;
 
 	static constexpr int lightAlign = 20;
 	static constexpr int materialAlign = 12;
@@ -23,11 +25,9 @@ public:
 
 	RaytracerShader(const char* vertexPath, const char* fragmentPath);
 
-	void setLightsUBO(const float* data, int lightCount) const;
-	void setMaterialsUBO(const float* data, int materialCount) const;
-	void setObjectsUBO(const float* data, int objectCount) const;
-	void setTrianglesSSBO(const float* data, int triangleCount) const;
-	void setBVHNodesSSBO(const float* data, int bvhNodeCount) const;
-
-	void setTrianglesTBO(const float* data, int triangleCount) const;
+	void setLights(const float* data, int lightCount) const;
+	void setMaterials(const float* data, int materialCount) const;
+	void setObjects(const float* data, int objectCount) const;
+	void setTriangles(const float* data, int triangleCount) const;
+	void setBVHNodes(const float* data, int bvhNodeCount) const;
 };

@@ -21,7 +21,7 @@ Camera::Camera(glm::vec3 pos, float focalDistance, float lensRadius, glm::vec2 s
 
 	Raytracer::mainShader->setFloat("focalDistance", focalDistance);
 	Raytracer::mainShader->setFloat2("screenSize", size);
-	Raytracer::mainShader->setInt("rayBounceCount", 5);
+	Raytracer::mainShader->setInt("maxRayBounce", 5);
 
 	onCameraRotate += [this] { Raytracer::mainShader->setMatrix4X4("cameraRotMat", mat4_cast(this->rot)); };
 	onCameraMove += [this] { Raytracer::mainShader->setFloat3("cameraPos", this->pos); };

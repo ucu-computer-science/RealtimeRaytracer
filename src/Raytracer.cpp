@@ -35,7 +35,7 @@ void Raytracer::initialize(int width, int height)
 	Raytracer::height = height;
 
 	SDLHandler::initialize(width, height);
-	mainShader = new RaytracerShader("../../shaders/raytracer.vert", "../../shaders/raytracer.frag");
+	mainShader = new RaytracerShader("shaders/raytracer.vert", "shaders/raytracer.frag");
 	mainShader->use();
 	mainShader->setFloat2("pixelSize", {width, height});
 
@@ -57,7 +57,7 @@ void Raytracer::initializeScene()
 	camera->setBackgroundColor(Color::black());
 	auto tex = std::make_shared<Texture>();
 
-	auto model = Model("../../models/skull.obj");
+	auto model = Model("models/skull.obj");
 	auto obj = new Mesh({0, 0, -9 }, model.triangles);
 
 	new GlobalLight({0, -1, 0}, Color::white(), 1);
@@ -120,8 +120,8 @@ void Raytracer::initializeScreenVertexBuffer()
 		2, 1, 3,
 	};
 
-	glGenVertexArrays(1, &screenVertexArray);
-	glBindVertexArray(screenVertexArray);
+	glGenVertexArrays(1, &vaoScreen);
+	glBindVertexArray(vaoScreen);
 
 	unsigned int vertexBuffer;
 	glGenBuffers(1, &vertexBuffer);
@@ -146,8 +146,11 @@ void Raytracer::loop()
 		onUpdate();
 
 		mainShader->use();
-		glBindVertexArray(screenVertexArray);
+		glBindVertexArray(vaoScreen);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, mainShader->cubeMapNodeLinks);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		glBindVertexArray(0);
 
 		if (!SDLHandler::update())
 			break;
