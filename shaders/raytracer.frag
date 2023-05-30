@@ -1,10 +1,11 @@
 #version 460 core
 out vec4 outColor;
+vec4 DEBUG_COLOR = vec4(0.2,0,0,1);
 
 #define FLT_MAX  1000000
 
 // ----------- OPTIONS -----------
-#define USE_BVH
+//#define USE_BVH
 //#define SHOW_BOXES
 
 
@@ -69,7 +70,7 @@ struct BVHNode {
 
 // UNIFORM BUFFERS
 uniform int textureCount;
-layout(std140, binding = 0) uniform sampler2D[] textures;
+uniform sampler2D[] textures;
 
 uniform int materialCount;
 layout(std140, binding = 1) buffer Materials {
@@ -134,18 +135,19 @@ vec3 getTriangleNormalAt(Triangle triangle, float u, float v, bool invert)
 bool IntersectTriangle(out Ray ray, Triangle triangle)
 {
     float dz = dot(triangle.rows[2].xyz, ray.dir);
-	if (dz == 0) return false;
+    DEBUG_COLOR = triangle.rows[2];
+    if (dz == 0) return false;
 
-	float oz = dot(triangle.rows[2].xyz, ray.pos) + triangle.rows[2].w;
-	float t = -oz / dz;
-	if (t < 0.0 || t > ray.closestT || t > ray.maxDis) return false;
+    float oz = dot(triangle.rows[2].xyz, ray.pos) + triangle.rows[2].w;
+    float t = -oz / dz;
+    if (t < 0.0 || t > ray.closestT || t > ray.maxDis) return false;
 
-	vec3 hitPos = ray.pos + ray.dir * t;
-	float u = dot(triangle.rows[0].xyz, hitPos) + triangle.rows[0].w;
-	if (u < 0.0 || u > 1.0) return false;
+    vec3 hitPos = ray.pos + ray.dir * t;
+    float u = dot(triangle.rows[0].xyz, hitPos) + triangle.rows[0].w;
+    if (u < 0.0 || u > 1.0) return false;
 
-	float v = dot(triangle.rows[1].xyz, hitPos) + triangle.rows[1].w;
-	if (v < 0.0 || u + v > 1.0) return false;
+    float v = dot(triangle.rows[1].xyz, hitPos) + triangle.rows[1].w;
+    if (v < 0.0 || u + v > 1.0) return false;
 
 	ray.closestT = t;
 	ray.materialIndex = int(triangle.materialIndex);
@@ -539,6 +541,6 @@ void main()
 		color += castRay(Ray(cameraPos /*+lensOffset*/, normalize(rayDir /*- lensOffset + aaOffset*/), RAY_DEFAULT_ARGS));
 	}
 	color /= samplesPerPixel;
-    outColor = color;
+    outColor = color+DEBUG_COLOR;
 //    outColor = texture(cubemap, rayDirNotNormalized);
 }

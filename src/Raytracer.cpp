@@ -74,8 +74,7 @@ void Raytracer::initializeSkybox()
 }
 void Raytracer::initializeScene()
 {
-	auto camera = new Camera({0.305388, -9.574623, 3.030889}, 1, 0, {(float)width / (float)height, 1});
-	camera->setRot({0.992115, 0.125332, 0.000000, 0.000004});
+	auto camera = new Camera({0, -30, 0}, 1, 0, {(float)width / (float)height, 1});
 	//float fov = 10;
 	//auto camera = new Camera({0, -50, 0}, fov, 0, fov * glm::vec2((float)width / (float)height, 1));
 	//camera->setBackgroundColor(Color::black());
