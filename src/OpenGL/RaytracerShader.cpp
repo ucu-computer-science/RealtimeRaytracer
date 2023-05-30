@@ -13,7 +13,7 @@ RaytracerShader::RaytracerShader(const char* vertexPath, const char* fragmentPat
 	ssboTriangles = new SSBO(triangleAlign, 4);
 	ssboBVHNodes = new SSBO(bvhNodeAlign, 5);
 
-	//skybox = new GLCubeMap();
+	skybox = new GLCubeMap();
 }
 
 void RaytracerShader::setUpScreenTriangles() const

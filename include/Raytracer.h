@@ -7,7 +7,7 @@ class Raytracer
 {
 	inline static constexpr int triangleBufferSize = 1000;
 
-	//static void initializeSkybox();
+	static void initializeSkybox();
 	static void initializeScene();
 
 public:

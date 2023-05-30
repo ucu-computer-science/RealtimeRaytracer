@@ -9,16 +9,18 @@ out vec4 outColor;
 
 
 // ----------- SETTINGS -----------
-const float boxLineWidth = 0.05f;
+const float boxLineWidth = 0.02f;
 uniform int maxRayBounce;
+uniform int samplesPerPixel = 1;
 
 
 // Camera
 uniform vec2 pixelSize;
 uniform vec2 screenSize;
 uniform float focalDistance;
+uniform float lensRadius;
 uniform vec3 cameraPos;
-uniform vec4 bgColor = vec4(0.3, 0, 0, 1);
+uniform vec4 bgColor = vec4(0, 0, 0, 1);
 
 uniform mat4x4 cameraRotMat = mat4x4(1.0);
 
@@ -97,9 +99,12 @@ layout(std140, binding = 5) buffer BVHNodes {
 };
 
 
-// TEXTURE BUFFERS
 
-uniform samplerBuffer trianglesTexture;
+float PHI = 1.61803398874989484820459;  
+
+float random(in vec2 xy, in float seed){
+       return fract(tan(distance(xy*PHI, xy)*seed)*xy.x);
+}
 
 // **************************************************************************
 // ------------------------------ INTERSECTION ------------------------------
@@ -330,7 +335,6 @@ bool intersectBVHTree(out Ray ray, bool castingShadows)
         {
             if(node.values.z == 1)
             {
-                vec4 tri = texelFetch(trianglesTexture, 0);
                 for (int i = int(node.min.w); i < node.min.w + node.max.w; i++)
 			        IntersectTriangle(ray, triangles[i]);
             }
@@ -512,17 +516,29 @@ vec4 castRay(Ray ray)
 }
 
 
-//uniform samplerCube cubemap;
+uniform samplerCube cubemap;
 
 void main()
 {
+    vec3 right = cameraRotMat[0].xyz;
+    vec3 forward = cameraRotMat[1].xyz;
+    vec3 up = cameraRotMat[2].xyz;
+
+    vec3 lb = focalDistance * forward - 0.5 * right * screenSize.x - 0.5 * up * screenSize.y;
     float x = gl_FragCoord.x / pixelSize.x * screenSize.x;
     float y = gl_FragCoord.y / pixelSize.y * screenSize.y;
-    vec4 right = cameraRotMat[0];
-    vec4 forward = cameraRotMat[1];
-    vec4 up = cameraRotMat[2];
-    vec4 lb = focalDistance * forward - 0.5 * right * screenSize.x - 0.5 * up;
-    vec4 rayDir = normalize(lb + x * right + y * up);
-    outColor = castRay(Ray(cameraPos, rayDir.xyz, RAY_DEFAULT_ARGS));
-//    outColor = vec4(1,0,0,1);
+    vec3 rayDir = lb + x * right + y * up;
+
+    vec4 color = vec4(0);
+    for (int i = 0; i < samplesPerPixel; ++i)
+	{
+//		vec3 lensOffsetStarting = lensRadius * normalize(vec3(random(gl_FragCoord.xy, i)-0.5, random(gl_FragCoord.xy, i+1)-0.5, 0)) * (random(gl_FragCoord.xy, i+2)-0.5)*2;
+//		vec3 lensOffset = right * lensOffsetStarting.x + up * lensOffsetStarting.y;
+//        vec3 aaOffsetStarting = normalize(vec3(random(gl_FragCoord.xy, i+3)-0.5, random(gl_FragCoord.xy, i+4)-0.5, 0)) * 0.0025;
+//		vec3 aaOffset = aaOffsetStarting.x + up * aaOffsetStarting.y;
+		color += castRay(Ray(cameraPos /*+lensOffset*/, normalize(rayDir /*- lensOffset + aaOffset*/), RAY_DEFAULT_ARGS));
+	}
+	color /= samplesPerPixel;
+    outColor = color;
+//    outColor = texture(cubemap, rayDirNotNormalized);
 }

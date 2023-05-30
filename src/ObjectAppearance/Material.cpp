@@ -9,7 +9,7 @@
 
 Texture* const Texture::defaultTex = new Texture("textures/church.jpg");//"textures/church.jpg"
 
-Material* const Material::debugLine = new Material(Color::blue(), false);
+Material* const Material::debugLine = new Material({50,100,200}, false);
 Material* const Material::defaultLit = new Material(Color::white(), true);
 Material* const Material::defaultUnlit = new Material(Color::white(), false);
 

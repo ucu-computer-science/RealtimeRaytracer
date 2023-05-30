@@ -17,7 +17,7 @@ public:
 
 	VAO* vaoScreen;
 
-	//GLCubeMap* skybox;
+	GLCubeMap* skybox;
 
 	std::vector<GLTexture2D*> textures{};
 

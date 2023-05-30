@@ -10,7 +10,7 @@ class BVHNode;
 
 class BVHBuilder
 {
-	inline static constexpr int maxTrianglesPerBox = 12;
+	inline static constexpr int maxTrianglesPerBox = 3;
 	inline static bool showBoxes = false;
 	inline static float lineWidth = 0.1f;
 
