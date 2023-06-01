@@ -9,6 +9,7 @@ class Raytracer
 
 	static void initializeSkybox();
 	static void initializeScene();
+	static void initializeFBO(Shader*& screenShader, unsigned& fbo, unsigned& renderTexture);
 
 public:
 	inline static int width, height;

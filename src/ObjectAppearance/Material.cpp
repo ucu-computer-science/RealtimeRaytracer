@@ -7,7 +7,7 @@
 #include "Scene.h"
 
 
-Texture* const Texture::defaultTex = new Texture("textures/church.jpg");//"textures/church.jpg"
+Texture* const Texture::defaultTex = new Texture();//"textures/minecraft.png"
 
 Material* const Material::debugLine = new Material({50,100,200}, false);
 Material* const Material::defaultLit = new Material(Color::white(), true);

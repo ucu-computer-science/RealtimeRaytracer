@@ -26,8 +26,8 @@ Camera::Camera(glm::vec3 pos, float focalDistance, float lensRadius, glm::vec2 s
 
 	onCameraRotate += [this] { Raytracer::shader->setMatrix4X4("cameraRotMat", mat4_cast(this->rot)); };
 	onCameraMove += [this] { Raytracer::shader->setFloat3("cameraPos", this->pos); };
-	//onCameraMove += [this] { std::cout << to_string(this->pos); };
-	//onCameraRotate += [this] { std::cout << to_string(this->rot); };
+	onCameraMove += [this] { std::cout << to_string(this->pos); };
+	onCameraRotate += [this] { std::cout << to_string(this->rot); };
 }
 
 void Camera::setBackgroundColor(Color color)

@@ -80,11 +80,11 @@ void Model::parseObject(const std::filesystem::path& path)
 
 			for (int i = 2; i < posIndexes.size(); i++)
 			{
-				auto v1 = Vertex(vertexPositions[posIndexes[0]], uvIndexes[0] != -1 ? vertexUVs[uvIndexes[0]] : glm::vec2(),
+				auto v1 = Vertex(vertexPositions[posIndexes[0] % vertexPositions.size()], uvIndexes[0] != -1 ? vertexUVs[uvIndexes[0]] : glm::vec2(),
 				                 normalIndexes[0] != -1 ? vertexNormals[normalIndexes[0]] : glm::vec3(0, 0, 0));
-				auto v2 = Vertex(vertexPositions[posIndexes[i - 1]], uvIndexes[i - 1] != -1 ? vertexUVs[uvIndexes[i - 1]] : glm::vec3(),
+				auto v2 = Vertex(vertexPositions[posIndexes[i - 1] % vertexPositions.size()], uvIndexes[i - 1] != -1 ? vertexUVs[uvIndexes[i - 1]] : glm::vec3(),
 				                 normalIndexes[i - 1] != -1 ? vertexNormals[normalIndexes[i - 1]] : glm::vec3(0, 0, 0));
-				auto v3 = Vertex(vertexPositions[posIndexes[i]], uvIndexes[i] != -1 ? vertexUVs[uvIndexes[i]] : glm::vec2(),
+				auto v3 = Vertex(vertexPositions[posIndexes[i] % vertexPositions.size()], uvIndexes[i] != -1 ? vertexUVs[uvIndexes[i]] : glm::vec2(),
 				                 normalIndexes[i - 1] != -1 ? vertexNormals[normalIndexes[i]] : glm::vec3(0, 0, 0));
 
 				triangles.emplace_back(new Triangle(nullptr, v1, v2, v3));

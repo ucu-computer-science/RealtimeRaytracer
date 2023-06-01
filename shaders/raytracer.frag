@@ -6,7 +6,7 @@ out vec4 outColor;
 // ----------- OPTIONS -----------
 #define USE_BVH
 //#define SHOW_BOXES
-//#define ROW_BY_ROW
+#define ROW_BY_ROW
 
 
 // ----------- SETTINGS -----------
