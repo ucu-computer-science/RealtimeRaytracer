@@ -20,6 +20,9 @@
 #include "stb_image.h"
 
 
+//#define ROW_BY_ROW
+
+
 int main(int argv, char* args[])
 {
 	Raytracer::initialize(640 * 2, 360 * 2);
@@ -41,7 +44,7 @@ void Raytracer::initialize(int width, int height)
 
 	// SETTINGS
 	shader->setInt("maxRayBounce", 5);
-	shader->setFloat2("pixelSize", { width, height });
+	shader->setFloat2("pixelSize", {width, height});
 
 	onUpdate += Time::updateTime;
 	onUpdate += Input::updateInput;
@@ -74,8 +77,10 @@ void Raytracer::initialize(int width, int height)
 //}
 void Raytracer::initializeScene()
 {
-	auto camera = new Camera({ 0.305388, -9.574623, 3.030889 }, 1, 0, { (float)width / (float)height, 1 });
-	camera->setRot({ 0.992115, 0.125332, 0.000000, 0.000004 });
+	float focalDistance = 22;
+	auto camera = new Camera({0.305388, -9.574623, 3.030889}, focalDistance, 0.3, glm::vec2((float)width / (float)height, 1)*focalDistance);
+	//auto camera = new Camera({0.305388, -30, 3.030889}, focalDistance, 0.5, glm::vec2((float)width / (float)height, 1) * focalDistance);
+	camera->setRot({0.992115, 0.125332, 0.000000, 0.000004});
 	//auto camera = new Camera({ 0, -50, 0 }, 1, 0, { (float)width / (float)height, 1 });
 	camera->setBackgroundColor(Color::black());
 	auto tex = Texture::defaultTex;
@@ -86,9 +91,9 @@ void Raytracer::initializeScene()
 	//new GlobalLight({0, -1, 0}, Color::white(), 1);
 
 	auto model = Model("models/west.obj");
-	auto obj = new Mesh({ 0, 0, 0 }, model.triangles);
-	obj->material = new Material(Color::white(), true, tex, 1, 0.3, 2000, 0);
-	auto light = new AreaLight{ {0.334557, 2, 14.720142}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 1, FLT_MAX, {3, 3, 2}, {6, 6, 1} };
+	auto obj = new Mesh({0, 0, 0}, model.triangles);
+	obj->material = new Material(Color::white(), true, tex, 1, 0.2, 2000, 0);
+	auto light = new AreaLight{{0.334557, 2, 14.720142}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 1, FLT_MAX, {3, 3, 2}, {1, 1, 1}};
 
 	//auto obj = new Cube({0, 0, 0}, 2, {{0, 0, 0}});
 	//obj->material = new Material(Color::blue(), true, tex, 1, 0, 2000, 0);
@@ -136,16 +141,71 @@ void Raytracer::initializeScene()
 
 void Raytracer::loop()
 {
+#ifdef ROW_BY_ROW
+	auto screenShader = Shader("shaders/screen.vert", "shaders/screen.frag");
+	screenShader.use();
+	screenShader.setInt("width", width);
+	screenShader.setInt("height", height);
+
+	unsigned int fbo;
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	// generate texture
+	unsigned int renderTexture;
+	glGenTextures(1, &renderTexture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, renderTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTexture, 0);
+
+	unsigned int rbo;
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	screenShader.use();
+	glUniform1i(glGetUniformLocation(screenShader.id, "screenTexture"), 1);
+#endif
+
+	auto currRow = 0;
 	while (true)
 	{
-		onUpdate();
+#ifdef ROW_BY_ROW
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+#else
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+#endif
 
+		// Draw scene
+		onUpdate();
 		shader->use();
 		glBindVertexArray(shader->vaoScreen->id);
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_CUBE_MAP, shader->skybox->id);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
+
+		shader->setInt("currRow", currRow++);
+
+
+#ifdef ROW_BY_ROW
+		// second pass
+		glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
+
+		screenShader.use();
+		glBindVertexArray(shader->vaoScreen->id);
+		glBindTexture(GL_TEXTURE_2D, renderTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+#endif
+
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, shader->skybox->id);
 
 		SDL_GL_SwapWindow(SDLHandler::window);
 		if (!SDLHandler::update())

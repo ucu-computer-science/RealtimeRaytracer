@@ -6,6 +6,7 @@ out vec4 outColor;
 // ----------- OPTIONS -----------
 #define USE_BVH
 //#define SHOW_BOXES
+//#define ROW_BY_ROW
 
 
 // ----------- SETTINGS -----------
@@ -103,7 +104,7 @@ layout(std140, binding = 5) buffer BVHNodes {
 float PHI = 1.61803398874989484820459;
 
 float random(in vec2 xy, in float seed){
-    return fract(tan(distance(xy*PHI, xy)*seed)*xy.x);
+    return fract(sin(distance(xy*PHI, xy)*seed)*xy.x);
 }
 
 // **************************************************************************
@@ -516,10 +517,18 @@ vec4 castRay(Ray ray)
 }
 
 
-uniform samplerCube cubemap;
+//uniform samplerCube cubemap;
+
+uniform int currRow = 0;
 
 void main()
 {
+#ifdef ROW_BY_ROW
+    if(gl_FragCoord.y!=currRow+0.5)
+    {
+        discard;
+    }
+#endif
     vec3 right = cameraRotMat[0].xyz;
     vec3 forward = cameraRotMat[1].xyz;
     vec3 up = cameraRotMat[2].xyz;
@@ -529,16 +538,17 @@ void main()
     float y = gl_FragCoord.y / pixelSize.y * screenSize.y;
     vec3 rayDir = lb + x * right + y * up;
 
+    float rand = 0.5;
     vec4 color = vec4(0);
     for (int i = 0; i < samplesPerPixel; ++i)
     {
-        //		vec3 lensOffsetStarting = lensRadius * normalize(vec3(random(gl_FragCoord.xy, i)-0.5, random(gl_FragCoord.xy, i+1)-0.5, 0)) * (random(gl_FragCoord.xy, i+2)-0.5)*2;
-        //		vec3 lensOffset = right * lensOffsetStarting.x + up * lensOffsetStarting.y;
+        rand = fract(rand*1232142);
+        vec3 lensOffsetStarting = lensRadius * vec3(random(gl_FragCoord.xy, i*2)-0.5, random(gl_FragCoord.xy, i*2+1)-0.5, 0) * (random(gl_FragCoord.xy, i*2+2)-0.5)*2;
+        vec3 lensOffset = right * lensOffsetStarting.x + up * lensOffsetStarting.y;
         //        vec3 aaOffsetStarting = normalize(vec3(random(gl_FragCoord.xy, i+3)-0.5, random(gl_FragCoord.xy, i+4)-0.5, 0)) * 0.0025;
         //		vec3 aaOffset = aaOffsetStarting.x + up * aaOffsetStarting.y;
-        color += castRay(Ray(cameraPos /*+lensOffset*/, normalize(rayDir /*- lensOffset + aaOffset*/), RAY_DEFAULT_ARGS));
+        color += castRay(Ray(cameraPos + lensOffset, normalize(rayDir - lensOffset /*+ aaOffset*/), RAY_DEFAULT_ARGS));
     }
     color /= samplesPerPixel;
     outColor = color;
-    //    outColor = texture(cubemap, rayDirNotNormalized);
 }
