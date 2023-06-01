@@ -7,6 +7,11 @@ void Triangle::recalculateCoefficients()
 {
 	texVecU = vertices[1].uvPos - vertices[0].uvPos;
 	texVecV = vertices[2].uvPos - vertices[0].uvPos;
+#if INTERSECTION_METHOD==MOLLER
+    auto p1 = globalVertexPositions[0], p2 = globalVertexPositions[1], p3 = globalVertexPositions[2];
+    e1 = p2 - p1;
+    e2 = p3 - p1;
+#elif INTERSECTION_METHOD==BALDWIN
 
 	auto p1 = globalVertexPositions[0], p2 = globalVertexPositions[1], p3 = globalVertexPositions[2];
 	auto e1 = p2 - p1;
@@ -54,6 +59,7 @@ void Triangle::recalculateCoefficients()
 		row3 = {};
 		valRow3 = 0.0f;
 	}
+#endif
 }
 
 Triangle::Triangle(GraphicalObject* obj, Vertex v1, Vertex v2, Vertex v3, bool isTwoSided) : vertices({v1, v2, v3}),
@@ -78,6 +84,9 @@ void Triangle::attachTo(GraphicalObject* obj)
 
 bool Triangle::intersect(Ray& ray, bool intersectAll)
 {
+
+#if INTERSECTION_METHOD==BALDWIN
+
 	const float dz = dot(row3, ray.dir);
 	if (dz == 0.0f)
 		return false;
@@ -103,6 +112,37 @@ bool Triangle::intersect(Ray& ray, bool intersectAll)
 	ray.closestT = t;
 	ray.color = getColorAt(u, v);
 	return true;
+#elif INTERSECTION_METHOD==MOLLER
+    	const float EPSILON = 0.0000001f;
+
+		glm::vec3 h = cross(ray.dir, (e2));
+		float a = dot(e1, h);
+		if (a > -EPSILON && a < EPSILON)
+			return false;    // This ray is parallel to this triangle.
+		float f = 1.0f / a;
+		glm::vec3 s = ray.pos - globalVertexPositions[0];
+		float u = f * dot(s, h);
+		if (u < 0.0f || u > 1.0f)
+			return false;
+		glm::vec3 q = cross(s, e1);
+		float v = f * dot(ray.dir, q);
+		if (v < 0.0f || u + v > 1.0f)
+			return false;
+		// At this stage we can compute t to find out where the intersection point is on the line.
+		float t = f * dot(e2, q);
+		if (t > EPSILON && ray.closestT > t) // ray intersection
+		{
+            ray.closestT = t;
+            ray.closestMat = &obj->material;
+            ray.surfaceNormal = getNormalAt(u, v, dot(globalNormal, ray.dir) > 0);
+            ray.interPoint = ray.pos + ray.dir * t;
+            ray.color = getColorAt(u, v);
+            return true;
+		}
+		return false;
+		//else // This means that there is a line intersection but not a ray intersection.
+			//return false;
+#endif
 }
 
 Color Triangle::getColorAt(float u, float v) const

@@ -6,6 +6,7 @@
 #include "GraphicalObject.h"
 #include "IBoundable.h"
 #include "Vertex.h"
+#include "Config.h"
 
 class Triangle : public IBoundable
 {
@@ -22,13 +23,17 @@ public:
 	void updateGeometry();
 
 	// precalculated
-	glm::vec3 row1{};
+#if INTERSECTION_METHOD==BALDWIN
+
+    glm::vec3 row1{};
 	glm::vec3 row2{};
 	glm::vec3 row3{};
 	float valRow1{};
 	float valRow2{};
 	float valRow3{};
-
+#elif INTERSECTION_METHOD==MOLLER
+    glm::vec3 e1, e2;
+#endif
 	glm::vec2 texVecU;
 	glm::vec2 texVecV;
 

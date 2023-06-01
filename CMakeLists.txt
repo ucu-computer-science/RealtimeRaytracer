@@ -47,7 +47,7 @@ add_executable(${PROJECT_NAME}
         "src/Parsers/SceneParser.cpp"
         "src/Object/PolyMesh.cpp"
         "include/Object/Vertex.h" 
-        "src/Physics/Physics.cpp")
+        "src/Physics/Physics.cpp" include/Config.h)
 
 target_link_libraries(${PROJECT_NAME} SDL2)
 target_link_libraries(${PROJECT_NAME} SDL2main)

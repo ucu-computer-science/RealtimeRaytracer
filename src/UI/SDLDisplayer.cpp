@@ -67,12 +67,12 @@ void SDLDisplayer::loop()
 		// Stats
 		FPSCounter::updateFPSCounter();
 		TriangleCounter::updateTriangleCounter();
-		if (Input::isFocused)
-			std::cout
-				<< "FPS: " << FPSCounter::fps
-				<< " Triangles: " << TriangleCounter::triangleCount
-				<< " Graphical Objects: " << Scene::graphicalObjects.size()
-				<< " Bounding Boxes: " << BVHNode::boxCount << '\n';
+//		if (Input::isFocused)
+//			std::cout
+//				<< "FPS: " << FPSCounter::fps
+//				<< " Triangles: " << TriangleCounter::triangleCount
+//				<< " Graphical Objects: " << Scene::graphicalObjects.size()
+//				<< " Bounding Boxes: " << BVHNode::boxCount << '\n';
 
 		SDL_UpdateTexture(renderTexture, nullptr, pixels, width * sizeof(uint32_t));
 		SDL_RenderCopy(renderer, renderTexture, nullptr, nullptr);
