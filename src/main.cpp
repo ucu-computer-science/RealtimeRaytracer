@@ -72,8 +72,10 @@ int main(int argv, char* args[])
 	//GlobalLight light10{{0, 0, 1}, Color::white(), 1};
 	//GlobalLight ligh11{{0, 0, 1}, Color::white(), 1};
 	//PointLight light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 1, FLT_MAX};
-	ImportedGraphicalObject obj("./models/skull.obj", {0, 10, 0}, {{0, 0, 0}});
-	auto tex = std::make_shared<Texture>("./textures/skull.jpg");
+//	ImportedGraphicalObject obj("./models/skull.obj", {0, 10, 0}, {{0, 0, 0}});
+    ImportedGraphicalObject obj("./models/polytest/20trig.obj", {0, 10, 0}, {{0, 0, 0}});
+
+    auto tex = std::make_shared<Texture>("./textures/default.png");
 	obj.setMaterial(Material(Color::white(), tex, true, 1, 0.5f, 2000, 0.4f));
 
 //	ImportedGraphicalObject obj1("./models/cube.obj", {0, -10, 0}, {{0, 0, 0}});
