@@ -64,8 +64,8 @@ int main(int argv, char* args[])
 	constexpr float focusDistance = 30, lensRadius = 0.05f;
 	int width = 640 * 2, height = 360 * 2;
 
-	Camera camera{{0, -240, 10}, focusDistance, lensRadius, glm::vec2((float)width / (float)height * focusDistance, focusDistance)};
-
+	Camera camera{{0, -15, 0}, focusDistance, lensRadius, glm::vec2((float)width / (float)height * focusDistance, focusDistance)};
+    camera.setBackgroundColor(Color::gray());
 //	PointLight light3{ {0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 1, 30};
 //    GlobalLight ligh4{};
 	GlobalLight light9{{0, -1, 0}, Color::white(), 1};
@@ -73,11 +73,12 @@ int main(int argv, char* args[])
 	//GlobalLight ligh11{{0, 0, 1}, Color::white(), 1};
 	//PointLight light3{{0, 0, 8}, {255 / 255.0f, 236 / 255.0f, 156 / 255.0f}, 1, FLT_MAX};
 //	ImportedGraphicalObject obj("./models/skull.obj", {0, 10, 0}, {{0, 0, 0}});
-    ImportedGraphicalObject obj("./models/polytest/20trig.obj", {0, 10, 0}, {{0, 0, 0}});
-
+    ImportedGraphicalObject obj("./models/polytest/5242880trig.obj", {0, 0, 0}, {{0, 0, 0}});
+//
     auto tex = std::make_shared<Texture>("./textures/default.png");
-	obj.setMaterial(Material(Color::white(), tex, true, 1, 0.5f, 2000, 0.4f));
-
+	obj.setMaterial(Material(Color::white(), tex, false, 1, 0, 0, 0));
+    //	Square sq{{0, 0, 9.999f}, {{-90 * DEG_TO_RAD, 0, 0}}, 5};
+    //	sq.material.color = {3.f, 3.f, 3.f};
 //	ImportedGraphicalObject obj1("./models/cube.obj", {0, -10, 0}, {{0, 0, 0}});
 //	obj.setMaterial(Material(Color::white(), tex, false, 1, 0.5f, 2000, 0.1f));
 
