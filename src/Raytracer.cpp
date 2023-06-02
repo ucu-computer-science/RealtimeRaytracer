@@ -151,7 +151,14 @@ void kokuraScene()
 
 void Raytracer::initializeScene()
 {
-	redGreenRoom();
+    float focalDistance = 22;
+    auto camera = new Camera({0, -15, 0}, focalDistance, 0, glm::vec2((float)width / (float)height, 1)*focalDistance);
+    camera->setBackgroundColor(Color::gray());
+    auto tex = Texture::defaultTex;
+// 5242880trig 1310720trig 327680trig 81920trig 20480trig 5120trig 1280trig 320trig 80trig
+    auto model = Model("models/polytest/80trig.obj");
+    auto obj = new Mesh({0, 0, 0}, model.triangles);
+    obj->material = new Material(Color::white(), false, tex, 1, 0, 0, 0);
 }
 
 void Raytracer::initializeFBO(Shader*& screenShader, unsigned& fbo, unsigned& renderTexture)

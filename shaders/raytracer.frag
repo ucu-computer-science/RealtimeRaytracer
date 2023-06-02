@@ -6,7 +6,8 @@ out vec4 outColor;
 // ----------- OPTIONS -----------
 #define USE_BVH
 //#define SHOW_BOXES
-#define ROW_BY_ROW
+//#define ROW_BY_ROW
+//#define USE_BLUR
 
 
 // ----------- SETTINGS -----------
@@ -542,12 +543,17 @@ void main()
     vec4 color = vec4(0);
     for (int i = 0; i < samplesPerPixel; ++i)
     {
+        #ifdef USE_BLUR
+
         rand = fract(rand*1232142);
         vec3 lensOffsetStarting = lensRadius * vec3(random(gl_FragCoord.xy, i*2)-0.5, random(gl_FragCoord.xy, i*2+1)-0.5, 0) * (random(gl_FragCoord.xy, i*2+2)-0.5)*2;
         vec3 lensOffset = right * lensOffsetStarting.x + up * lensOffsetStarting.y;
         //        vec3 aaOffsetStarting = normalize(vec3(random(gl_FragCoord.xy, i+3)-0.5, random(gl_FragCoord.xy, i+4)-0.5, 0)) * 0.0025;
         //		vec3 aaOffset = aaOffsetStarting.x + up * aaOffsetStarting.y;
         color += castRay(Ray(cameraPos + lensOffset, normalize(rayDir - lensOffset /*+ aaOffset*/), RAY_DEFAULT_ARGS));
+        #else
+        color += castRay(Ray(cameraPos , normalize(rayDir /*+ aaOffset*/), RAY_DEFAULT_ARGS));
+        #endif
     }
     color /= samplesPerPixel;
     outColor = color;
